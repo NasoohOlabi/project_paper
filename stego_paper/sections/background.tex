@@ -1,0 +1,17 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{Linguistics-Based Steganography}
+Steganography is distinguished from cryptography by its primary objective: the achievement of imperceptibility rather than mere confidentiality. The fundamental goal is to obscure the very existence of a communication channel. This is traditionally conceptualized through the "Prisoners' Problem" \cite{simmons1984prisoners}, wherein Alice must transmit a message to Bob under the scrutiny of an adversarial warden. Should the warden identify any deviation from expected behavior, the communication channel is terminated.
+
+\subsection{Generative Steganography in the Era of LLMs}
+Traditional textual steganography involves the modification of a static cover text, a process that frequently introduces detectable statistical or linguistic artifacts. In contrast, generative steganography \cite{wu2024generative} utilizes probabilistic models to synthesize the cover text de novo.
+\begin{itemize}
+    \item \textbf{Syntactic/Token-Level Embedding:} Prevailing methodologies often embed information by manipulating the sampling distribution of the subsequent token (e.g., through vocabulary partitioning or binning). However, these techniques typically necessitate "white-box" access to the model's internal logits.
+    \item \textbf{Black-Box Generative Architectures:} Emerging frameworks interact with language models solely through API-driven prompts. Our research operates within this paradigm, leveraging the instruction-following capabilities of LLMs rather than direct manipulation of internal weight distributions.
+\end{itemize}
+
+Linguistic steganography specifically refers to the concealment of information within natural language through the generation or modification of text while maintaining semantic and syntactic fluency \cite{fridrich2009steganography}. While LLM-based systems have significantly improved the quality of generated covers, they remain susceptible to the "Psic effect"—the pervasive tension between statistical imperceptibility and contextual naturalness \cite{yang2020vae,shanahan2024talking}.
+
+\subsection{The Semantic Context Challenge}
+A critical limitation of existing generative systems is their tendency to produce content in isolation or based on abstract prompts. In the context of real-world communicative environments, such as social media, "naturalness" is inextricably linked to conversational relevance. Consequently, a sophisticated adversary can identify steganographic content not by identifying syntactic errors, but by analyzing its pragmatic misalignment with the surrounding discourse \cite{ding2023context}. The framework proposed in this research specifically addresses this semantic-level vulnerability.

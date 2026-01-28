@@ -1,0 +1,99 @@
+\begin{thebibliography}{12}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Yang et~al.(2020)Yang, Zhang, Hu, Hu, and Huang]{yang2020vae}
+Zhong-Liang Yang, Si-Yu Zhang, Yu-Ting Hu, Zhi-Wen Hu, and Yong-Feng Huang.
+\newblock Vae-stega: linguistic steganography based on variational
+  auto-encoder.
+\newblock \emph{IEEE Transactions on Information Forensics and Security},
+  16:\penalty0 880--895, 2020.
+
+\bibitem[Kaptchuk et~al.(2021)Kaptchuk, Jois, Green, and
+  Rubin]{kaptchuk2021meteor}
+Gabriel Kaptchuk, Tushar~M Jois, Matthew Green, and Aviel~D Rubin.
+\newblock Meteor: Cryptographically secure steganography for realistic
+  distributions.
+\newblock In \emph{Proceedings of the 2021 ACM SIGSAC Conference on Computer
+  and Communications Security}, pages 1529--1548, Virtual Event, Republic of
+  Korea, 2021. ACM.
+
+\bibitem[Wang et~al.(2023)Wang, Zhang, Tang, and Liu]{Wang_2023}
+Yihao Wang, Ru~Zhang, Yifan Tang, and Jianyi Liu.
+\newblock State-of-the-art advances of deep-learning linguistic steganalysis
+  research.
+\newblock In \emph{2023 International Conference on Data, Information and
+  Computing Science (CDICS)}, page 20–24. IEEE, December 2023.
+\newblock \doi{10.1109/cdics61497.2023.00014}.
+\newblock URL \url{http://dx.doi.org/10.1109/CDICS61497.2023.00014}.
+
+\bibitem[Liao et~al.(2024)Liao, Yang, Pang, and Huang]{liao2024co}
+Guorui Liao, Jinshuai Yang, Kaiyi Pang, and Yongfeng Huang.
+\newblock Co-stega: Collaborative linguistic steganography for the low capacity
+  challenge in social media.
+\newblock In \emph{Proceedings of the 2024 ACM Workshop on Information Hiding
+  and Multimedia Security}, pages 7--12, Baiona, Spain, 2024. ACM.
+
+\bibitem[Simmons(1984)]{simmons1984prisoners}
+Gustavus~J Simmons.
+\newblock The prisoners' problem and the subliminal channel.
+\newblock In \emph{Advances in Cryptology: Proceedings of Crypto 83}, pages
+  51--67, Boston, MA, 1984. Springer.
+
+\bibitem[Wu et~al.(2024)Wu, Wu, Xue, Wen, and Peng]{wu2024generative}
+Jiaxuan Wu, Zhengxian Wu, Yiming Xue, Juan Wen, and Wanli Peng.
+\newblock Generative text steganography with large language model.
+\newblock In \emph{Proceedings of the 32nd ACM International Conference on
+  Multimedia}, pages 10345--10353, Melbourne, Australia, 2024. ACM.
+
+\bibitem[Fridrich(2009)]{fridrich2009steganography}
+Jessica Fridrich.
+\newblock \emph{Steganography in digital media: principles, algorithms, and
+  applications}.
+\newblock Cambridge University Press, Cambridge, UK, 2009.
+
+\bibitem[Shanahan(2024)]{shanahan2024talking}
+Murray Shanahan.
+\newblock Talking about large language models.
+\newblock \emph{Communications of the ACM}, 67\penalty0 (2):\penalty0 68--79,
+  2024.
+
+\bibitem[Ding et~al.(2023)Ding, Fu, Yang, Yu, Li, and Huang]{ding2023context}
+Changhao Ding, Zhangjie Fu, Zhongliang Yang, Qi~Yu, Daqiu Li, and Yongfeng
+  Huang.
+\newblock Context-aware linguistic steganography model based on neural machine
+  translation.
+\newblock \emph{IEEE/ACM Transactions on Audio, Speech, and Language
+  Processing}, 32:\penalty0 868--878, 2023.
+
+\bibitem[Zillien et~al.(2024)Zillien, Schmidbauer, Kubek, Keller, and
+  Wendzel]{zillien2024oppression}
+Sebastian Zillien, Tobias Schmidbauer, Mario Kubek, Joerg Keller, and Steffen
+  Wendzel.
+\newblock Look what’s there! utilizing the internet’s existing data for
+  censorship circumvention with oppression.
+\newblock In \emph{Proceedings of the 19th ACM Asia Conference on Computer and
+  Communications Security}, ASIA CCS '24, page 80–95, New York, NY, USA,
+  2024. Association for Computing Machinery.
+\newblock ISBN 9798400704826.
+\newblock \doi{10.1145/3634737.3637676}.
+\newblock URL \url{https://doi.org/10.1145/3634737.3637676}.
+
+\bibitem[Pillutla et~al.(2021)Pillutla, Swayamdipta, Zellers, Thickstun,
+  Callison-Burch, Ai2, and Grover]{pillutla2021mauve}
+Krishna Pillutla, Swabha Swayamdipta, Rowan Zellers, John Thickstun, Chris
+  Callison-Burch, AI~Ai2, and Aditya Grover.
+\newblock Mauve: Measuring the gap between neural text and human text using
+  divergence frontiers.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~34, pages 4816--4828, Virtual Event, 2021. Curran Associates, Inc.
+
+\bibitem[Wang et~al.(2022)Wang, Deng, Sun, and Meng]{wang2022perplexity}
+Yequan Wang, Jiawen Deng, Aixin Sun, and Xuying Meng.
+\newblock Perplexity from plm is unreliable for evaluating text quality.
+\newblock \emph{arXiv preprint arXiv:2210.05892}, 2022.
+
+\end{thebibliography}
