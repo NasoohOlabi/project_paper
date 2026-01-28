@@ -4,7 +4,7 @@
 This research proposes a black-box steganographic technique that embeds information within the semantic architecture of a conversation. The methodology is predicated on a standard covert communication scenario involving Alice (the sender) and Bob (the receiver), communicating over a public social media platform. While this study utilizes Reddit as a primary case study, the underlying principles are platform-agnostic and transferable to any threaded discussion environment.
 
 \subsection{System Architecture}
-The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a thematic angle—the system maximizes channel capacity while preserving perceptual naturalness. In a passive discovery scenario, the receiver monitors the sender's public profile to identify recent interactions, which serve as the requisite entry points for the de-steganography process.
+The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a tangent—the system maximizes channel capacity while preserving perceptual naturalness. In a passive discovery scenario, the receiver monitors the sender's public profile to identify recent interactions, which serve as the requisite entry points for the de-steganography process.
 
 \subsection{Operational Requirements}
 To achieve synchronization, both the sender and receiver must maintain access to:
@@ -51,19 +51,19 @@ The primary embedding layer determines the \textit{architectural placement} of t
     \item \textbf{Resultant State:} A designated \texttt{Target Comment Chain}.
 \end{enumerate}
 
-\subsubsection{Layer 2: Intent-Based Embedding (Thematic Angle Selection)}
+\subsubsection{Layer 2: Intent-Based Embedding (Thematic Tangent Selection)}
 The secondary layer determines the \textit{communicative intent} of the generated text.
 \begin{enumerate}
     \item \textbf{Contextual Expansion:} The system extracts salient search terms from both the original post and the selected comment chain, initiating a retrieval-augmented search to gather external domain knowledge.
     \item \textbf{Contextual Pool Construction:} A unified repository is assembled from: (1) the source post, (2) the relevant comment chain, and (3) the retrieved search results.
-    \item \textbf{Thematic Perspective Mapping:} Each document within the pool is processed by the synchronized LLM using a structured prompt to distill "Tangents"—potential thematic angles for conversation.
+    \item \textbf{Thematic Perspective Mapping:} Each document within the pool is processed by the synchronized LLM using a structured prompt to distill "Tangents"—potential thematic directions for conversation.
     \item \textbf{Deterministic Serialization:} To ensure consistent bit-to-index mapping, the extracted Tangents are serialized into a single list. The ordering of this list is strictly derived from the deterministic sort order of the source documents, guaranteeing that both Alice and Bob generate identical codebook indices.
-    \item \textbf{Thematic Selection:} The corresponding payload bits are mapped to a specific thematic angle within the serialized list.
-    \item \textbf{Resultant State:} A specific \texttt{Target Angle} comprising a Category, Tangent, and Source Context.
+    \item \textbf{Thematic Selection:} The corresponding payload bits are mapped to a specific tangent within the serialized list.
+    \item \textbf{Resultant State:} A specific \texttt{Target Tangent} comprising a Category, Tangent, and Source Context.
 \end{enumerate}
 
 \subsection{Generative Synthesis \& Verification}
-Following the selection of the target context and thematic angle, the sender initiates the cover text synthesis process.
+Following the selection of the target context and thematic tangent, the sender initiates the cover text synthesis process.
 \begin{itemize}
     \item \textbf{Synthesis:} A generative LLM (configured with \texttt{temperature > 0}) constructs a response that explores the \texttt{Target Tangent} while maintaining the appropriate \texttt{Thematic Category}. The model utilizes the \texttt{Target Comment Chain} as context to ensure pragmatic integration.
     \item \textbf{Verification Loop:} Before the stego-text is committed to the public channel, the sender executes a local \textit{Decoding Simulation}.
@@ -75,8 +75,8 @@ The receiver, identifying the \texttt{Target Comment Chain} post-hoc, reconstruc
 \begin{enumerate}
     \item \textbf{Semantic Filtering:} The receiver employs a semantic similarity model to compare the observed stego-text against the pool of potential Tangents, identifying the top $N \approx 50$ candidates.
     \item \textbf{Discriminative Identification:} A specialized LLM prompt is executed on these candidates to achieve precise identification:
-    \begin{quote}
-        \textit{"Identify the specific angle/tangent from the provided candidates... return the index only."}
-    \end{quote}
+          \begin{quote}
+              \textit{"Identify the specific tangent from the provided candidates... return the index only."}
+          \end{quote}
 \end{enumerate}
 This high-precision recovery mechanism ensures the robust extraction of the hidden payload with minimal error rates.

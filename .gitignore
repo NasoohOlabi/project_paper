@@ -26,3 +26,4 @@ knowledge-base
 **.log
 **.synctex.gz
 **.bak*
+**.aux

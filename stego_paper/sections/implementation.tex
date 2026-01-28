@@ -9,7 +9,7 @@ The system is operationalized through a series of specialized nodes, each respon
     \item \texttt{ScrapeDomain}: Executes a retrieval-augmented extraction process to fetch and normalize domain-specific content into a structured markdown format for downstream processing.
     \item \texttt{Thematic Extraction Agent (Tangents Agent)}: A specialized LLM chain that transforms raw context into structured JSON objects, encapsulating potential thematic orientations and their corresponding categories.
     \item \texttt{Payload Optimization Node}: A custom-engineered execution node that implements the dynamic dictionary-based compression protocol to ensure bitstream efficiency.
-    \item \texttt{Agentic Supervisor}: A recursive verification loop that subjects synthesized cover text to a "Decoding Simulation" prompt, iterating the generation process until the target intent reaches a predefined recoverability threshold.
+    \item \texttt{Recursive Verification Loop}: A mechanism that subjects synthesized cover text to a "Decoding Simulation" prompt, iterating the generation process until the target intent reaches a predefined recoverability threshold.
 \end{itemize}
 
 \subsection{Model Configuration}
