@@ -14,15 +14,17 @@ To achieve synchronization, both the sender and receiver must maintain access to
     \item \textbf{Synchronized LLM Configuration:} Access to an identical Large Language Model (or API) with a fixed \texttt{temperature=0} setting, ensuring deterministic output during the codebook construction phase.
 \end{itemize}
 
-\subsection{Deterministic Search \& Synchronization Modes}
-Ensuring that both parties construct an identical \textit{TangentsDB} from dynamic online content is critical for reliable decoding. We adopt operational modes inspired by the OPPRESSION framework \cite{zillien2024oppression} to maintain consistency:
+\subsection{Search Determinism \& Synchronization Framework}
+\label{sec:search_determinism}
+Ensuring that both Alice and Bob construct an identical \textit{TangentsDB} from dynamic online content is the cornerstone of reliable decoding. Our approach is conceptually grounded in the \textit{history-based covert channel} paradigm introduced by the OPPRESSION framework \cite{zillien2024oppression}, which utilizes existing online data as a deterministic lookup table. While we adopt the fundamental principle of referencing external "world knowledge" to minimize explicit data transmission, our implementation adapts these concepts to address the practical challenges of web search variability.
 
-\begin{enumerate}
-    \item \textbf{Ephemeral Mode (Temporal Snapshots):} For highly dynamic environments, both parties capture a "snapshot" of a document set at a synchronized temporal reference. Alice utilizes a precise timestamp $t_{snap}$ alongside fixed search criteria (e.g., "return the 1,000 most recent posts for hashtag X"). Upon observing the stego-contribution, Bob retrieves the same stream using the identical timestamp and parameters, thereby ensuring parity despite platform-level fluctuations.
-    \item \textbf{Persistent Mode (Immutable Versioning):} For scenarios requiring long-term consistency, the system leverages resources with immutable version histories. This involves referencing specific historical versions of encyclopedic entries (e.g., Wikipedia via \texttt{oldid}) or archived digital texts, guaranteeing bit-for-bit identity regardless of access time.
-\end{enumerate}
+Specifically, we operationalize search determinism through the \textbf{Google Custom Search API (GCS)}. Unlike traditional organic search, which is prone to algorithmic personalization and geographic bias, GCS provides a controlled execution environment. By utilizing a shared \textit{Search Engine ID} and a fixed JSON-based query structure, both parties are guaranteed to retrieve an identical ranked list of documents. Our implementation leverages two specific features to enforce parity:
+\begin{itemize}
+    \item \textbf{Domain-Specific Constrainment:} The search is restricted to a pre-defined set of high-authority, stable domains (e.g., specific news archives or academic repositories). This reduces the variance inherent in broad-web crawls.
+    \item \textbf{Parameter Locking:} Operational parameters such as \texttt{dateRestrict}, \texttt{sort}, and \texttt{gl} (geolocation) are hard-coded into the shared algorithm settings. This ensures that the retrieved search results are independent of the user's physical location or session history.
+\end{itemize}
 
-To further guarantee state synchronization, Alice generates a \textbf{Cryptographic Hash} of the selected document set. This hash (or a truncated representation) can be embedded within the primary layer, allowing Bob to verify dataset integrity before proceeding with the decoding sequence. This mechanism effectively mitigates the "Shared Algorithm Gap," where search results might otherwise diverge due to algorithmic personalization or geofencing.
+To further verify state integrity, Alice generates a \textbf{Cryptographic Hash} of the retrieved document set. A truncated segment of this hash can be embedded within the primary spatial layer (see Section \ref{sec:layer1}), allowing Bob to perform an integrity check on his local \textit{TangentsDB} before attempting to recover the secondary payload. This mechanism effectively bridges the "Shared Algorithm Gap" and ensures that the dynamic web behaves as a static, shared codebook.
 
 \subsection{State Synchronization (Temporal Window)}
 To ensure that both Alice and Bob visualize an identical state of the conversation tree, they must adhere to a negotiated \textit{Temporal Window Duration} ($T_{sync}$). This synchronization mechanism is operationalized as follows:
@@ -43,6 +45,7 @@ This ensures that the payload is reduced to its minimal binary representation be
 \subsection{Two-Layer Semantic Embedding Architecture}
 
 \subsubsection{Layer 1: Spatial Embedding (Reply Targeting)}
+\label{sec:layer1}
 The primary embedding layer determines the \textit{architectural placement} of the steganographic contribution within the conversation tree.
 \begin{enumerate}
     \item The system retrieves the comprehensive comment structure of the target post, subject to the $T_{sync}$ constraint.
@@ -52,9 +55,10 @@ The primary embedding layer determines the \textit{architectural placement} of t
 \end{enumerate}
 
 \subsubsection{Layer 2: Intent-Based Embedding (Thematic Tangent Selection)}
+\label{sec:layer2}
 The secondary layer determines the \textit{communicative intent} of the generated text.
 \begin{enumerate}
-    \item \textbf{Contextual Expansion:} The system extracts salient search terms from both the original post and the selected comment chain, initiating a retrieval-augmented search to gather external domain knowledge.
+    \item \textbf{Contextual Expansion:} The system extracts salient search terms from both the original post and the selected comment chain, initiating a retrieval-augmented search (as detailed in Section \ref{sec:search_determinism}) to gather external domain knowledge.
     \item \textbf{Contextual Pool Construction:} A unified repository is assembled from: (1) the source post, (2) the relevant comment chain, and (3) the retrieved search results.
     \item \textbf{Thematic Perspective Mapping:} Each document within the pool is processed by the synchronized LLM using a structured prompt to distill "Tangents"—potential thematic directions for conversation.
     \item \textbf{Deterministic Serialization:} To ensure consistent bit-to-index mapping, the extracted Tangents are serialized into a single list. The ordering of this list is strictly derived from the deterministic sort order of the source documents, guaranteeing that both Alice and Bob generate identical codebook indices.

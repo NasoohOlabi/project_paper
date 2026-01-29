@@ -27,3 +27,5 @@ knowledge-base
 **.synctex.gz
 **.bak*
 **.aux
+**.fls
+**.out
