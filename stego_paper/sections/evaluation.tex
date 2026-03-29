@@ -9,6 +9,75 @@ The channel capacity of the semantic layer is fundamentally dependent on the dim
 \subsection{Perceptual \& Statistical Imperceptibility}
 Imperceptibility is evaluated through the dual lenses of semantic coherence and contextual integration. Unlike traditional steganographic methodologies that risk producing disjointed or statistically anomalous text, our intent-based approach ensures that every stego-contribution maintains a clear thematic alignment with the encompassing discourse. Comparative analysis using the MAUVE metric \cite{pillutla2021mauve} and cross-entropy (perplexity) assessments demonstrates that our generative framework preserves high levels of naturalness. This is particularly significant given that standard perplexity scores may not fully capture the nuances of long-context semantic quality \cite{wang2022perplexity}.
 
+Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram divergence against two baselines: the matched primary post and a global comment corpus, over 571 stego strings.
+
+\begin{table}[t]
+	\centering
+	\caption{Perplexity and distribution divergence for stego comments (GPT-2 PPL; KL/JSD on word unigrams).}
+	\label{tab:method-metrics}
+	\small
+	\begin{tabularx}{\columnwidth}{@{}l l X c X@{}}
+		\toprule
+		Category & Metric & Baseline / context & Mean & Range (min / max) \\
+		\midrule
+		Perplexity & PPL (GPT-2) & 571 stego strings & $\approx 92.3$ & 14.2 -- 3580.0 \\
+		\midrule
+		Divergence & KL & Matched primary post & $\approx 6.88$ & --- \\
+		Divergence & KL & Global comment corpus & $\approx 4.14$ & --- \\
+		Divergence & JSD & Matched primary post & $\approx 0.54$ & --- \\
+		Divergence & JSD & Global comment corpus & $\approx 0.54$ & --- \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\paragraph{Definitions.}
+Perplexity is computed from average per-token log-probability,
+$2^{-\frac{1}{n} \sum_{i=1}^{n} \log_2 P(x_i \mid x_{<i})}$:
+lower PPL indicates more natural continuations under the model; higher PPL indicates surprising or awkward text.
+The extreme maximum ($\sim$3580) likely reflects a few pathological samples that are highly unnatural to GPT-2.
+
+Kullback--Leibler (KL) divergence compares stego word unigrams $P_S$ to a baseline $P_C$ via
+$\sum_w p_{\text{stego}}(w) \log \frac{p_{\text{stego}}(w)}{p_{\text{baseline}}(w)}$;
+lower KL indicates closer statistical match to the baseline.
+KL being lower against the global corpus than against the matched post suggests stego wording drifts toward generic phrasing rather than thread-specific vocabulary.
+
+Jensen--Shannon divergence (JSD) is the symmetric, bounded counterpart,
+$D_{\mathrm{JS}}(P_C \,\|\, P_S) = \frac{1}{2} D_{\mathrm{KL}}\bigl(P_C \,\|\, \frac{P_C + P_S}{2}\bigr) + \frac{1}{2} D_{\mathrm{KL}}\bigl(P_S \,\|\, \frac{P_C + P_S}{2}\bigr)$,
+often used to upper-bound distinguishability from the true language distribution.
+Word pairs absent from one side of the comparison are handled with Laplace-style smoothing (e.g., $\alpha = 10^{-6}$) so KL and JSD remain well defined.
+
+Table~\ref{tab:metrics-vs-literature} contrasts these means with representative values from related work (exact comparability varies by corpus and tokenization).
+
+\begin{table}[t]
+	\centering
+	\caption{Comparison of measured means to illustrative values from the literature.}
+	\label{tab:metrics-vs-literature}
+	\footnotesize
+	\begin{tabularx}{\columnwidth}{@{}l c X@{}}
+		\toprule
+		Metric & Ours (mean) & Source reference and context \\
+		\midrule
+		PPL & 92.3 & 134.11 (human mean), VAE-Stega / IMDB training baseline. \\
+		PPL & & 20.92 (RNN-Stega), VAE-Stega RNN at 1.0 bpw. \\
+		PPL & & 165.76 (LLM-Stega), black-box generation with GPT-4. \\
+		PPL & & 42.23 (Discop), stego quality with GPT-2. \\
+		\midrule
+		KL & 4.14--6.88 & 19.51 (RNN-Stega), VAE-Stega RNN on IMDB. \\
+		KL & & 0.045 (Meteor), high-entropy English sampling. \\
+		KL & & 0.00 (Discop), distribution-matching stego. \\
+		\midrule
+		JSD & 0.54 & 14.48 (RNN-Stega), VAE-Stega RNN on IMDB. \\
+		JSD & & 0.18 (Zero-shot LLM), in-context learning ($17.9 \times 10^{-2}$). \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\paragraph{Reading the comparison.}
+Mean PPL ($\approx 92.3$) is lower (more predictable under GPT-2) than the human-text average reported for VAE-Stega (134.11), and lies between highly optimized but detectable RNN stego ($\sim$20--30 PPL) and black-box LLM-Stega (165.76), i.e., in a plausible range for naturalistic text under GPT-2.
+KL (4.14--6.88) is much smaller than the RNN-Stega IMDB figure (19.51), indicating stronger unigram-level alignment with the chosen baselines than older recurrent generators, but larger than methods that tightly match a model distribution (Meteor, Discop), which operate at token level or with provable distribution matching.
+JSD (0.54) exceeds the cited zero-shot LLM value (0.18), so the stego text retains a more distinct unigram signature than that reference.
+Finally, lower KL to the global corpus than to the matched post parallels a known pattern: as surface quality is pushed, text may move toward background forum language and away from idiosyncratic thread-specific vocabulary.
+
 \subsection{System Robustness \& Recovery Rate}
 The deployment of a recursive verification mechanism represents a critical component in ensuring high payload fidelity. Our experimental data reveals that this mechanism successfully identifies and remediates ambiguous or off-topic outputs in approximately 70\% of initial generation failures. This recursive refinement significantly enhances the bit recovery rate, ensuring consistent payload integrity even when utilizing non-deterministic LLM sampling for cover text synthesis.
 

@@ -4,83 +4,75 @@
 This research proposes a black-box steganographic technique that embeds information within the semantic architecture of a conversation. The methodology is predicated on a standard covert communication scenario involving Alice (the sender) and Bob (the receiver), communicating over a public social media platform. While this study utilizes Reddit as a primary case study, the underlying principles are platform-agnostic and transferable to any threaded discussion environment.
 
 \subsection{System Architecture}
-The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a tangent—the system maximizes channel capacity while preserving perceptual naturalness. In a passive discovery scenario, the receiver monitors the sender's public profile to identify recent interactions, which serve as the requisite entry points for the de-steganography process.
+The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a tangent—the system maximizes channel capacity while preserving perceptual naturalness. In the implemented workflow, the receiver later reuses the published thread state and angle list to recover the payload.
 
 \subsection{Operational Requirements}
 To achieve synchronization, both the sender and receiver must maintain access to:
 \begin{itemize}
     \item \textbf{Public Communication Channel:} Accounts on the target social media platform.
-    \item \textbf{Shared Operational Parameters:} A deterministic search algorithm, target identifiers (URLs or hashtags), and predefined search constraints.
+    \item \textbf{Shared Operational Parameters:} A deterministic search algorithm, post metadata, and predefined search constraints.
     \item \textbf{Synchronized LLM Configuration:} Access to an identical Large Language Model (or API) with a fixed \texttt{temperature=0} setting, ensuring deterministic output during the codebook construction phase.
 \end{itemize}
 
 \subsection{Search Determinism \& Synchronization Framework}
 \label{sec:search_determinism}
-Ensuring that both Alice and Bob construct an identical \textit{TangentsDB} from dynamic online content is the cornerstone of reliable decoding. Our approach is conceptually grounded in the \textit{history-based covert channel} paradigm introduced by the OPPRESSION framework \cite{zillien2024oppression}, which utilizes existing online data as a deterministic lookup table. While we adopt the fundamental principle of referencing external "world knowledge" to minimize explicit data transmission, our implementation adapts these concepts to address the practical challenges of web search variability.
-
-Specifically, we operationalize search determinism through the \textbf{Google Custom Search API (GCS)}. Unlike traditional organic search, which is prone to algorithmic personalization and geographic bias, GCS provides a controlled execution environment. By utilizing a shared \textit{Search Engine ID} and a fixed JSON-based query structure, both parties are guaranteed to retrieve an identical ranked list of documents. Our implementation leverages two specific features to enforce parity:
-\begin{itemize}
-    \item \textbf{Domain-Specific Constrainment:} The search is restricted to a pre-defined set of high-authority, stable domains (e.g., specific news archives or academic repositories). This reduces the variance inherent in broad-web crawls.
-    \item \textbf{Parameter Locking:} Operational parameters such as \texttt{dateRestrict}, \texttt{sort}, and \texttt{gl} (geolocation) are hard-coded into the shared algorithm settings. This ensures that the retrieved search results are independent of the user's physical location or session history.
-\end{itemize}
-
-To further verify state integrity, Alice generates a \textbf{Cryptographic Hash} of the retrieved document set. A truncated segment of this hash can be embedded within the primary spatial layer (see Section \ref{sec:layer1}), allowing Bob to perform an integrity check on his local \textit{TangentsDB} before attempting to recover the secondary payload. This mechanism effectively bridges the "Shared Algorithm Gap" and ensures that the dynamic web behaves as a static, shared codebook.
+Ensuring that both Alice and Bob operate on the same researched corpus is the cornerstone of reliable decoding. The implemented research stage is a reproducible preprocessing chain rather than an ad hoc web search. A search-term generator first extracts 12--20 unique queries from the post title, body, and URL using the workflow LLM at \texttt{temperature=0}; the resulting term list is cached in SQLite by post ID. Each query is then executed through the Google Custom Search backend with a fixed request shape (\texttt{first=1}, \texttt{count=10}), duplicate links and PDF results are removed, and the surviving URLs are fetched in batches of three. Content extraction uses a crawl4ai-based adapter that normalizes URLs, caches responses by SHA-256 hash, and falls back to a local HTTP endpoint when necessary. The resulting flat list of fetched page texts is stored as \texttt{search\_results}, and the pipeline records \texttt{search\_terms\_hash} and \texttt{search\_results\_hash} so the same corpus can be replayed by downstream stages.
 
 \subsection{State Synchronization (Temporal Window)}
-To ensure that both Alice and Bob visualize an identical state of the conversation tree, they must adhere to a negotiated \textit{Temporal Window Duration} ($T_{sync}$). This synchronization mechanism is operationalized as follows:
+To ensure that both Alice and Bob visualize an identical state of the conversation tree, they must adhere to a negotiated \textit{Temporal Window Duration} ($T_{sync}$). This synchronization mechanism is operationalized to address the processing latency inherent in the sender's agent:
 \begin{enumerate}
-    \item \textbf{Sender Side:} Alice captures a snapshot of the discussion thread at time $t_{start}$ and subsequently publishes the generated stego-comment at $t_{publish}$.
+    \item \textbf{Sender Side:} Alice captures a snapshot of the discussion thread at time $t_{start}$, performs the multi-layer embedding, and subsequently publishes the generated stego-comment at $t_{publish}$.
     \item \textbf{Receiver Side:} Upon identifying the stego-contribution published at $t_{publish}$, Bob filters the thread's historical state to include only those comments established prior to $t_{publish} - T_{sync}$.
 \end{enumerate}
-This protocol ensures that the "Comment Chain" retrieved by the receiver precisely replicates the context available to the sender during generation. In instances where the sender's generation and verification cycles exceed $T_{sync}$, state divergence may occur. To mitigate this, the sender may leverage an extended window or transmit a minimal adjustment signal via a secondary channel or within the primary payload.
+The agreed-upon duration $T_{sync}$ ensures that the "Comment Chain" retrieved by the receiver precisely replicates the context available to the sender at $t_{start}$, even if new comments were published during the sender's computational cycle. This prevents state divergence and ensures that the decoder can confidently identify the exact parent comment and conversational state used for encoding.
 
 \subsection{Payload Optimization \& Compression}
-Prior to embedding, the raw payload undergoes a transformation layer designed to minimize bitstream length and maximize efficiency. We implement a \textit{dynamic dictionary-based compression} scheme:
+Prior to embedding, the raw payload undergoes a transformation layer designed to minimize bitstream length. We implement a \textit{dynamic dictionary-based compression} scheme that uses dynamic programming to minimize the total bit-cost:
 \begin{enumerate}
-    \item \textbf{Dictionary Synthesis:} A session-specific linguistic dictionary is synthesized from the encompassing conversational context (post text and existing comments) and the broader domain-specific documents retrieved via search.
-    \item \textbf{Bitstream Transformation:} The secret payload is encoded using references to this dynamic dictionary (e.g., utilizing a tuple format: \textit{Document Index, Offset, Length}), falling back to an efficient literal encoding for unique sequences.
+    \item \textbf{Dictionary Synthesis:} A session-specific linguistic dictionary is synthesized from the post body, the flattened comment bodies, and the fetched \texttt{search\_results} text corpus.
+    \item \textbf{Optimal Path Selection:} The compression engine scans payload substrings up to 250 characters and evaluates two encoding modes for each segment:
+        \begin{itemize}
+            \item \textit{Literal Encoding:} Encodes the raw UTF-8 bitstream with a short length header.
+            \item \textit{Dictionary Encoding:} Encodes a reference to the dynamic dictionary using a tuple of \textit{(Dictionary Index, Offset, Length)}.
+        \end{itemize}
+    \item \textbf{Bit-Cost Optimization:} The dynamic program selects the sequence of encoding modes that minimizes the total compressed length. If the dictionary path is not shorter than standard UTF-8, the compressor falls back to the standard representation.
 \end{enumerate}
-This ensures that the payload is reduced to its minimal binary representation before being partitioned for multi-layered embedding.
 
 \subsection{Two-Layer Semantic Embedding Architecture}
 
 \subsubsection{Layer 1: Spatial Embedding (Reply Targeting)}
 \label{sec:layer1}
-The primary embedding layer determines the \textit{architectural placement} of the steganographic contribution within the conversation tree.
+The primary embedding layer determines the \textit{architectural placement} of the steganographic contribution.
 \begin{enumerate}
-    \item The system retrieves the comprehensive comment structure of the target post, subject to the $T_{sync}$ constraint.
-    \item This tree is flattened into a deterministic sequence of available comments, ordered by an immutable attribute (e.g., \textit{Creation Timestamp} or \textit{Unique Identifier}).
-    \item A specific segment of the compressed payload determines the index of the reply target.
-    \item \textbf{Resultant State:} A designated \texttt{Target Comment Chain}.
+    \item The system flattens the nested comment tree with a deterministic depth-first walk.
+    \item The bit-width for this layer is dynamically calculated as $w_1 = \lceil \log_2(n + 1) \rceil$, where $n$ is the number of available comments.
+    \item Index 0 corresponds to a top-level reply to the post, while any non-zero index selects a comment whose parent chain is reconstructed through \texttt{parent\_id} and \texttt{link\_id} lookups.
 \end{enumerate}
 
 \subsubsection{Layer 2: Intent-Based Embedding (Thematic Tangent Selection)}
 \label{sec:layer2}
-The secondary layer determines the \textit{communicative intent} of the generated text.
+The secondary layer determines the \textit{communicative intent}.
 \begin{enumerate}
-    \item \textbf{Contextual Expansion:} The system extracts salient search terms from both the original post and the selected comment chain, initiating a retrieval-augmented search (as detailed in Section \ref{sec:search_determinism}) to gather external domain knowledge.
-    \item \textbf{Contextual Pool Construction:} A unified repository is assembled from: (1) the source post, (2) the relevant comment chain, and (3) the retrieved search results.
-    \item \textbf{Thematic Perspective Mapping:} Each document within the pool is processed by the synchronized LLM using a structured prompt to distill "Tangents"—potential thematic directions for conversation.
-    \item \textbf{Deterministic Serialization:} To ensure consistent bit-to-index mapping, the extracted Tangents are serialized into a single list. The ordering of this list is strictly derived from the deterministic sort order of the source documents, guaranteeing that both Alice and Bob generate identical codebook indices.
-    \item \textbf{Thematic Selection:} The corresponding payload bits are mapped to a specific tangent within the serialized list.
-    \item \textbf{Resultant State:} A specific \texttt{Target Tangent} comprising a Category, Tangent, and Source Context.
+    \item \textbf{TangentsDB Construction:} As detailed in Section \ref{sec:search_determinism}, the system constructs a serialized list of potential thematic directions (\textit{Tangents}).
+    \item \textbf{Dynamic Bit-Mapping:} The bit-width for this layer is calculated from the total number of tangents, and the flattened list is assigned sequential \texttt{idx} values.
+    \item \textbf{Thematic Selection:} The corresponding payload bits are mapped to a specific tangent within the serialized list. In the generation step, the first four candidates are used to build the primary prompts and few-shot validation examples, while each angle is paired with the best matching research text selected from \texttt{search\_results}.
 \end{enumerate}
 
 \subsection{Generative Synthesis \& Verification}
 Following the selection of the target context and thematic tangent, the sender initiates the cover text synthesis process.
 \begin{itemize}
-    \item \textbf{Synthesis:} A generative LLM (configured with \texttt{temperature > 0}) constructs a response that explores the \texttt{Target Tangent} while maintaining the appropriate \texttt{Thematic Category}. The model utilizes the \texttt{Target Comment Chain} as context to ensure pragmatic integration.
-    \item \textbf{Verification Loop:} Before the stego-text is committed to the public channel, the sender executes a local \textit{Decoding Simulation}.
-    \item \textbf{Recursive Refinement:} If the simulation fails to accurately recover the intended angle, the sender re-executes the synthesis step. The non-zero temperature ensures variations in output; this process iterates until a verifiable stego-text is achieved.
+    \item \textbf{Synthesis:} A \texttt{gpt-oss-20b} model configured with \texttt{temperature=0.7} constructs one JSON array of exactly three short Reddit-style comments. The prompt combines the source post metadata, the selected comment chain, the target tangent, and the best-match research text, and the parser accepts both raw JSON and fenced JSON responses.
+    \item \textbf{Verification Loop:} Before the stego-text is committed to the public channel, the sender executes a local \textit{Decoding Simulation} to verify that the generated text remains recoverable.
+    \item \textbf{Recursive Refinement:} If the simulation fails to recover the intended angle, the sender re-executes the synthesis step without changing the embedding parameters. The non-zero temperature ensures output variation; the retry loop is capped at five total attempts.
 \end{itemize}
 
 \subsection{Decoding \& Intent Recovery}
-The receiver, identifying the \texttt{Target Comment Chain} post-hoc, reconstructs the identical Contextual Pool and serialized Tangents list. To recover the hidden intent (Layer 2):
+The receiver reuses the published angle list rather than rebuilding the corpus from scratch. To recover the hidden intent (Layer 2):
 \begin{enumerate}
-    \item \textbf{Semantic Filtering:} The receiver employs a semantic similarity model to compare the observed stego-text against the pool of potential Tangents, identifying the top $N \approx 50$ candidates.
+    \item \textbf{Semantic Filtering:} The receiver employs a semantic similarity model to perform a lookup against the pool of potential Tangents, identifying the top 20 candidates that most closely match the observed stego-text.
     \item \textbf{Discriminative Identification:} A specialized LLM prompt is executed on these candidates to achieve precise identification:
           \begin{quote}
               \textit{"Identify the specific tangent from the provided candidates... return the index only."}
           \end{quote}
 \end{enumerate}
-This high-precision recovery mechanism ensures the robust extraction of the hidden payload with minimal error rates.
+The decoder uses a \texttt{gpt-oss-20b} model at \texttt{temperature=0}. If the model returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlisted candidate; otherwise it falls back to the top semantic match. This high-precision recovery mechanism ensures robust extraction of the hidden payload with minimal error rates.

@@ -1,16 +1,22 @@
 \section{Implementation}
 \label{sec:implementation}
 
-The practical implementation of the proposed framework utilizes the n8n workflow automation platform to orchestrate the multi-agent pipeline. This modular approach facilitates the seamless integration of disparate computational tasks and ensures the scalability of the agentic workflow.
+The practical implementation follows the same stage order as the workflow runner: data load, research, angle generation, stego synthesis, and decode. Each stage persists artifacts to disk so later stages can reuse the exact same corpus and hashes, which keeps the sender and receiver aligned across retries.
 
 \subsection{Architectural Components}
-The system is operationalized through a series of specialized nodes, each responsible for a discrete stage of the steganographic process. Notable components include:
+The system is operationalized through a series of deterministic pipeline stages. Core components include:
 \begin{itemize}
-    \item \texttt{ScrapeDomain}: Executes a retrieval-augmented extraction process to fetch and normalize domain-specific content into a structured markdown format for downstream processing.
-    \item \texttt{Thematic Extraction Agent (Tangents Agent)}: A specialized LLM chain that transforms raw context into structured JSON objects, encapsulating potential thematic orientations and their corresponding categories.
-    \item \texttt{Payload Optimization Node}: A custom-engineered execution node that implements the dynamic dictionary-based compression protocol to ensure bitstream efficiency.
-    \item \texttt{Recursive Verification Loop}: A mechanism that subjects synthesized cover text to a "Decoding Simulation" prompt, iterating the generation process until the target intent reaches a predefined recoverability threshold.
+    \item \texttt{DataLoadPipeline}: Fetches unresolved URL content, replaces the post body with the extracted text, and caches normalized URL responses by SHA-256.
+    \item \texttt{ResearchPipeline}: Generates search terms from the post title, text, and URL with an LM Studio model at \texttt{temperature=0}, caches them in a SQLite \texttt{research\_terms\_cache.db}, queries Google Custom Search, removes duplicate links and PDFs, and fetches page text in batches of three. The stage persists a flat \texttt{search\_results} corpus together with reproducibility hashes.
+    \item \texttt{GenAnglesPipeline}: Flattens the corpus assembled from \texttt{selftext}, \texttt{search\_results}, and comments, then calls the angle runner to produce \texttt{source\_quote}/\texttt{tangent}/\texttt{category} triplets. Long inputs are split into 30k-character segments and batched up to 150k characters, and each prompt batch is logged and cached by input hash. If the backend path fails, the pipeline falls back to a direct LM Studio prompt that uses the same JSON schema.
+    \item \texttt{StegoPipeline} and \texttt{DecodePipeline}: Combine the compression layer, comment targeting, semantic shortlist, and verification loop. The encoder generates three candidate comments per angle, decodes them immediately, and retries up to five attempts if the selected angle is not recoverable.
 \end{itemize}
 
 \subsection{Model Configuration}
-The agentic pipeline is model-agnostic, supporting a variety of Large Language Model architectures. In our pilot testing, high-parameter models such as GPT-4o were utilized for complex semantic reasoning, while smaller-scale models like Mistral-7B (via Ollama) were deployed for local, resource-efficient execution. To ensure the requisite deterministic behavior for codebook synchronization, the thematic mapping agents are strictly configured with a \texttt{temperature=0} setting.
+The pipeline uses different models for different stages:
+\begin{itemize}
+    \item \textbf{URL extraction and search terms:} The crawl4ai extraction stage and the search-term generator default to \texttt{mistral-nemo-instruct-2407-abliterated} at \texttt{temperature=0}.
+    \item \textbf{Angle generation:} The dedicated angle runner uses \texttt{openai/gpt-oss-20b} at \texttt{temperature=0}, validates raw JSON arrays, and repairs malformed responses when needed.
+    \item \textbf{Stego synthesis:} The encoder uses \texttt{openai/gpt-oss-20b} at \texttt{temperature=0.7} to produce candidate Reddit-style comments.
+    \item \textbf{Semantic matching and decode:} \texttt{all-MiniLM-L6-v2} performs cosine-similarity shortlist ranking, and \texttt{gpt-oss-20b} selects the final angle index at \texttt{temperature=0}.
+\end{itemize}

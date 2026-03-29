@@ -1,4 +1,4 @@
-\begin{thebibliography}{12}
+\begin{thebibliography}{11}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -68,19 +68,6 @@ Changhao Ding, Zhangjie Fu, Zhongliang Yang, Qi~Yu, Daqiu Li, and Yongfeng
   translation.
 \newblock \emph{IEEE/ACM Transactions on Audio, Speech, and Language
   Processing}, 32:\penalty0 868--878, 2023.
-
-\bibitem[Zillien et~al.(2024)Zillien, Schmidbauer, Kubek, Keller, and
-  Wendzel]{zillien2024oppression}
-Sebastian Zillien, Tobias Schmidbauer, Mario Kubek, Joerg Keller, and Steffen
-  Wendzel.
-\newblock Look what’s there! utilizing the internet’s existing data for
-  censorship circumvention with oppression.
-\newblock In \emph{Proceedings of the 19th ACM Asia Conference on Computer and
-  Communications Security}, ASIA CCS '24, page 80–95, New York, NY, USA,
-  2024. Association for Computing Machinery.
-\newblock ISBN 9798400704826.
-\newblock \doi{10.1145/3634737.3637676}.
-\newblock URL \url{https://doi.org/10.1145/3634737.3637676}.
 
 \bibitem[Pillutla et~al.(2021)Pillutla, Swayamdipta, Zellers, Thickstun,
   Callison-Burch, Ai2, and Grover]{pillutla2021mauve}
