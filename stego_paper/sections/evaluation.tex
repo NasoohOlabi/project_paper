@@ -47,6 +47,41 @@ often used to upper-bound distinguishability from the true language distribution
 Word pairs absent from one side of the comparison are handled with Laplace-style smoothing (e.g., $\alpha = 10^{-6}$) so KL and JSD remain well defined.
 
 Table~\ref{tab:metrics-vs-literature} contrasts these means with representative values from related work (exact comparability varies by corpus and tokenization).
+Table~\ref{tab:slr-metrics-comparison} uses the same column layout as our systematic-review extraction sheet: paper, model, corpus, reported metrics, and context tags, with our row listed first for side-by-side reading.
+
+\begin{landscape}
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\begin{longtable}{@{}p{2.05cm}p{2.35cm}cp{1.85cm}p{5.35cm}p{1.45cm}p{1.55cm}p{1.95cm}@{}}
+		\caption{This work versus prior papers (SLR-style summary; metrics are as stated in each paper and may use different models, tokenizations, and baselines).}
+		\label{tab:slr-metrics-comparison} \\
+		\toprule
+		Paper & LLM & Yr. & Dataset & Result & Ctx.\ aware & Cat.\ ctx.\ & Repr.\ ctx.\ \\
+		\midrule
+		\endfirsthead
+		\multicolumn{8}{c}{\tablename\ \thetable{}---continued from previous page} \\
+		\toprule
+		Paper & LLM & Yr. & Dataset & Result & Ctx.\ aware & Cat.\ ctx.\ & Repr.\ ctx.\ \\
+		\midrule
+		\endhead
+		\midrule
+		\multicolumn{8}{r}{\emph{Continued on next page}} \\
+		\endfoot
+		\bottomrule
+		\endlastfoot
+		This work & Shared LLM ($T{=}0$ for decode); GPT-2 for PPL & --- & Reddit threads; 571 stego strings & PPL $\approx 92.3$; KL $4.14$--$6.88$; JSD $\approx 0.54$ (word unigrams vs.\ matched post / global corpus) & explicit & social thread & text + semantic tangents \\
+		\midrule
+		VAE-Stega \cite{yang2020vae} & BERT--LSTM; LSTM--LSTM (from scratch) & 2020 & Twitter (2.6M sents.); IMDB (1.2M sents.) & PPL 28.879; $\Delta$MP 0.242; KLD 3.302; JSD 10.411; Acc 0.600 & non-explicit & pre-text & text \\
+		General MLM RH \cite{zheng2022general} & BERT-base & 2022 & BookCorpus & BPW 0.5335; F1 0.9402; PPL 134.22 & non-explicit & pre-text & text \\
+		Co-Stega \cite{liao2024co} & Llama-2-7B/13B-chat; fine-tuned GPT-2 & 2024 & Twitter; tweet data for fine-tuning & SR1 60.87\%; SR2 98.55\%; cap.\ 44.91 bit; BPW 2.31; PPL 16.75; SimCSE 0.69 & explicit & social media & text \\
+		Joint BERT--GAT \cite{ding2023joint} & LSTM+attn.; GAT; BERT MLM & 2023 & OPUS & PPL 13.917; KLD 2.904; SIM 0.812; ER 0.365; best Acc 0.575 & explicit & pre-text & text \\
+		Discop \cite{ding2023discop} & GPT-2 & 2023 & IMDB & $p{=}1.00$; ave.\ KLD 0; max KLD 0; cap.\ 5.76 bit/token; PPL $\approx 42$ (stego quality in paper) & non-explicit & tuning + pretext & text \\
+		LLM generative stego \cite{wu2024generative} & Any LLM (e.g., GPT-4 in eval.) & 2024 & [not specified] & len.\ 13.3 words; BPW 5.93; PPL 165.76; SS 0.5881; BiLSTM Acc 49.2\% & explicit & [varies] & [varies] \\
+		Zero-shot ling.\ stego \cite{lin2024zero} & LLaMA2-Chat-7B; GPT-2 for baselines & 2024 & IMDB; Twitter & PPL 8.81; JSD$_\text{full}$ $17.9{\times}10^{-2}$; JSD$_\text{half}$ $16.86{\times}10^{-2}$; JSD$_\text{zero}$ $13.40{\times}10^{-2}$ & explicit & zero-shot + prompt & text \\
+		Provably secure disamb.\ \cite{qi2024provably} & LLaMA2-7B; Baichuan2-7B & 2024 & IMDb (EN/ZH samples) & err.\ 0\%; ave.\ KLD 0; ave.\ PPL 3.19 (EN), 7.49 (ZH); cap.\ 1.03--3.05 bit/token & non-explicit & pretext & text \\
+		Hi-Stega \cite{wang2023hi} & GPT-2 & 2024 & Yahoo! News (titles/bodies/comments) & PPL 109.60; MAUVE 0.2051; ER2 10.42; $\Delta$cosine 0.0088; $\Delta$SimCSE 0.0191 & explicit & social media & text \\
+	\end{longtable}
+\end{landscape}
 
 \begin{table}[t]
 	\centering
@@ -82,4 +117,4 @@ Finally, lower KL to the global corpus than to the matched post parallels a know
 The deployment of a recursive verification mechanism represents a critical component in ensuring high payload fidelity. Our experimental data reveals that this mechanism successfully identifies and remediates ambiguous or off-topic outputs in approximately 70\% of initial generation failures. This recursive refinement significantly enhances the bit recovery rate, ensuring consistent payload integrity even when utilizing non-deterministic LLM sampling for cover text synthesis.
 
 \subsection{Resistance to Automated Steganalysis}
-The system's resilience against automated detection is primarily derived from its high-level semantic alignment. When subjected to standard linguistic steganalysis benchmarks \cite{Wang_2023}, the generated comments proved to be indistinguishable from legitimate human interactions within the same conversational thread. This suggests that shifting the embedding domain to communicative intents effectively bypasses the detection signatures typically exploited by token-level steganalysis.
+The system's resilience against automated detection is primarily derived from its high-level semantic alignment. When subjected to standard linguistic steganalysis benchmarks \cite{Wang_2023}, the generated comments proved to be indistinguishable from legitimate human interactions within the same conversational thread. By shifting the embedding domain from token patterns to communicative intent, the scheme avoids the local distributional cues that token-level steganalysis typically exploits and instead requires thread-level pragmatic reasoning.

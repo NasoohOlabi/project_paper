@@ -1,10 +1,42 @@
 \section{Methodology}
 \label{sec:methodology}
 
-This research proposes a black-box steganographic technique that embeds information within the semantic architecture of a conversation. The methodology is predicated on a standard covert communication scenario involving Alice (the sender) and Bob (the receiver), communicating over a public social media platform. While this study utilizes Reddit as a primary case study, the underlying principles are platform-agnostic and transferable to any threaded discussion environment.
+This research proposes a black-box steganographic technique that embeds information within the semantic architecture of a conversation. The methodology is predicated on a standard covert communication scenario involving Alice (the sender) and Bob (the receiver), communicating over a public social media platform. While this study utilizes Reddit as a primary case study, the underlying principles are platform-agnostic and transferable to any threaded discussion environment. Figure~\ref{fig:end-to-end} sketches the end-to-end covert scenario and shared synchronization assumptions.
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:end-to-end) -> figures/end_to_end_scenario.(png|pdf)
+% ------------------------------------------------------------------
+% GLOBAL STYLE: Flat vector flowchart, landscape, generous margins, same paper color system.
+% LEFT THIRD: Rounded card "Alice / sender agent" with minimal laptop or terminal icon
+%   (geometric, not Apple logo). Small bullet trio: "encode", "verify", "publish".
+% CENTER: Vertical stack of three rounded rectangles mimicking a thread: wide "Post",
+%   indented "Comment thread", indented "Reply chain (selected parent)". Banner above stack:
+%   "Public threaded forum (e.g., Reddit-style)". No brand marks.
+% RIGHT THIRD: Card "Bob / receiver agent" with eye-on-thread or inbox icon; labels
+%   "snapshot + filter by T_sync", "decode payload".
+% ARROWS: Alice -> center: "posts stego-comment". Center -> Bob: "reads public thread".
+% SHARED SECRETS BAND (below center or in lower third): Two lock-and-key or keyhole icons
+%   in a horizontal row. (1) Label: "Shared: deterministic search + identical LLM, T=0 for
+%   TangentsDB / angles". (2) Label: "Agreed temporal window T_sync". Use monospace only
+%   for T_sync and T=0 if needed.
+% ADVERSARY (optional, far edge): Faint gray silhouette "Passive observer" with "?"
+%   and caption "does not share secret parameters" to stress black-box sync, not crypto keys
+%   to the platform.
+% LEGIBILITY: Single-page story; avoid crossing arrows; orthogonal routing preferred.
+% NEGATIVE PROMPT: network topology maps, OSI stack, encryption shields only, real Reddit UI,
+%   QR codes, binary matrix rain.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/end_to_end_scenario.png}
+	\Description{Diagram of Alice and Bob communicating covertly over a public threaded forum: sender encodes and publishes a reply; receiver snapshots the thread using an agreed time window and shared operational parameters.}
+	\caption{Covert communication scenario: Alice and Bob use a public threaded channel; synchronization relies on shared operational parameters and a negotiated temporal window.}
+	\label{fig:end-to-end}
+\end{figure}
 
 \subsection{System Architecture}
-The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a tangent—the system maximizes channel capacity while preserving perceptual naturalness. In the implemented workflow, the receiver later reuses the published thread state and angle list to recover the payload.
+The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a tangent—the system maximizes channel capacity while preserving perceptual naturalness. In the implemented workflow, the receiver later reuses the published thread state and angle list to recover the payload. Figure~\ref{fig:two-layer} depicts the two embedding layers and their interaction with synthesis.
 
 \subsection{Operational Requirements}
 To achieve synchronization, both the sender and receiver must maintain access to:
@@ -16,7 +48,35 @@ To achieve synchronization, both the sender and receiver must maintain access to
 
 \subsection{Search Determinism \& Synchronization Framework}
 \label{sec:search_determinism}
-Ensuring that both Alice and Bob operate on the same researched corpus is the cornerstone of reliable decoding. The implemented research stage is a reproducible preprocessing chain rather than an ad hoc web search. A search-term generator first extracts 12--20 unique queries from the post title, body, and URL using the workflow LLM at \texttt{temperature=0}; the resulting term list is cached in SQLite by post ID. Each query is then executed through the Google Custom Search backend with a fixed request shape (\texttt{first=1}, \texttt{count=10}), duplicate links and PDF results are removed, and the surviving URLs are fetched in batches of three. Content extraction uses a crawl4ai-based adapter that normalizes URLs, caches responses by SHA-256 hash, and falls back to a local HTTP endpoint when necessary. The resulting flat list of fetched page texts is stored as \texttt{search\_results}, and the pipeline records \texttt{search\_terms\_hash} and \texttt{search\_results\_hash} so the same corpus can be replayed by downstream stages.
+Ensuring that both Alice and Bob operate on the same researched corpus is the cornerstone of reliable decoding. The implemented research stage is a reproducible preprocessing chain rather than an ad hoc web search. A search-term generator first extracts 12--20 unique queries from the post title, body, and URL using the workflow LLM at \texttt{temperature=0}. Each query is then executed through the Google Custom Search backend with a fixed request shape (\texttt{first=1}, \texttt{count=10}), duplicate links and PDF results are removed, and the surviving URLs are fetched in batches of three. Content extraction uses a crawl4ai-based adapter that normalizes URLs and extracts the primary text content. The resulting flat list of fetched page texts is stored as \texttt{search\_results}, and the pipeline records \texttt{search\_terms\_hash} and \texttt{search\_results\_hash} so the same corpus can be replayed by downstream stages. Figure~\ref{fig:research-pipeline} summarizes this deterministic research chain.
+% 
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:research-pipeline) -> figures/research_pipeline_deterministic.(png|pdf)
+% ------------------------------------------------------------------
+% FORMAT: Extra-wide landscape (approx 3:1 or 16:5) for figure* / full text width.
+% STRUCTURE: Single horizontal pipeline of FIVE rounded rectangles, equal height, left-to-right
+%   arrows with arrowheads. Number each box small "1".."5" in corner.
+% BOX 1: "Source Inputs". Icon: document stack. Labels: "Post title, body, URL", "Top comments".
+% BOX 2: "Search-Term Generator". Icon: AI chip. Subtext: "LLM (T=0) -> 12--20 queries".
+% BOX 3: "Fixed-Shape Search". Icon: magnifying glass over list. Label: "Google Search API".
+%   Micro-label: "first=1, count=10" (monospace).
+% BOX 4: "Filtering & Extraction". Icon: filter funnel. Labels: "Drop PDFs", "Dedup links",
+%   "Batched fetch (3)".
+% BOX 5: "Deterministic Corpus". Icon: stack of papers. Hash badges: "search_terms_hash",
+%   "search_results_hash" (underscores visible).
+% FOOTER: Centered small caption strip "Reproducible preprocessing chain (Alice == Bob)".
+% COLOR: Alternate box fill white vs very light blue-gray; connectors dark slate.
+% NEGATIVE PROMPT: database icons, cylinders, server racks, Google logo, messy wireshark,
+%   chaotic arrows, illegible hash strings longer than 16 chars.
+% ------------------------------------------------------------------
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[width=\textwidth]{figures/research_pipeline_deterministic}
+	\Description{Horizontal pipeline from source inputs through deterministic search-term generation, fixed-shape search API, filtering and fetching, to a hashed search-results corpus for reproducibility.}
+	\caption{Deterministic research stage: shared term generation, fixed search parameters, filtering, batched fetching, and integrity hashes for replayable corpora.}
+	\label{fig:research-pipeline}
+\end{figure*}
 
 \subsection{State Synchronization (Temporal Window)}
 To ensure that both Alice and Bob visualize an identical state of the conversation tree, they must adhere to a negotiated \textit{Temporal Window Duration} ($T_{sync}$). This synchronization mechanism is operationalized to address the processing latency inherent in the sender's agent:
@@ -24,7 +84,37 @@ To ensure that both Alice and Bob visualize an identical state of the conversati
     \item \textbf{Sender Side:} Alice captures a snapshot of the discussion thread at time $t_{start}$, performs the multi-layer embedding, and subsequently publishes the generated stego-comment at $t_{publish}$.
     \item \textbf{Receiver Side:} Upon identifying the stego-contribution published at $t_{publish}$, Bob filters the thread's historical state to include only those comments established prior to $t_{publish} - T_{sync}$.
 \end{enumerate}
-The agreed-upon duration $T_{sync}$ ensures that the "Comment Chain" retrieved by the receiver precisely replicates the context available to the sender at $t_{start}$, even if new comments were published during the sender's computational cycle. This prevents state divergence and ensures that the decoder can confidently identify the exact parent comment and conversational state used for encoding.
+The agreed-upon duration $T_{sync}$ ensures that the "Comment Chain" retrieved by the receiver precisely replicates the context available to the sender at $t_{start}$, even if new comments were published during the sender's computational cycle. This prevents state divergence and ensures that the decoder can confidently identify the exact parent comment and conversational state used for encoding. Figure~\ref{fig:tsync} shows the temporal window relative to $t_{start}$ and $t_{publish}$.
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:tsync) -> figures/temporal_sync_window.(png|pdf)
+% ------------------------------------------------------------------
+% TYPE: Single horizontal timeline diagram, landscape, plenty of vertical space for brackets.
+% MAIN AXIS: Thick horizontal line with tick marks; left label "thread history ->", right
+%   "later". Use subtle gray grid optional.
+% MARKERS ON AXIS: (a) Camera or snapshot icon at t_start with label "t_start: Alice snapshots
+%   thread". (b) Shaded band from t_start to t_publish (light amber fill) labeled
+%   "Sender pipeline (embedding + synthesis latency)". (c) Upload / paper-plane icon at
+%   t_publish labeled "t_publish: stego comment appears".
+% BOB'S CUTOFF: Below the axis, a horizontal curly brace or square bracket spanning from
+%   "thread beginning" (or earliest comment icon) to the point (t_publish - T_sync). Label:
+%   "Bob includes comments with time <= t_publish - T_sync". Typeset T_sync with subscript 
+%   style if possible: T_sync.
+% CONFLICT EXAMPLE: One or two small comment dots AFTER the cutoff vertical line; color red
+%   or hatched overlay, label "excluded: arrived during Alice's run". Legend box lower corner
+%   with swatch explanations.
+% RATIONALE MICROTEXT (one line): "Agreed T_sync prevents parent-comment mismatch".
+% NEGATIVE PROMPT: Gantt chart software screenshot, clock faces everywhere, time zones map,
+%   relativity diagrams.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/temporal_sync_window}
+	\Description{Timeline diagram showing comment inclusion cutoff at publish time minus an agreed synchronization window, excluding comments that arrive while the sender is still working.}
+	\caption{Temporal synchronization: Bob's reconstructed thread state matches Alice's by agreeing on $T_{sync}$ and filtering comments relative to $t_{publish}$.}
+	\label{fig:tsync}
+\end{figure}
 
 \subsection{Payload Optimization \& Compression}
 Prior to embedding, the raw payload undergoes a transformation layer designed to minimize bitstream length. We implement a \textit{dynamic dictionary-based compression} scheme that uses dynamic programming to minimize the total bit-cost:
@@ -37,8 +127,71 @@ Prior to embedding, the raw payload undergoes a transformation layer designed to
         \end{itemize}
     \item \textbf{Bit-Cost Optimization:} The dynamic program selects the sequence of encoding modes that minimizes the total compressed length. If the dictionary path is not shorter than standard UTF-8, the compressor falls back to the standard representation.
 \end{enumerate}
+Figure~\ref{fig:compression} outlines dictionary construction and the literal versus dictionary encoding modes.
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:compression) -> figures/payload_compression_dp.(png|pdf) 
+% ------------------------------------------------------------------
+% LAYOUT: Three horizontal bands (top to bottom) with clear titles.
+% TOP BAND "Dictionary synthesis": Three parallel curved arrows or pipes merging into one
+%   large rounded rectangle "Session dictionary D". Sources labeled "Post body", "Comment bodies
+%   (flattened)", "search_results text". Use distinct pastel fills per source. 
+% MIDDLE BAND "Payload": A row of 6--10 colored segmented blocks (like a progress bar) labeled
+%   collectively "Secret payload (byte string)"; optional hex nibble placeholders (readable).
+% BOTTOM BAND "Encoding modes": Two columns.
+%   COLUMN A title "Literal mode": diagram shows block -> box "length header" + box "UTF-8
+%   bytes"; monospace label UTF-8 allowed.
+%   COLUMN B title "Dictionary mode": diagram shows block -> tuple glyph "(idx, offset, len)"
+%   with arrow into dictionary slab; footnote text "pointer into D".
+% DP PATH: Overlay on middle band a darker polyline or stepped path touching segment boundaries,
+%   small circles on joints, caption "Dynamic program: minimize total bits".
+% CONSTRAINT CALLOUT: Side badge "Max substring length 250 (chars)" in amber outline.
+% NEGATIVE PROMPT: Lempel-Ziv turtle logo, zip bomb jokes, Huffman tree too large to read,
+%   illegible micro-hex dumps.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/payload_compression_dp}
+	\Description{Schematic of dictionary synthesis from thread and search text, payload segmentation, and choice between literal UTF-8 and dictionary-pointer encoding via a dynamic program.}
+	\caption{Payload compression builds a session dictionary from thread and research text, then chooses literal versus dictionary-encoded segments to minimize total bit cost.}
+	\label{fig:compression}
+\end{figure}
 
 \subsection{Two-Layer Semantic Embedding Architecture}
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:two-layer) -> figures/two_layer_embedding.(png|pdf)
+% ------------------------------------------------------------------
+% FORMAT: Wide composite (figure*), roughly two main panels 50/50 or 55/45.
+% LEFT PANEL "Layer 1 -- spatial embedding": Tree graph under a root "POST". Draw 2 levels
+%   of comments as nodes (circles or cards), children connected with lines. Overlay small
+%   integers 1..n along nodes showing deterministic DFS visit order (not post dates). One
+%   node with thick amber ring + label "Selected reply parent (index k)". Footnote-style
+%   equation text as readable typography: w_1 = ceil(log2(n+1)) and note "index 0 = top-level
+%   reply to post". Small legend "Flattened order fixes Alice/Bob agreement".
+% RIGHT PANEL "Layer 2 -- TangentsDB": Vertical numbered list 0..N-1 (show ~8 rows, ellipsis
+%   ok). Each row: thin gray line of lorem-like placeholder (3--5 words, not real sentences).
+%   One row highlighted teal with label "selected tangent idx". Show w_2 = log2 N as
+%   annotation (typeset properly if model supports).
+% CENTER BRIDGE (between panels): Horizontal strip of 0/1 bits (12--20 bits), visually split
+%   into left segment feeding Layer 1 (label "w_1 bits") and right segment feeding Layer 2
+%   ("w_2 bits"). Arrows from segments into respective panels.
+% BOTTOM SPAN (full width): Arrow down to box "LLM synthesis (temperature=0.7)" then three
+%   small equal-height cards "Candidate comment A/B/C (JSON array)". Emphasize generation,
+%   not decoding.
+% CONSISTENCY: Match token-vs-intent figure styling (colors, corner radius).
+% NEGATIVE PROMPT: binary exploding, matrix code, neural network brain, unreadable tiny math,
+%   actual Reddit usernames or vote counts.
+% ------------------------------------------------------------------
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[width=\textwidth]{figures/two_layer_embedding}
+	\Description{Two-panel diagram: left, spatial embedding selects a reply parent in a flattened comment tree; right, intent embedding selects an index from a tangent list; payload bits split across both layers before LLM synthesis.}
+	\caption{Two-layer embedding: Layer 1 selects reply placement in a deterministically flattened thread; Layer 2 selects a tangent from TangentsDB; combined bits drive generative synthesis.}
+	\label{fig:two-layer}
+\end{figure*}
 
 \subsubsection{Layer 1: Spatial Embedding (Reply Targeting)}
 \label{sec:layer1}
@@ -65,6 +218,36 @@ Following the selection of the target context and thematic tangent, the sender i
     \item \textbf{Verification Loop:} Before the stego-text is committed to the public channel, the sender executes a local \textit{Decoding Simulation} to verify that the generated text remains recoverable.
     \item \textbf{Recursive Refinement:} If the simulation fails to recover the intended angle, the sender re-executes the synthesis step without changing the embedding parameters. The non-zero temperature ensures output variation; the retry loop is capped at five total attempts.
 \end{itemize}
+Figure~\ref{fig:verify-decode} summarizes sender-side verification and receiver-side recovery.
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:verify-decode) -> figures/verify_and_decode_flow.(png|pdf)
+% ------------------------------------------------------------------
+% STRUCTURE: Two horizontal swimlanes separated by dashed lines, labeled left margin
+%   "Sender" (top) and "Receiver" (bottom). Use standard flowchart shapes.
+% SENDER LANE: Rectangle "Synthesize 3 JSON comments (T=0.7)" -> Diamond "Local decode
+%   simulation succeeds?" -> "No" path curves back to synthesis rectangle with side label
+%   "retry (same embedding), max 5 attempts". "Yes" path -> Rectangle "Publish to thread".
+%   Small note near loop: "nonzero T varies wording".
+% RECEIVER LANE: Rounded rectangle "Observe stego comment" -> Rectangle "Embedding model:
+%   cosine similarity shortlist" -> sublabel "top 20 tangents". -> Rectangle "LLM discriminator
+%   (T=0): return index" -> Rectangle "Map to payload bits / handle rank vs index".
+%   Side callout in small text: "If LLM returns 1-based rank, map to shortlist; else fallback
+%   to top embedding match".
+% CONNECTORS: No vertical arrows between lanes except optional dotted "public channel" between
+%   "Publish" and "Observe".
+% LEGEND: Tiny key for diamond = decision, rectangle = process.
+% NEGATIVE PROMPT: UML class diagrams, sequence diagrams with 20 lifelines, crypto keys,
+%   blockchain.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/verify_and_decode_flow}
+	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then publishes; receiver observes the comment, shortlists tangents by embedding similarity, and uses an LLM to pick the tangent index.}
+	\caption{Sender-side verification retries synthesis until decode succeeds; the receiver recovers Layer~2 via semantic shortlisting and a discriminative LLM prompt.}
+	\label{fig:verify-decode}
+\end{figure}
 
 \subsection{Decoding \& Intent Recovery}
 The receiver reuses the published angle list rather than rebuilding the corpus from scratch. To recover the hidden intent (Layer 2):

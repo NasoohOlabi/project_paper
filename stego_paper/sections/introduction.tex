@@ -5,7 +5,44 @@ Linguistic steganography focuses on the covert embedding of secret information w
 
 However, existing LLM-based steganographic systems remain constrained by a fundamental trade-off between statistical security and perceptual naturalness \cite{yang2020vae}. While a model may output grammatically and statistically fluent sentences, these often lack the deep semantic coherence required for specific communicative contexts, such as threaded social media discussions. A comment that is technically flawless yet pragmatically irrelevant to the ongoing discourse serves as a conspicuous anomaly under human or semantic-level scrutiny.
 
-To address these challenges, we introduce a context-aware steganographic framework that elevates the embedding domain from the lexical level (individual tokens) to the semantic level (communicative intents). Instead of manipulating distribution probabilities, our approach analyzes the target conversational context to synthesize a dynamic repository of "Tangents"—relevant, thematic contextual directions. Secret payloads are encoded through the selection of specific Tangents, which are subsequently expanded by an LLM into natural, contextually appropriate responses. This ensures that the generated stego-text is not only statistically robust but also pragmatically integrated into the target environment. A specialized verification agent closes the loop, guaranteeing that the intended semantic orientation remains recoverable prior to transmission.
+To address these challenges, we introduce a context-aware steganographic framework that elevates the embedding domain from the lexical level (individual tokens) to the semantic level (communicative intents). Instead of manipulating distribution probabilities, our approach analyzes the target conversational context to synthesize a dynamic repository of "Tangents"—relevant, thematic contextual directions. Secret payloads are encoded through the selection of specific Tangents, which are subsequently expanded by an LLM into natural, contextually appropriate responses. This ensures that the generated stego-text is not only statistically robust but also pragmatically integrated into the target environment. A specialized verification agent closes the loop, guaranteeing that the intended semantic orientation remains recoverable prior to transmission. Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with our two-layer semantic embedding over a threaded discussion.
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:token-vs-intent) -> figures/token_vs_intent_embedding.(png|pdf)
+% ------------------------------------------------------------------
+% GLOBAL STYLE: Academic technical diagram, flat vector infographic, 16:9 or 2:1 landscape,
+%   300 DPI target, white or #F8FAFC background, high contrast, sans-serif labels (simulate
+%   Helvetica / Inter), slate blue #334155 primary, teal #0D9488 secondary, amber #D97706
+%   accents, thin 1--2pt strokes, optional subtle card shadows. No photorealistic humans,
+%   no Reddit Snoo or brand logos, no watermarks, no 3D renders, no cluttered stock icons.
+% COMPOSITION: Three-column layout. Vertical divider lines or generous whitespace between
+%   columns. Top centered small title: "Embedding domain: token vs communicative intent".
+% LEFT PANEL (width ~38%): Header bar "Token / distribution embedding (typical)".
+%   Below: horizontal row of 8--12 small rectangles as fake tokens (single letters or
+%   [tok] placeholders). Arrow down to a stacked bar or histogram labeled "next-token
+%   distribution / logits". Second arrow to a die or branching arrows labeled "sampling".
+%   Small triangular warning badge with text "often needs white-box logits" and sublabel
+%   "fragile in threaded social context". Use cool gray tones; keep diagram busy but legible.
+% CENTER (~12%): Large vertical double chevron or bold arrow pointing upward, label
+%   "shift to semantic layer" on two lines, color teal.
+% RIGHT PANEL (~38%): Header "Semantic / intent embedding (this work)". Generic forum UI:
+%   rounded rectangle "Original post" at top; 2--3 nested "Comment" cards with indent guides;
+%   one comment node outlined in amber with pin icon, label "Layer 1: reply target".
+%   From that node, fan out 4--6 small rounded chips labeled "Tangent 0..N" (Layer 2).
+%   One chip highlighted; arrow to final speech bubble "Stego reply (cover text)".
+%   Optional tiny caption strip: "TangentsDB + shared LLM (T=0) for codebook".
+% LEGIBILITY: All English labels at least 8pt equivalent when scaled to single-column
+%   figure width in ACM manuscript. Avoid micro-font paragraphs; use short phrases only.
+% NEGATIVE PROMPT: blurry text, illegible handwriting, isometric clutter, cyberpunk neon,
+%   anime, screenshots of real apps, dense equations, more than two sentences of body text.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/token_vs_intent_embedding}
+	\Description{Side-by-side contrast: token-level steganography versus two-layer semantic embedding (reply placement and thematic intent) in a discussion thread.}
+	\caption{Conceptual contrast between token-level embedding and our two-layer semantic embedding over a threaded discussion.}
+	\label{fig:token-vs-intent}
+\end{figure}
 
 The primary contributions of this paper are:
 \begin{itemize}

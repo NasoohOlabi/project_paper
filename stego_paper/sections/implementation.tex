@@ -6,11 +6,41 @@ The practical implementation follows the same stage order as the workflow runner
 \subsection{Architectural Components}
 The system is operationalized through a series of deterministic pipeline stages. Core components include:
 \begin{itemize}
-    \item \texttt{DataLoadPipeline}: Fetches unresolved URL content, replaces the post body with the extracted text, and caches normalized URL responses by SHA-256.
-    \item \texttt{ResearchPipeline}: Generates search terms from the post title, text, and URL with an LM Studio model at \texttt{temperature=0}, caches them in a SQLite \texttt{research\_terms\_cache.db}, queries Google Custom Search, removes duplicate links and PDFs, and fetches page text in batches of three. The stage persists a flat \texttt{search\_results} corpus together with reproducibility hashes.
-    \item \texttt{GenAnglesPipeline}: Flattens the corpus assembled from \texttt{selftext}, \texttt{search\_results}, and comments, then calls the angle runner to produce \texttt{source\_quote}/\texttt{tangent}/\texttt{category} triplets. Long inputs are split into 30k-character segments and batched up to 150k characters, and each prompt batch is logged and cached by input hash. If the backend path fails, the pipeline falls back to a direct LM Studio prompt that uses the same JSON schema.
+    \item \texttt{DataLoadPipeline}: Fetches unresolved URL content and replaces the post body with the extracted text.
+    \item \texttt{ResearchPipeline}: Generates search terms from the post title, text, and URL with an LM Studio model at \texttt{temperature=0}, queries Google Custom Search, removes duplicate links and PDFs, and fetches page text in batches of three. The stage persists a flat \texttt{search\_results} corpus together with reproducibility hashes.
+    \item \texttt{GenAnglesPipeline}: Flattens the corpus assembled from \texttt{selftext}, \texttt{search\_results}, and comments, then calls the angle runner to produce \texttt{source\_quote}/\texttt{tangent}/\texttt{category} triplets. Long inputs are split into 30k-character segments and batched up to 150k characters. If the backend path fails, the pipeline falls back to a direct LM Studio prompt that uses the same JSON schema.
     \item \texttt{StegoPipeline} and \texttt{DecodePipeline}: Combine the compression layer, comment targeting, semantic shortlist, and verification loop. The encoder generates three candidate comments per angle, decodes them immediately, and retries up to five attempts if the selected angle is not recoverable.
 \end{itemize}
+Figure~\ref{fig:impl-pipelines} aligns these components with the staged implementation and on-disk artifacts.
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:impl-pipelines) -> figures/implementation_pipelines.(png|pdf)
+% ------------------------------------------------------------------
+% STYLE: Professional academic pipeline diagram, flat vector artwork, white background,
+%   restrained but distinct color accents per stage.
+% LAYOUT: One horizontal row of five evenly spaced stages connected by thin arrows.
+%   Use one short label per stage only; do not repeat labels above and below the icon.
+% STAGE 1 LABEL: "Data Load". Visual: URL/document import into a clean data stack or database.
+% STAGE 2 LABEL: "Research". Visual: magnifying glass over stacked documents and search results.
+% STAGE 3 LABEL: "Tangent Generation". Visual: branching tangent paths or clustered notes
+%   emerging from a document graph; emphasize tangents, not angles.
+% STAGE 4 LABEL: "Stego Encoding". Visual: a message bubble or document with embedded bits,
+%   compression symbol, and reply arrow.
+% STAGE 5 LABEL: "Decode". Visual: filter/search funnel extracting a key or checkmark from a bitstream.
+% VISUAL TONE: Minimal text, no camelCase, no snake_case, no duplicate captions, no bullets,
+%   no dense annotation.
+% COLORS: Use coordinated but muted academic colors per stage (blue, amber, violet, rose, green).
+% NEGATIVE PROMPT: repeated labels, code-style names, "GenAngles", angle terminology,
+%   decorative marketing style, 3D rendering, neon glow, cluttered background.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/implementation_pipelines}
+	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting deterministic replay and sender--receiver alignment.}
+	\caption{Implementation stages and persisted artifacts align with the methodology: each stage is deterministic and replayable where required for sender--receiver parity.}
+	\label{fig:impl-pipelines}
+\end{figure}
 
 \subsection{Model Configuration}
 The pipeline uses different models for different stages:

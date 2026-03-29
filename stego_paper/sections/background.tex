@@ -2,7 +2,39 @@
 \label{sec:background}
 
 \subsection{Linguistics-Based Steganography}
-Steganography is distinguished from cryptography by its primary objective: the achievement of imperceptibility rather than mere confidentiality. The fundamental goal is to obscure the very existence of a communication channel. This is traditionally conceptualized through the "Prisoners' Problem" \cite{simmons1984prisoners}, wherein Alice must transmit a message to Bob under the scrutiny of an adversarial warden. Should the warden identify any deviation from expected behavior, the communication channel is terminated.
+Steganography is distinguished from cryptography by its primary objective: the achievement of imperceptibility rather than mere confidentiality. The fundamental goal is to obscure the very existence of a communication channel. This is traditionally conceptualized through the "Prisoners' Problem" \cite{simmons1984prisoners}, wherein Alice must transmit a message to Bob under the scrutiny of an adversarial warden. Should the warden identify any deviation from expected behavior, the communication channel is terminated. Figure~\ref{fig:prisoners} illustrates this monitored-channel abstraction.
+%
+% ------------------------------------------------------------------
+% AI IMAGE PROMPT (fig:prisoners) -> figures/prisoners_problem.(png|pdf)
+% ------------------------------------------------------------------
+% GLOBAL STYLE: Same academic flat-vector palette as other figures (slate / teal / amber),
+%   white background, print-safe, no prison imagery (no bars, chains, orange jumpsuits).
+% PURPOSE: Abstract Simmons "prisoners' problem" for steganography: covert channel under
+%   monitoring, not a literal prison scene.
+% LAYOUT: Equilateral or isosceles triangle of three actors; Alice lower-left, Bob lower-right,
+%   Warden top center. Use simple circles or rounded squares with initials "A", "B", "W"
+%   or full names "Alice (sender)", "Bob (receiver)", "Warden (adversary)" beneath.
+% CHANNEL: Horizontal arrow from Alice to Bob, 2--3px dashed stroke, label above or below:
+%   "Public channel (monitored)". Along the arrow, draw a second thinner solid or dotted
+%   inner line, or a nested smaller arrow inside a speech-bubble silhouette, labeled
+%   "Covert payload (hidden in innocuous text)". Visual metaphor: stego hides *inside* the
+%   overt traffic, not a separate wire.
+% WARDEN: Above the dashed arrow, place magnifying glass or stylized eye icon tethered to
+%   Warden node; short label "observes traffic for anomalies". Optional small red "X"
+%   over a separate "second channel" if shown, to imply single channel only.
+% TYPOGRAPHY: Optional figure title top: "Prisoners' problem: covert linguistic channel".
+%   Keep total text under ~25 words on canvas.
+% NEGATIVE PROMPT: realistic faces, CCTV footage, horror, political symbols, cluttered UI,
+%   comic speech balloons with long dialogue, cryptography padlock as sole metaphor.
+% ------------------------------------------------------------------
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{figures/prisoners_problem}
+	\Description{Illustration of the prisoners' problem: Alice and Bob communicate over a monitored channel while hiding a covert message from the warden.}
+	\caption{The prisoners' problem: Alice must reach Bob over a channel monitored by an adversary (warden); steganography hides the existence of the covert payload.}
+	\label{fig:prisoners}
+\end{figure}
 
 \subsection{Generative Steganography in the Era of LLMs}
 Traditional textual steganography involves the modification of a static cover text, a process that frequently introduces detectable statistical or linguistic artifacts. In contrast, generative steganography \cite{wu2024generative} utilizes probabilistic models to synthesize the cover text de novo.
@@ -15,3 +47,4 @@ Linguistic steganography specifically refers to the concealment of information w
 
 \subsection{The Semantic Context Challenge}
 A critical limitation of existing generative systems is their tendency to produce content in isolation or based on abstract prompts. In the context of real-world communicative environments, such as social media, "naturalness" is inextricably linked to conversational relevance. Consequently, a sophisticated adversary can identify steganographic content not by identifying syntactic errors, but by analyzing its pragmatic misalignment with the surrounding discourse \cite{ding2023context}. The framework proposed in this research specifically addresses this semantic-level vulnerability.
+ 

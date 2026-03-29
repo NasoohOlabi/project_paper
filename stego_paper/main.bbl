@@ -1,4 +1,4 @@
-\begin{thebibliography}{11}
+\begin{thebibliography}{17}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -21,12 +21,12 @@ Gabriel Kaptchuk, Tushar~M Jois, Matthew Green, and Aviel~D Rubin.
   and Communications Security}, pages 1529--1548, Virtual Event, Republic of
   Korea, 2021. ACM.
 
-\bibitem[Wang et~al.(2023)Wang, Zhang, Tang, and Liu]{Wang_2023}
+\bibitem[Wang et~al.(2023{\natexlab{a}})Wang, Zhang, Tang, and Liu]{Wang_2023}
 Yihao Wang, Ru~Zhang, Yifan Tang, and Jianyi Liu.
 \newblock State-of-the-art advances of deep-learning linguistic steganalysis
   research.
 \newblock In \emph{2023 International Conference on Data, Information and
-  Computing Science (CDICS)}, page 20–24. IEEE, December 2023.
+  Computing Science (CDICS)}, page 20–24. IEEE, December 2023{\natexlab{a}}.
 \newblock \doi{10.1109/cdics61497.2023.00014}.
 \newblock URL \url{http://dx.doi.org/10.1109/CDICS61497.2023.00014}.
 
@@ -61,13 +61,14 @@ Murray Shanahan.
 \newblock \emph{Communications of the ACM}, 67\penalty0 (2):\penalty0 68--79,
   2024.
 
-\bibitem[Ding et~al.(2023)Ding, Fu, Yang, Yu, Li, and Huang]{ding2023context}
+\bibitem[Ding et~al.(2023{\natexlab{a}})Ding, Fu, Yang, Yu, Li, and
+  Huang]{ding2023context}
 Changhao Ding, Zhangjie Fu, Zhongliang Yang, Qi~Yu, Daqiu Li, and Yongfeng
   Huang.
 \newblock Context-aware linguistic steganography model based on neural machine
   translation.
 \newblock \emph{IEEE/ACM Transactions on Audio, Speech, and Language
-  Processing}, 32:\penalty0 868--878, 2023.
+  Processing}, 32:\penalty0 868--878, 2023{\natexlab{a}}.
 
 \bibitem[Pillutla et~al.(2021)Pillutla, Swayamdipta, Zellers, Thickstun,
   Callison-Burch, Ai2, and Grover]{pillutla2021mauve}
@@ -82,5 +83,48 @@ Krishna Pillutla, Swabha Swayamdipta, Rowan Zellers, John Thickstun, Chris
 Yequan Wang, Jiawen Deng, Aixin Sun, and Xuying Meng.
 \newblock Perplexity from plm is unreliable for evaluating text quality.
 \newblock \emph{arXiv preprint arXiv:2210.05892}, 2022.
+
+\bibitem[Zheng et~al.(2022)Zheng, Fang, and Wu]{zheng2022general}
+Xiaoyan Zheng, Yurun Fang, and Hanzhou Wu.
+\newblock General framework for reversible data hiding in texts based on masked
+  language modeling.
+\newblock In \emph{2022 IEEE 24th International Workshop on Multimedia Signal
+  Processing (MMSP)}, pages 1--6. IEEE, 2022.
+
+\bibitem[Ding et~al.(2023{\natexlab{b}})Ding, Fu, Yu, Wang, and
+  Chen]{ding2023joint}
+Changhao Ding, Zhangjie Fu, Qi~Yu, Fan Wang, and Xianyi Chen.
+\newblock Joint linguistic steganography with bert masked language model and
+  graph attention network.
+\newblock \emph{IEEE Transactions on Cognitive and Developmental Systems},
+  16\penalty0 (2):\penalty0 772--781, 2023{\natexlab{b}}.
+
+\bibitem[Ding et~al.(2023{\natexlab{c}})Ding, Chen, Wang, Zhao, Zhang, and
+  Yu]{ding2023discop}
+Jinyang Ding, Kejiang Chen, Yaofei Wang, Na~Zhao, Weiming Zhang, and Nenghai
+  Yu.
+\newblock Discop: Provably secure steganography in practice based on
+  distribution copies.
+\newblock In \emph{2023 IEEE Symposium on Security and Privacy (SP)}, pages
+  2238--2255, San Francisco, CA, USA, 2023{\natexlab{c}}. IEEE.
+
+\bibitem[Lin et~al.(2024)Lin, Luo, Zhang, and Luo]{lin2024zero}
+Ke~Lin, Yiyang Luo, Zijian Zhang, and Ping Luo.
+\newblock Zero-shot generative linguistic steganography.
+\newblock \emph{arXiv preprint arXiv:2403.10856}, 2024.
+
+\bibitem[Qi et~al.(2024)Qi, Chen, Zeng, Zhang, and Yu]{qi2024provably}
+Yuang Qi, Kejiang Chen, Kai Zeng, Weiming Zhang, and Nenghai Yu.
+\newblock Provably secure disambiguating neural linguistic steganography.
+\newblock \emph{IEEE Transactions on Dependable and Secure Computing}, 2024.
+\newblock Early Access.
+
+\bibitem[Wang et~al.(2023{\natexlab{b}})Wang, Yang, Yang, Gao, and
+  Huang]{wang2023hi}
+Huili Wang, Zhongliang Yang, Jinshuai Yang, Yue Gao, and Yongfeng Huang.
+\newblock Hi-stega: A hierarchical linguistic steganography framework combining
+  retrieval and generation.
+\newblock In \emph{International Conference on Neural Information Processing},
+  pages 41--54. Springer, 2023{\natexlab{b}}.
 
 \end{thebibliography}
