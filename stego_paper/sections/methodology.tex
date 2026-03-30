@@ -29,7 +29,7 @@ This research proposes a black-box steganographic technique that embeds informat
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=\linewidth]{figures/end_to_end_scenario.png}
+	\includegraphics[width=0.78\linewidth]{figures/end_to_end_scenario.png}
 	\Description{Diagram of Alice and Bob communicating covertly over a public threaded forum: sender encodes and publishes a reply; receiver snapshots the thread using an agreed time window and shared operational parameters.}
 	\caption{Covert communication scenario: Alice and Bob use a public threaded channel; synchronization relies on shared operational parameters and a negotiated temporal window.}
 	\label{fig:end-to-end}
@@ -72,7 +72,7 @@ Ensuring that both Alice and Bob operate on the same researched corpus is the co
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth]{figures/research_pipeline_deterministic}
+	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/research_pipeline_deterministic}
 	\Description{Horizontal pipeline from source inputs through deterministic search-term generation, fixed-shape search API, filtering and fetching, to a hashed search-results corpus for reproducibility.}
 	\caption{Deterministic research stage: shared term generation, fixed search parameters, filtering, batched fetching, and integrity hashes for replayable corpora.}
 	\label{fig:research-pipeline}
@@ -108,13 +108,13 @@ The agreed-upon duration $T_{sync}$ ensures that the "Comment Chain" retrieved b
 %   relativity diagrams.
 % ------------------------------------------------------------------
 
-\begin{figure}[t]
+\begin{figure*}[t]
 	\centering
-	\includegraphics[width=\linewidth]{figures/temporal_sync_window}
+	\includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{figures/temporal_sync_window}
 	\Description{Timeline diagram showing comment inclusion cutoff at publish time minus an agreed synchronization window, excluding comments that arrive while the sender is still working.}
 	\caption{Temporal synchronization: Bob's reconstructed thread state matches Alice's by agreeing on $T_{sync}$ and filtering comments relative to $t_{publish}$.}
 	\label{fig:tsync}
-\end{figure}
+\end{figure*}
 
 \subsection{Payload Optimization \& Compression}
 Prior to embedding, the raw payload undergoes a transformation layer designed to minimize bitstream length. We implement a \textit{dynamic dictionary-based compression} scheme that uses dynamic programming to minimize the total bit-cost:
@@ -150,13 +150,13 @@ Figure~\ref{fig:compression} outlines dictionary construction and the literal ve
 %   illegible micro-hex dumps.
 % ------------------------------------------------------------------
 
-\begin{figure}[t]
+\begin{figure*}[t]
 	\centering
-	\includegraphics[width=\linewidth]{figures/payload_compression_dp}
+	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/payload_compression_dp}
 	\Description{Schematic of dictionary synthesis from thread and search text, payload segmentation, and choice between literal UTF-8 and dictionary-pointer encoding via a dynamic program.}
 	\caption{Payload compression builds a session dictionary from thread and research text, then chooses literal versus dictionary-encoded segments to minimize total bit cost.}
 	\label{fig:compression}
-\end{figure}
+\end{figure*}
 
 \subsection{Two-Layer Semantic Embedding Architecture}
 %
@@ -187,7 +187,7 @@ Figure~\ref{fig:compression} outlines dictionary construction and the literal ve
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth]{figures/two_layer_embedding}
+	\includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{figures/two_layer_embedding}
 	\Description{Two-panel diagram: left, spatial embedding selects a reply parent in a flattened comment tree; right, intent embedding selects an index from a tangent list; payload bits split across both layers before LLM synthesis.}
 	\caption{Two-layer embedding: Layer 1 selects reply placement in a deterministically flattened thread; Layer 2 selects a tangent from TangentsDB; combined bits drive generative synthesis.}
 	\label{fig:two-layer}
@@ -241,13 +241,13 @@ Figure~\ref{fig:verify-decode} summarizes sender-side verification and receiver-
 %   blockchain.
 % ------------------------------------------------------------------
 
-\begin{figure}[t]
+\begin{figure*}[t]
 	\centering
-	\includegraphics[width=\linewidth]{figures/verify_and_decode_flow}
+	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/verify_and_decode_flow}
 	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then publishes; receiver observes the comment, shortlists tangents by embedding similarity, and uses an LLM to pick the tangent index.}
 	\caption{Sender-side verification retries synthesis until decode succeeds; the receiver recovers Layer~2 via semantic shortlisting and a discriminative LLM prompt.}
 	\label{fig:verify-decode}
-\end{figure}
+\end{figure*}
 
 \subsection{Decoding \& Intent Recovery}
 The receiver reuses the published angle list rather than rebuilding the corpus from scratch. To recover the hidden intent (Layer 2):
@@ -259,3 +259,4 @@ The receiver reuses the published angle list rather than rebuilding the corpus f
           \end{quote}
 \end{enumerate}
 The decoder uses a \texttt{gpt-oss-20b} model at \texttt{temperature=0}. If the model returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlisted candidate; otherwise it falls back to the top semantic match. This high-precision recovery mechanism ensures robust extraction of the hidden payload with minimal error rates.
+\FloatBarrier

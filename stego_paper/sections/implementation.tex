@@ -34,13 +34,13 @@ Figure~\ref{fig:impl-pipelines} aligns these components with the staged implemen
 %   decorative marketing style, 3D rendering, neon glow, cluttered background.
 % ------------------------------------------------------------------
 
-\begin{figure}[t]
+\begin{figure*}[t]
 	\centering
-	\includegraphics[width=\linewidth]{figures/implementation_pipelines}
+	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/implementation_pipelines}
 	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting deterministic replay and sender--receiver alignment.}
 	\caption{Implementation stages and persisted artifacts align with the methodology: each stage is deterministic and replayable where required for sender--receiver parity.}
 	\label{fig:impl-pipelines}
-\end{figure}
+\end{figure*}
 
 \subsection{Model Configuration}
 The pipeline uses different models for different stages:
