@@ -7,7 +7,7 @@ This section provides a comprehensive assessment of the proposed workflow, speci
 The channel capacity of the semantic layer is fundamentally dependent on the dimensionality of the generated \textit{TangentsDB}. We analyzed the variance in dictionary size across heterogeneous subreddit contexts, observing that the number of extracted tangents, $N$, directly dictates the bits-per-message throughput, defined by $\log_2 N$. Our results indicate that complex, multifaceted discussions yield significantly higher embedding capacities compared to narrow or highly restricted thematic environments.
 
 \subsection{Perceptual \& Statistical Imperceptibility}
-Imperceptibility is evaluated through the dual lenses of semantic coherence and contextual integration. Unlike traditional steganographic methodologies that risk producing disjointed or statistically anomalous text, our intent-based approach ensures that every stego-contribution maintains a clear thematic alignment with the encompassing discourse. Comparative analysis using the MAUVE metric \cite{pillutla2021mauve} and cross-entropy (perplexity) assessments demonstrates that our generative framework preserves high levels of naturalness. This is particularly significant given that standard perplexity scores may not fully capture the nuances of long-context semantic quality \cite{wang2022perplexity}.
+Imperceptibility is evaluated through the dual lenses of semantic coherence and contextual integration. Unlike traditional steganographic methodologies that risk producing disjointed or statistically anomalous text, our intent-based approach ensures that every stego-contribution maintains a clear thematic alignment with the encompassing discourse. Comparative analysis using MAUVE, a distributional similarity metric for generated text \cite{pillutla2021mauve}, Jensen--Shannon divergence (JSD), and cross-entropy (perplexity) assessments demonstrates that our generative framework preserves high levels of naturalness. This is particularly significant given that standard perplexity scores may not fully capture the nuances of long-context semantic quality \cite{wang2022perplexity}.
 
 Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram divergence against two baselines: the matched primary post and a global comment corpus, over 571 stego strings.
 
@@ -69,7 +69,7 @@ Table~\ref{tab:slr-metrics-comparison} uses the same column layout as our system
 		\endfoot
 		\bottomrule
 		\endlastfoot
-		This work & Shared LLM ($T{=}0$ for decode); GPT-2 for PPL & --- & Reddit threads; 571 stego strings & PPL $\approx 92.3$; KL $4.14$--$6.88$; JSD $\approx 0.54$ (word unigrams vs.\ matched post / global corpus) & explicit & social thread & text + semantic tangents \\
+		This work & Shared LLM (\texttt{temperature=0} for decode); GPT-2 for PPL & --- & Reddit threads; 571 stego strings & PPL $\approx 92.3$; KL $4.14$--$6.88$; JSD $\approx 0.54$ (word unigrams vs.\ matched post / global corpus) & explicit & social thread & text + semantic tangents \\
 		\midrule
 		VAE-Stega \cite{yang2020vae} & BERT--LSTM; LSTM--LSTM (from scratch) & 2020 & Twitter (2.6M sents.); IMDB (1.2M sents.) & PPL 28.879; $\Delta$MP 0.242; KLD 3.302; JSD 10.411; Acc 0.600 & non-explicit & pre-text & text \\
 		General MLM RH \cite{zheng2022general} & BERT-base & 2022 & BookCorpus & BPW 0.5335; F1 0.9402; PPL 134.22 & non-explicit & pre-text & text \\
