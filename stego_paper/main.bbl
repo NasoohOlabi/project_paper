@@ -1,4 +1,4 @@
-\begin{thebibliography}{17}
+\begin{thebibliography}{16}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -69,15 +69,6 @@ Changhao Ding, Zhangjie Fu, Zhongliang Yang, Qi~Yu, Daqiu Li, and Yongfeng
   translation.
 \newblock \emph{IEEE/ACM Transactions on Audio, Speech, and Language
   Processing}, 32:\penalty0 868--878, 2023{\natexlab{a}}.
-
-\bibitem[Pillutla et~al.(2021)Pillutla, Swayamdipta, Zellers, Thickstun,
-  Callison-Burch, Ai2, and Grover]{pillutla2021mauve}
-Krishna Pillutla, Swabha Swayamdipta, Rowan Zellers, John Thickstun, Chris
-  Callison-Burch, AI~Ai2, and Aditya Grover.
-\newblock Mauve: Measuring the gap between neural text and human text using
-  divergence frontiers.
-\newblock In \emph{Advances in Neural Information Processing Systems},
-  volume~34, pages 4816--4828, Virtual Event, 2021. Curran Associates, Inc.
 
 \bibitem[Wang et~al.(2022)Wang, Deng, Sun, and Meng]{wang2022perplexity}
 Yequan Wang, Jiawen Deng, Aixin Sun, and Xuying Meng.

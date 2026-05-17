@@ -5,7 +5,7 @@ Linguistic steganography focuses on the covert embedding of secret information w
 
 However, existing LLM-based steganographic systems remain constrained by a fundamental trade-off between statistical security and perceptual naturalness \cite{yang2020vae}. While a model may output grammatically and statistically fluent sentences, these often lack the deep semantic coherence required for specific communicative contexts, such as threaded social media discussions. A comment that is technically flawless yet pragmatically irrelevant to the ongoing discourse serves as a conspicuous anomaly under human or semantic-level scrutiny.
 
-To address these challenges, we introduce a context-aware steganographic framework that elevates the embedding domain from the lexical level (individual tokens) to the semantic level (communicative intents). Instead of manipulating distribution probabilities, our approach analyzes the target conversational context to synthesize a dynamic repository of "Tangents"—relevant, thematic contextual directions. Secret payloads are encoded through the selection of specific Tangents, which are subsequently expanded by an LLM into natural, contextually appropriate responses. This ensures that the generated stego-text is not only statistically robust but also pragmatically integrated into the target environment. A specialized verification agent closes the loop, guaranteeing that the intended semantic orientation remains recoverable prior to transmission. Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with our two-layer semantic embedding over a threaded discussion.
+To address these challenges, we introduce a context-aware steganographic framework that elevates the embedding domain from the lexical level (individual tokens) to the semantic level (conversational decisions). Instead of manipulating token distributions, our scheme carries the payload through a \textit{selection channel}: bits map to (i) the index of the reply target within a deterministically flattened comment tree, and (ii) the index of a context-conditioned \textit{Angle} within a shared angle set that both parties reconstruct deterministically from the public thread and reproducible research. A language model then generates an ordinary visible reply that serves as a \textit{decodable witness} of the selected Angle; we do not rely on invisible characters or control Unicode. A sender-side verification loop closes the system by simulating receiver decoding before publication. Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with our two-layer selection-channel embedding over a threaded discussion.
 % ------------------------------------------------------------------
 % AI IMAGE PROMPT (fig:token-vs-intent) -> figures/token_vs_intent_embedding.(png|pdf)
 % ------------------------------------------------------------------
@@ -27,9 +27,9 @@ To address these challenges, we introduce a context-aware steganographic framewo
 % RIGHT PANEL (~38%): Header "Semantic / intent embedding (this work)". Generic forum UI:
 %   rounded rectangle "Original post" at top; 2--3 nested "Comment" cards with indent guides;
 %   one comment node outlined in amber with pin icon, label "Layer 1: reply target".
-%   From that node, fan out 4--6 small rounded chips labeled "Tangent 0..N" (Layer 2).
+%   From that node, fan out 4--6 small rounded chips labeled "Angle 0..N" (Layer 2).
 %   One chip highlighted; arrow to final speech bubble "Stego reply (cover text)".
-%   Optional tiny caption strip: "TangentsDB + shared LLM (T=0) for codebook".
+%   Optional tiny caption strip: "Shared deterministic reconstruction (thread + research)".
 % LEGIBILITY: All English labels at least 8pt equivalent when scaled to single-column
 %   figure width in ACM manuscript. Avoid micro-font paragraphs; use short phrases only.
 % NEGATIVE PROMPT: blurry text, illegible handwriting, isometric clutter, cyberpunk neon,
@@ -46,7 +46,7 @@ To address these challenges, we introduce a context-aware steganographic framewo
 
 The primary contributions of this paper are:
 \begin{itemize}
-    \item A novel "Semantic Steganography" architecture that encodes data into high-level communicative intents, significantly enhancing resistance to semantic analysis.
-    \item A dynamic, context-driven dictionary generation mechanism that achieves operational parity between sender and receiver through deterministic search and retrieval.
-    \item A closed-loop verification system utilizing a recursive refinement process to ensure message recoverability and cross-contextual alignment.
+    \item A two-layer, selection-channel embedding architecture for threaded discussions that encodes bits into reply targeting and Angle selection, with visible text serving as a decodable witness rather than a hidden carrier.
+    \item A deterministic reconstruction pipeline (thread + reproducible research) that enables sender/receiver parity without white-box model access or side-channel metadata exchange.
+    \item A closed-loop verification mechanism that simulates decoding pre-publication and retries synthesis to improve recoverability under stochastic generation.
 \end{itemize}

@@ -43,6 +43,8 @@ Traditional textual steganography involves the modification of a static cover te
     \item \textbf{Black-Box Generative Architectures:} Emerging frameworks interact with language models solely through API-driven prompts. Our research operates within this paradigm, leveraging the instruction-following capabilities of LLMs rather than direct manipulation of internal weight distributions.
 \end{itemize}
 
+Threat model. We assume a passive observer (human or automated) can read the public thread and the published reply, but does not possess the shared operational parameters used by the sender and receiver (deterministic preprocessing and search constraints, deterministic model settings for reconstruction, and the agreed temporal synchronization window). The platform itself is treated as an untrusted carrier that observes only public content.
+
 Linguistic steganography specifically refers to the concealment of information within natural language through the generation or modification of text while maintaining semantic and syntactic fluency \cite{fridrich2009steganography}. While LLM-based systems have significantly improved the quality of generated covers, they remain susceptible to the fundamental tension between statistical imperceptibility and contextual naturalness \cite{yang2020vae,shanahan2024talking}.
 
 \subsection{The Semantic Context Challenge}

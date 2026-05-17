@@ -16,8 +16,8 @@ This research proposes a black-box steganographic technique that embeds informat
 %   "snapshot + filter by T_sync", "decode payload".
 % ARROWS: Alice -> center: "posts stego-comment". Center -> Bob: "reads public thread".
 % SHARED SECRETS BAND (below center or in lower third): Two lock-and-key or keyhole icons
-%   in a horizontal row. (1) Label: "Shared: deterministic search + identical LLM, T=0 for
-%   TangentsDB / angles". (2) Label: "Agreed temporal window T_sync". Use monospace only
+%   in a horizontal row. (1) Label: "Shared: deterministic preprocessing + identical LLM (T=0)
+%   for angle reconstruction". (2) Label: "Agreed temporal window T_sync". Use monospace only
 %   for T_sync and T=0 if needed.
 % ADVERSARY (optional, far edge): Faint gray silhouette "Passive observer" with "?"
 %   and caption "does not share secret parameters" to stress black-box sync, not crypto keys
@@ -36,14 +36,15 @@ This research proposes a black-box steganographic technique that embeds informat
 \end{figure}
 
 \subsection{System Architecture}
-The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions—specifically, the selection of a reply target and the determination of a tangent—the system maximizes channel capacity while preserving perceptual naturalness. In the implemented workflow, the receiver later reuses the published thread state and angle list to recover the payload. Figure~\ref{fig:two-layer} depicts the two embedding layers and their interaction with synthesis.
+The core of the proposed framework centers on a multi-layer embedding process that leverages both the \textit{spatial location} of the response and the \textit{thematic subject} of the content as carriers for the secret payload. By mapping binary data to high-level conversational actions---specifically, the selection of a reply target and the selection of an \textit{Angle}---the system carries the payload through a selection channel while preserving perceptual naturalness in the visible text. In the implemented workflow, the receiver reconstructs the same pre-sender context (thread snapshot + deterministic research + regenerated angles) and decodes the same selection indices to recover the payload. Figure~\ref{fig:two-layer} depicts the two embedding layers and their interaction with synthesis.
 
 \subsection{Operational Requirements}
 To achieve synchronization, both the sender and receiver must maintain access to:
 \begin{itemize}
     \item \textbf{Public Communication Channel:} Accounts on the target social media platform.
     \item \textbf{Shared Operational Parameters:} A deterministic search algorithm, post metadata, and predefined search constraints.
-    \item \textbf{Synchronized LLM Configuration:} Access to an identical Large Language Model (or API) with a fixed \texttt{temperature=0} setting, ensuring deterministic output during the codebook construction phase.
+    \item \textbf{Deterministic Reconstruction Settings:} A synchronized model/backend configuration for deterministic stages (e.g., \texttt{temperature=0}) so both parties regenerate the same search terms and angle set from the same inputs.
+    \item \textbf{Agreed Temporal Window:} A negotiated $T_{sync}$ used to filter thread state so the receiver reconstructs the same parent-comment context seen by the sender.
 \end{itemize}
 
 \subsection{Search Determinism \& Synchronization Framework}
@@ -170,9 +171,9 @@ Figure~\ref{fig:compression} outlines dictionary construction and the literal ve
 %   node with thick amber ring + label "Selected reply parent (index k)". Footnote-style
 %   equation text as readable typography: w_1 = ceil(log2(n+1)) and note "index 0 = top-level
 %   reply to post". Small legend "Flattened order fixes Alice/Bob agreement".
-% RIGHT PANEL "Layer 2 -- TangentsDB": Vertical numbered list 0..N-1 (show ~8 rows, ellipsis
+% RIGHT PANEL "Layer 2 -- shared angle set": Vertical numbered list 0..N-1 (show ~8 rows, ellipsis
 %   ok). Each row: thin gray line of lorem-like placeholder (3--5 words, not real sentences).
-%   One row highlighted teal with label "selected tangent idx". Show w_2 = log2 N as
+%   One row highlighted teal with label "selected angle idx". Show w_2 = log2 N as
 %   annotation (typeset properly if model supports).
 % CENTER BRIDGE (between panels): Horizontal strip of 0/1 bits (12--20 bits), visually split
 %   into left segment feeding Layer 1 (label "w_1 bits") and right segment feeding Layer 2
@@ -188,8 +189,8 @@ Figure~\ref{fig:compression} outlines dictionary construction and the literal ve
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{figures/two_layer_embedding}
-	\Description{Two-panel diagram: left, spatial embedding selects a reply parent in a flattened comment tree; right, intent embedding selects an index from a tangent list; payload bits split across both layers before LLM synthesis.}
-	\caption{Two-layer embedding: Layer 1 selects reply placement in a deterministically flattened thread; Layer 2 selects a tangent from TangentsDB; combined bits drive generative synthesis.}
+	\Description{Two-panel diagram: left, spatial embedding selects a reply parent in a flattened comment tree; right, intent embedding selects an index from a shared angle set; payload bits split across both layers before LLM synthesis.}
+	\caption{Two-layer embedding: Layer 1 selects reply placement in a deterministically flattened thread; Layer 2 selects an Angle from a shared, deterministically reconstructed angle set; combined bits drive generative synthesis.}
 	\label{fig:two-layer}
 \end{figure*}
 
@@ -202,21 +203,21 @@ The primary embedding layer determines the \textit{architectural placement} of t
     \item Index 0 corresponds to a top-level reply to the post, while any non-zero index selects a comment whose parent chain is reconstructed through \texttt{parent\_id} and \texttt{link\_id} lookups.
 \end{enumerate}
 
-\subsubsection{Layer 2: Intent-Based Embedding (Thematic Tangent Selection)}
+\subsubsection{Layer 2: Intent-Based Embedding (Angle Selection)}
 \label{sec:layer2}
 The secondary layer determines the \textit{communicative intent}.
 \begin{enumerate}
-    \item \textbf{TangentsDB Construction:} As detailed in Section \ref{sec:search_determinism}, the system constructs a serialized list of potential thematic directions (\textit{Tangents}).
-    \item \textbf{Dynamic Bit-Mapping:} The bit-width for this layer is calculated from the total number of tangents, and the flattened list is assigned sequential \texttt{idx} values.
-    \item \textbf{Thematic Selection:} The corresponding payload bits are mapped to a specific tangent within the serialized list. In the generation step, the first four candidates are used to build the primary prompts and few-shot validation examples, while each angle is paired with the best matching research text selected from \texttt{search\_results}.
+    \item \textbf{Angle Set Reconstruction:} Using the deterministic preprocessing chain (Section \ref{sec:search_determinism}) and the filtered thread snapshot, both parties regenerate the same ordered list of candidate Angles, each described by \texttt{category}, \texttt{source\_quote}, and a \texttt{tangent} field (the thematic direction).
+    \item \textbf{Dynamic Bit-Mapping:} The bit-width for this layer is computed from the total number of Angles, and the flattened list is assigned sequential \texttt{idx} values.
+    \item \textbf{Angle Selection:} The corresponding payload bits are mapped to a specific Angle index. During synthesis, the selected Angle is paired with the reply context and relevant research excerpts to produce a plausible cover reply.
 \end{enumerate}
 
 \subsection{Generative Synthesis \& Verification}
-Following the selection of the target context and thematic tangent, the sender initiates the cover text synthesis process.
+Following the selection of the target context and selected Angle, the sender initiates the cover text synthesis process.
 \begin{itemize}
-    \item \textbf{Synthesis:} A \texttt{gpt-oss-20b} model configured with \texttt{temperature=0.7} constructs one JSON array of exactly three short Reddit-style comments. The prompt combines the source post metadata, the selected comment chain, the target tangent, and the best-match research text, and the parser accepts both raw JSON and fenced JSON responses.
+    \item \textbf{Synthesis:} A configurable generative language model (run at non-zero temperature) produces a small fixed set of short, thread-appropriate reply candidates as a JSON list of non-empty strings. The prompt conditions on post metadata, the selected comment chain, the selected Angle (tangent), and relevant research excerpts.
     \item \textbf{Verification Loop:} Before the stego-text is committed to the public channel, the sender executes a local \textit{Decoding Simulation} to verify that the generated text remains recoverable.
-    \item \textbf{Recursive Refinement:} If the simulation fails to recover the intended angle, the sender re-executes the synthesis step without changing the embedding parameters. The non-zero temperature ensures output variation; the retry loop is capped at five total attempts.
+    \item \textbf{Recursive Refinement:} If the simulation fails to recover the intended Angle, the sender re-executes synthesis without changing the embedding parameters. The non-zero temperature ensures output variation; the retry loop is capped by a fixed attempt budget.
 \end{itemize}
 Figure~\ref{fig:verify-decode} summarizes sender-side verification and receiver-side recovery.
 %
@@ -230,7 +231,7 @@ Figure~\ref{fig:verify-decode} summarizes sender-side verification and receiver-
 %   "retry (same embedding), max 5 attempts". "Yes" path -> Rectangle "Publish to thread".
 %   Small note near loop: "nonzero T varies wording".
 % RECEIVER LANE: Rounded rectangle "Observe stego comment" -> Rectangle "Embedding model:
-%   cosine similarity shortlist" -> sublabel "top 20 tangents". -> Rectangle "LLM discriminator
+%   cosine similarity shortlist" -> sublabel "top 20 angles". -> Rectangle "LLM discriminator
 %   (T=0): return index" -> Rectangle "Map to payload bits / handle rank vs index".
 %   Side callout in small text: "If LLM returns 1-based rank, map to shortlist; else fallback
 %   to top embedding match".
@@ -244,19 +245,20 @@ Figure~\ref{fig:verify-decode} summarizes sender-side verification and receiver-
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/verify_and_decode_flow}
-	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then publishes; receiver observes the comment, shortlists tangents by embedding similarity, and uses an LLM to pick the tangent index.}
-	\caption{Sender-side verification retries synthesis until decode succeeds; the receiver recovers Layer~2 via semantic shortlisting and a discriminative LLM prompt.}
+	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then publishes; receiver observes the comment, shortlists Angles by semantic similarity, and uses a discriminative prompt to pick the Angle index.}
+	\caption{Sender-side verification retries synthesis until decode succeeds; the receiver recovers Layer~2 via semantic shortlisting and a discriminative identification step.}
 	\label{fig:verify-decode}
 \end{figure*}
 
 \subsection{Decoding \& Intent Recovery}
-The receiver reuses the published angle list rather than rebuilding the corpus from scratch. To recover the hidden intent (Layer 2):
+To recover the hidden intent (Layer 2), the receiver first reconstructs the pre-sender context deterministically, then decodes the Angle selection from the visible reply:
 \begin{enumerate}
-    \item \textbf{Semantic Filtering:} The receiver employs a semantic similarity model to perform a lookup against the pool of potential Tangents, identifying the top 20 candidates that most closely match the observed stego-text.
-    \item \textbf{Discriminative Identification:} A specialized LLM prompt is executed on these candidates to achieve precise identification:
+    \item \textbf{Context Reconstruction:} The receiver locates the candidate stego comment, removes it from the thread, applies the temporal cutoff ($t_{publish} - T_{sync}$), and reruns deterministic preprocessing (URL normalization, research, and angle generation) to reproduce the same ordered Angle list.
+    \item \textbf{Semantic Filtering:} A semantic similarity model shortlists the top-$N$ Angles whose text descriptions best match the observed stego reply.
+    \item \textbf{Discriminative Identification:} A deterministic identification prompt is executed on the shortlisted candidates to return the most likely Angle index:
           \begin{quote}
-              \textit{"Identify the specific tangent from the provided candidates... return the index only."}
+              \textit{"Identify the specific Angle from the provided candidates... return the index only."}
           \end{quote}
 \end{enumerate}
-The decoder uses a \texttt{gpt-oss-20b} model at \texttt{temperature=0}. If the model returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlisted candidate; otherwise it falls back to the top semantic match. This high-precision recovery mechanism ensures robust extraction of the hidden payload with minimal error rates.
+If the discriminator returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlist; otherwise it falls back to the top semantic match. Combined with Layer~1 (reply targeting), the recovered indices reconstruct the same selection bits and allow recovery of the compressed payload.
 \FloatBarrier

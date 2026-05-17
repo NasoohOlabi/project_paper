@@ -1,15 +1,15 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-This section provides a comprehensive assessment of the proposed workflow, specifically focusing on its embedding capacity, perceptual imperceptibility, and operational robustness.
+This section reports an artifact-based assessment of the workflow, focusing on (i) embedding capacity of the selection channel, (ii) naturalness and distributional divergence of successful stego samples, and (iii) operational reliability under the sender-side verification loop. We center results on a clean run artifact (\texttt{run\_id} \texttt{20260509T203344Z}, directory \texttt{metrics/e2e\_runs/fresh\_metrics\_200\_20260509T233342Z}) and explicitly separate generation/decode failures from infrastructure errors.
 
 \subsection{Capacity Analysis}
-The channel capacity of the semantic layer is fundamentally dependent on the dimensionality of the generated \textit{TangentsDB}. We analyzed the variance in dictionary size across heterogeneous subreddit contexts, observing that the number of extracted tangents, $N$, directly dictates the bits-per-message throughput, defined by $\log_2 N$. Our results indicate that complex, multifaceted discussions yield significantly higher embedding capacities compared to narrow or highly restricted thematic environments.
+The channel capacity of Layer~2 is fundamentally dependent on the size of the shared, deterministically reconstructed angle set. If the reconstructed set contains $N$ Angles, then Layer~2 contributes $\log_2 N$ bits per message instance (rounded up to an integer bit-width in the implementation). In practice, broader threads and richer research corpora tend to yield larger and more diverse angle sets than narrowly constrained topics, increasing available capacity.
 
 \subsection{Perceptual \& Statistical Imperceptibility}
-Imperceptibility is evaluated through the dual lenses of semantic coherence and contextual integration. Unlike traditional steganographic methodologies that risk producing disjointed or statistically anomalous text, our intent-based approach ensures that every stego-contribution maintains a clear thematic alignment with the encompassing discourse. Comparative analysis using MAUVE, a distributional similarity metric for generated text \cite{pillutla2021mauve}, Jensen--Shannon divergence (JSD), and cross-entropy (perplexity) assessments demonstrates that our generative framework preserves high levels of naturalness. This is particularly significant given that standard perplexity scores may not fully capture the nuances of long-context semantic quality \cite{wang2022perplexity}.
+Imperceptibility is evaluated through the dual lenses of semantic coherence and contextual integration. Unlike traditional steganographic methodologies that risk producing disjointed or statistically anomalous text, our intent-based approach aims to ensure that each stego contribution maintains a clear thematic alignment with the surrounding discourse. In this work we report GPT-2 perplexity and word-unigram KL/JSD as coarse statistical proxies, noting that these metrics do not fully capture long-context semantic quality \cite{wang2022perplexity} and do not replace dedicated steganalysis benchmarks.
 
-Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram divergence against two baselines: the matched primary post and a global comment corpus, over 571 stego strings.
+Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram divergence against two baselines: the matched primary post and a global comment corpus. Values are computed over the successful, receiver-validated stego samples produced in run \texttt{20260509T203344Z} (\texttt{requested}=200, \texttt{succeeded}=183).
 
 \begin{table}[t]
 	\centering
@@ -20,12 +20,12 @@ Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram di
 		\toprule
 		Category & Metric & Baseline / context & Mean & Range (min / max) \\
 		\midrule
-		Perplexity & PPL (GPT-2) & 571 stego strings & $\approx 92.3$ & 14.2 -- 3580.0 \\
+		Perplexity & PPL (GPT-2) & 183 successful stego strings & $\approx 142.3$ & 22.8 -- 653.8 \\
 		\midrule
-		Divergence & KL & Matched primary post & $\approx 6.88$ & --- \\
-		Divergence & KL & Global comment corpus & $\approx 4.14$ & --- \\
-		Divergence & JSD & Matched primary post & $\approx 0.54$ & --- \\
-		Divergence & JSD & Global comment corpus & $\approx 0.54$ & --- \\
+		Divergence & KL & Matched primary post & $\approx 9.24$ & --- \\
+		Divergence & KL & Global comment corpus & $\approx 6.50$ & --- \\
+		Divergence & JSD & Matched primary post & $\approx 0.590$ & --- \\
+		Divergence & JSD & Global comment corpus & $\approx 0.588$ & --- \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -34,7 +34,7 @@ Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram di
 Perplexity is computed from average per-token log-probability,
 $2^{-\frac{1}{n} \sum_{i=1}^{n} \log_2 P(x_i \mid x_{<i})}$:
 lower PPL indicates more natural continuations under the model; higher PPL indicates surprising or awkward text.
-The extreme maximum ($\sim$3580) likely reflects a few pathological samples that are highly unnatural to GPT-2.
+The observed maximum ($\sim$654) likely reflects a small number of pathological samples that are highly unnatural to GPT-2.
 
 Kullback--Leibler (KL) divergence compares stego word unigrams $P_S$ to a baseline $P_C$ via
 $\sum_w p_{\text{stego}}(w) \log \frac{p_{\text{stego}}(w)}{p_{\text{baseline}}(w)}$;
@@ -69,7 +69,7 @@ Table~\ref{tab:slr-metrics-comparison} uses the same column layout as our system
 		\endfoot
 		\bottomrule
 		\endlastfoot
-		This work & Shared LLM (\texttt{temperature=0} for decode); GPT-2 for PPL & --- & Reddit threads; 571 stego strings & PPL $\approx 92.3$; KL $4.14$--$6.88$; JSD $\approx 0.54$ (word unigrams vs.\ matched post / global corpus) & explicit & social thread & text + semantic tangents \\
+		This work & Configurable black-box LLMs (deterministic decode; stochastic synthesis); GPT-2 for PPL & 2026 & Threaded forum posts; run \texttt{20260509T203344Z} (183 successes) & PPL $\approx 142.3$; KL 6.50 (global) / 9.24 (matched); JSD 0.588 (global) / 0.590 (matched) & explicit & social thread & selection channel (reply + angle) \\
 		\midrule
 		VAE-Stega \cite{yang2020vae} & BERT--LSTM; LSTM--LSTM (from scratch) & 2020 & Twitter (2.6M sents.); IMDB (1.2M sents.) & PPL 28.879; $\Delta$MP 0.242; KLD 3.302; JSD 10.411; Acc 0.600 & non-explicit & pre-text & text \\
 		General MLM RH \cite{zheng2022general} & BERT-base & 2022 & BookCorpus & BPW 0.5335; F1 0.9402; PPL 134.22 & non-explicit & pre-text & text \\
@@ -92,29 +92,29 @@ Table~\ref{tab:slr-metrics-comparison} uses the same column layout as our system
 		\toprule
 		Metric & Ours (mean) & Source reference and context \\
 		\midrule
-		PPL & 92.3 & 134.11 (human mean), VAE-Stega / IMDB training baseline. \\
+		PPL & 142.3 & 134.11 (human mean), VAE-Stega / IMDB training baseline. \\
 		PPL & & 20.92 (RNN-Stega), VAE-Stega RNN at 1.0 bpw. \\
 		PPL & & 165.76 (LLM-Stega), black-box generation with GPT-4. \\
 		PPL & & 42.23 (Discop), stego quality with GPT-2. \\
 		\midrule
-		KL & 4.14--6.88 & 19.51 (RNN-Stega), VAE-Stega RNN on IMDB. \\
+		KL & 6.50--9.24 & 19.51 (RNN-Stega), VAE-Stega RNN on IMDB. \\
 		KL & & 0.045 (Meteor), high-entropy English sampling. \\
 		KL & & 0.00 (Discop), distribution-matching stego. \\
 		\midrule
-		JSD & 0.54 & 14.48 (RNN-Stega), VAE-Stega RNN on IMDB. \\
+		JSD & 0.588--0.590 & 14.48 (RNN-Stega), VAE-Stega RNN on IMDB. \\
 		JSD & & 0.18 (Zero-shot LLM), in-context learning ($17.9 \times 10^{-2}$). \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
 \paragraph{Reading the comparison.}
-Mean PPL ($\approx 92.3$) is lower (more predictable under GPT-2) than the human-text average reported for VAE-Stega (134.11), and lies between highly optimized but detectable RNN stego ($\sim$20--30 PPL) and black-box LLM-Stega (165.76), i.e., in a plausible range for naturalistic text under GPT-2.
-KL (4.14--6.88) is much smaller than the RNN-Stega IMDB figure (19.51), indicating stronger unigram-level alignment with the chosen baselines than older recurrent generators, but larger than methods that tightly match a model distribution (Meteor, Discop), which operate at token level or with provable distribution matching.
-JSD (0.54) exceeds the cited zero-shot LLM value (0.18), so the stego text retains a more distinct unigram signature than that reference.
+Mean PPL ($\approx 142.3$) is of similar scale to the human-text average reported for VAE-Stega (134.11) and lower than a cited black-box LLM-Stega reference (165.76), i.e., within a plausible range for non-adversarial generated forum-style text when evaluated under GPT-2.
+KL (6.50--9.24) is much smaller than the RNN-Stega IMDB figure (19.51), indicating stronger unigram-level alignment with the chosen baselines than older recurrent generators, but larger than methods that tightly match a model distribution (Meteor, Discop), which operate at token level or with provable distribution matching.
+JSD (0.588--0.590) exceeds the cited zero-shot LLM value (0.18), so the stego text retains a more distinct unigram signature than that reference.
 Finally, lower KL to the global corpus than to the matched post parallels a known pattern: as surface quality is pushed, text may move toward background forum language and away from idiosyncratic thread-specific vocabulary.
 
 \subsection{System Robustness \& Recovery Rate}
-The deployment of a recursive verification mechanism represents a critical component in ensuring high payload fidelity. Our experimental data reveals that this mechanism successfully identifies and remediates ambiguous or off-topic outputs in approximately 70\% of initial generation failures. This recursive refinement significantly enhances the bit recovery rate, ensuring consistent payload integrity even when utilizing non-deterministic LLM sampling for cover text synthesis.
+The sender-side verification loop improves operational reliability by rejecting candidates that do not decode back to the selected Angle. In run \texttt{20260509T203344Z} (\texttt{requested}=200), the pipeline produced 183 successful, receiver-validated samples and 17 failures after exhausting the retry budget. The primary failure modes were (i) decoding validation failures (10/17) and (ii) malformed synthesis output that did not match the required JSON schema (7/17). These failures highlight that reliability is primarily limited by the ability to synthesize a decodable witness under stochastic generation, rather than by payload recovery after validation.
 
 \subsection{Resistance to Automated Steganalysis}
-The system's resilience against automated detection is primarily derived from its high-level semantic alignment. When subjected to standard linguistic steganalysis benchmarks \cite{Wang_2023}, the generated comments proved to be indistinguishable from legitimate human interactions within the same conversational thread. By shifting the embedding domain from token patterns to communicative intent, the scheme avoids the local distributional cues that token-level steganalysis typically exploits and instead requires thread-level pragmatic reasoning.
+The design objective of the framework is to reduce semantic and pragmatic anomalies by conditioning synthesis on the full thread context and by encoding information in conversational decisions (reply targeting and Angle selection) rather than local token artifacts. We therefore expect detection to require thread-level pragmatic reasoning rather than relying solely on token-level distribution cues \cite{Wang_2023}. A dedicated steganalysis benchmark evaluation is left to future work; here we limit claims to the measured distributional and operational metrics reported above.

@@ -7,9 +7,9 @@ The practical implementation follows the same stage order as the workflow runner
 The system is operationalized through a series of deterministic pipeline stages. Core components include:
 \begin{itemize}
     \item \texttt{DataLoadPipeline}: Fetches unresolved URL content and replaces the post body with the extracted text.
-    \item \texttt{ResearchPipeline}: Generates search terms from the post title, text, and URL with an LM Studio model at \texttt{temperature=0}, queries Google Custom Search, removes duplicate links and PDFs, and fetches page text in batches of three. The stage persists a flat \texttt{search\_results} corpus together with reproducibility hashes.
-    \item \texttt{GenAnglesPipeline}: Flattens the corpus assembled from \texttt{selftext}, \texttt{search\_results}, and comments, then calls the angle runner to produce \texttt{source\_quote}/\texttt{tangent}/\texttt{category} triplets. Long inputs are split into 30k-character segments and batched up to 150k characters. If the backend path fails, the pipeline falls back to a direct LM Studio prompt that uses the same JSON schema.
-    \item \texttt{StegoPipeline} and \texttt{DecodePipeline}: Combine the compression layer, comment targeting, semantic shortlist, and verification loop. The encoder generates three candidate comments per angle, decodes them immediately, and retries up to five attempts if the selected angle is not recoverable.
+    \item \texttt{ResearchPipeline}: Generates search terms from the post title, text, and URL using a deterministic LLM configuration (e.g., \texttt{temperature=0}), queries a fixed-shape search backend, removes duplicate links and PDFs, and fetches page text in bounded batches. The stage persists a flat \texttt{search\_results} corpus together with reproducibility hashes.
+    \item \texttt{GenAnglesPipeline}: Flattens the corpus assembled from \texttt{selftext}, \texttt{search\_results}, and comments, then calls the angle runner to produce \texttt{source\_quote}/\texttt{tangent}/\texttt{category} triplets. Long inputs are split into 30k-character segments and batched up to 150k characters. If the backend path fails, the pipeline falls back to a direct LLM prompt that uses the same JSON schema.
+    \item \texttt{StegoPipeline} and \texttt{DecodePipeline}: Combine the compression layer, comment targeting, semantic shortlist, and verification loop. The encoder generates a small fixed number of candidate comments for the selected Angle, decodes them immediately, and retries synthesis if the selected Angle is not recoverable.
 \end{itemize}
 Figure~\ref{fig:impl-pipelines} aligns these components with the staged implementation and on-disk artifacts.
 %
@@ -22,8 +22,8 @@ Figure~\ref{fig:impl-pipelines} aligns these components with the staged implemen
 %   Use one short label per stage only; do not repeat labels above and below the icon.
 % STAGE 1 LABEL: "Data Load". Visual: URL/document import into a clean data stack or database.
 % STAGE 2 LABEL: "Research". Visual: magnifying glass over stacked documents and search results.
-% STAGE 3 LABEL: "Tangent Generation". Visual: branching tangent paths or clustered notes
-%   emerging from a document graph; emphasize tangents, not angles.
+% STAGE 3 LABEL: "Angle Generation". Visual: branching tangent paths or clustered notes
+%   emerging from a document graph; emphasize thematic options.
 % STAGE 4 LABEL: "Stego Encoding". Visual: a message bubble or document with embedded bits,
 %   compression symbol, and reply arrow.
 % STAGE 5 LABEL: "Decode". Visual: filter/search funnel extracting a key or checkmark from a bitstream.
@@ -43,10 +43,9 @@ Figure~\ref{fig:impl-pipelines} aligns these components with the staged implemen
 \end{figure*}
 
 \subsection{Model Configuration}
-The pipeline uses different models for different stages:
+The implementation uses different model roles for different stages, but the exact model IDs are treated as configurable parameters:
 \begin{itemize}
-    \item \textbf{URL extraction and search terms:} The crawl4ai extraction stage and the search-term generator default to \texttt{mistral-nemo-instruct-2407-abliterated} at \texttt{temperature=0}.
-    \item \textbf{Angle generation:} The dedicated angle runner uses \texttt{openai/gpt-oss-20b} at \texttt{temperature=0}, validates raw JSON arrays, and repairs malformed responses when needed.
-    \item \textbf{Stego synthesis:} The encoder uses \texttt{openai/gpt-oss-20b} at \texttt{temperature=0.7} to produce candidate Reddit-style comments.
-    \item \textbf{Semantic matching and decode:} \texttt{all-MiniLM-L6-v2} performs cosine-similarity shortlist ranking, and \texttt{gpt-oss-20b} selects the final angle index at \texttt{temperature=0}.
+    \item \textbf{Deterministic stages (term/angle generation):} Run at \texttt{temperature=0} to ensure reproducible reconstruction from the same inputs.
+    \item \textbf{Stego synthesis:} Runs at non-zero temperature to generate diverse candidate replies for a fixed embedding choice.
+    \item \textbf{Semantic matching and decode:} Uses a semantic similarity model for shortlist ranking, followed by a deterministic discriminative identification prompt (e.g., \texttt{temperature=0}) to select the final Angle index.
 \end{itemize}
