@@ -1,9 +1,15 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{15}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Qiang et~al.(2023)Qiang, Zhu, Li, Zhu, Yuan, and Wu]{qiang2023natural}
+Jipeng Qiang, Shiyu Zhu, Yun Li, Yi~Zhu, Yunhao Yuan, and Xindong Wu.
+\newblock Natural language watermarking via paraphraser-based lexical
+  substitution.
+\newblock \emph{Artificial Intelligence}, 317:\penalty0 103859, 2023.
 
 \bibitem[Yang et~al.(2020)Yang, Zhang, Hu, Hu, and Huang]{yang2020vae}
 Zhong-Liang Yang, Si-Yu Zhang, Yu-Ting Hu, Zhi-Wen Hu, and Yong-Feng Huang.
@@ -21,14 +27,34 @@ Gabriel Kaptchuk, Tushar~M Jois, Matthew Green, and Aviel~D Rubin.
   and Communications Security}, pages 1529--1548, Virtual Event, Republic of
   Korea, 2021. ACM.
 
-\bibitem[Wang et~al.(2023)Wang, Zhang, Tang, and Liu]{Wang_2023}
+\bibitem[Wang et~al.(2023{\natexlab{a}})Wang, Zhang, Tang, and Liu]{Wang_2023}
 Yihao Wang, Ru~Zhang, Yifan Tang, and Jianyi Liu.
 \newblock State-of-the-art advances of deep-learning linguistic steganalysis
   research.
 \newblock In \emph{2023 International Conference on Data, Information and
-  Computing Science (CDICS)}, page 20–24. IEEE, December 2023.
+  Computing Science (CDICS)}, page 20–24. IEEE, December 2023{\natexlab{a}}.
 \newblock \doi{10.1109/cdics61497.2023.00014}.
 \newblock URL \url{http://dx.doi.org/10.1109/CDICS61497.2023.00014}.
+
+\bibitem[Li et~al.(2023)Li, Wu, Yu, Wang, Song, Liu, Lai, and
+  Zhou]{li2023rewriting}
+Fanxiao Li, Sixing Wu, Jiong Yu, Shuoxin Wang, BingBing Song, Renyang Liu,
+  Haoseng Lai, and Wei Zhou.
+\newblock Rewriting-stego: generating natural and controllable steganographic
+  text with pre-trained language model.
+\newblock In \emph{International Conference on Database Systems for Advanced
+  Applications}, pages 617--626. Springer, 2023.
+
+\bibitem[Lin et~al.(2024)Lin, Luo, Zhang, and Luo]{lin2024zero}
+Ke~Lin, Yiyang Luo, Zijian Zhang, and Ping Luo.
+\newblock Zero-shot generative linguistic steganography.
+\newblock \emph{arXiv preprint arXiv:2403.10856}, 2024.
+
+\bibitem[Wu et~al.(2024)Wu, Wu, Xue, Wen, and Peng]{wu2024generative}
+Jiaxuan Wu, Zhengxian Wu, Yiming Xue, Juan Wen, and Wanli Peng.
+\newblock Generative text steganography with large language model.
+\newblock In \emph{Proceedings of the 32nd ACM International Conference on
+  Multimedia}, pages 10345--10353, Melbourne, Australia, 2024. ACM.
 
 \bibitem[Liao et~al.(2024)Liao, Yang, Pang, and Huang]{liao2024co}
 Guorui Liao, Jinshuai Yang, Kaiyi Pang, and Yongfeng Huang.
@@ -37,17 +63,26 @@ Guorui Liao, Jinshuai Yang, Kaiyi Pang, and Yongfeng Huang.
 \newblock In \emph{Proceedings of the 2024 ACM Workshop on Information Hiding
   and Multimedia Security}, pages 7--12, Baiona, Spain, 2024. ACM.
 
+\bibitem[Wang et~al.(2023{\natexlab{b}})Wang, Yang, Yang, Gao, and
+  Huang]{wang2023hi}
+Huili Wang, Zhongliang Yang, Jinshuai Yang, Yue Gao, and Yongfeng Huang.
+\newblock Hi-stega: A hierarchical linguistic steganography framework combining
+  retrieval and generation.
+\newblock In \emph{International Conference on Neural Information Processing},
+  pages 41--54. Springer, 2023{\natexlab{b}}.
+
+\bibitem[Zhang et~al.(2024)Zhang, Liu, and Zhang]{zhang2024controllable}
+Ruifan Zhang, Jianyi Liu, and Ru~Zhang.
+\newblock Controllable semantic linguistic steganography via summarization
+  generation.
+\newblock In \emph{ICASSP 2024-2024 IEEE International Conference on Acoustics,
+  Speech and Signal Processing (ICASSP)}, pages 4560--4564. IEEE, 2024.
+
 \bibitem[Simmons(1984)]{simmons1984prisoners}
 Gustavus~J Simmons.
 \newblock The prisoners' problem and the subliminal channel.
 \newblock In \emph{Advances in Cryptology: Proceedings of Crypto 83}, pages
   51--67, Boston, MA, 1984. Springer.
-
-\bibitem[Wu et~al.(2024)Wu, Wu, Xue, Wen, and Peng]{wu2024generative}
-Jiaxuan Wu, Zhengxian Wu, Yiming Xue, Juan Wen, and Wanli Peng.
-\newblock Generative text steganography with large language model.
-\newblock In \emph{Proceedings of the 32nd ACM International Conference on
-  Multimedia}, pages 10345--10353, Melbourne, Australia, 2024. ACM.
 
 \bibitem[Fridrich(2009)]{fridrich2009steganography}
 Jessica Fridrich.
