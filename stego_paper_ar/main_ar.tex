@@ -1,0 +1,94 @@
+\documentclass[journal,onecolumn]{IEEEtran}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage[numerals=maghrib]{arabic}
+\setotherlanguage{english}
+\newfontfamily\arabicfont[
+  Script=Arabic,
+  Scale=1.08,
+  BoldFont={Arial},
+  ItalicFont={Arial},
+  BoldItalicFont={Arial}
+]{Arial}
+\newfontfamily\arabicfonttt[Script=Arabic,Scale=1.08]{Arial}
+\newfontfamily\englishfont{Times New Roman}
+\setmainfont{Times New Roman}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{placeins}
+\usepackage{url}
+
+\captionsetup[figure]{skip=4pt,font=small}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+
+\newcommand{\EN}[1]{\textenglish{#1}}
+\let\origtexttt\texttt
+\renewcommand{\texttt}[1]{\EN{\origtexttt{#1}}}
+\providecommand{\UseMathForPositioningText}{}
+\renewcommand{\IEEEkeywordsname}{الكلمات المفتاحية}
+\renewcommand{\refname}{المراجع}
+
+\makeatletter
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesectiondis}{\thesection.}
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+  {2.4ex plus 1ex minus .4ex}%
+  {0.9ex plus .3ex}%
+  {\normalfont\large\bfseries\raggedleft}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+  {1.5ex plus 0.5ex minus .2ex}%
+  {0.5ex plus .2ex}%
+  {\normalfont\normalsize\bfseries\raggedleft}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+  {1.2ex plus 0.4ex minus .2ex}%
+  {0.4ex plus .2ex}%
+  {\normalfont\normalsize\itshape\raggedleft}}
+\let\IEEEorigmaketitle\@maketitle
+\def\@maketitle{{\let\centering\raggedleft\IEEEorigmaketitle}}
+\makeatother
+
+\title{الإخفاء اللغوي للمعلومات المدرك للسياق: سير عمل توليدي باستخدام نماذج اللغة الكبيرة}
+
+\author{نسوح العلبي ورياض سنبل%
+\thanks{ينتمي المؤلفان إلى المعهد العالي للعلوم التطبيقية والتكنولوجيا، دمشق، سوريا.}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract.tex}
+\end{abstract}
+
+\begin{IEEEkeywords}
+إخفاء المعلومات اللغوي، نماذج اللغة الكبيرة، \EN{LLMs}، معالجة اللغة الطبيعية، إخفاء المعلومات بنموذج الصندوق الأسود، التضمين الدلالي، سير العمل الوكيلي، اللامحسوسية.
+\end{IEEEkeywords}
+
+\section*{ملاحظة ما قبل النشر}
+هذه المخطوطة نسخة ما قبل النشر مؤرخة في 21 حزيران/يونيو 2026.
+
+\input{sections/introduction.tex}
+\input{sections/background.tex}
+\input{sections/related_work.tex}
+\input{sections/methodology.tex}
+\input{sections/implementation.tex}
+\input{sections/evaluation.tex}
+\input{sections/conclusion.tex}
+
+\begin{LTR}
+\bibliographystyle{IEEEtran}
+\bibliography{references/bibliography}
+\end{LTR}
+
+\end{document}
