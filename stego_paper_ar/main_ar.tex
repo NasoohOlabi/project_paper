@@ -1,20 +1,103 @@
 \documentclass[journal,onecolumn]{IEEEtran}
 
+%% ─── Language & Fonts ────────────────────────────────────────────────────────
 \usepackage{fontspec}
 \usepackage{polyglossia}
 \setmainlanguage[numerals=maghrib]{arabic}
 \setotherlanguage{english}
 \newfontfamily\arabicfont[
-  Script=Arabic,
-  Scale=1.08,
-  BoldFont={Arial},
-  ItalicFont={Arial},
-  BoldItalicFont={Arial}
+  Script=Arabic, Scale=1.1,
+  BoldFont={Arial}, ItalicFont={Arial}, BoldItalicFont={Arial}
 ]{Arial}
-\newfontfamily\arabicfonttt[Script=Arabic,Scale=1.08]{Arial}
+\newfontfamily\arabicfonttt[Script=Arabic,Scale=1.1]{Arial}
 \newfontfamily\englishfont{Times New Roman}
 \setmainfont{Times New Roman}
 
+%% ─── Page Layout ─────────────────────────────────────────────────────────────
+\usepackage[a4paper,top=2.8cm,bottom=2.8cm,left=2.6cm,right=2.6cm,
+            headheight=16pt,headsep=10pt]{geometry}
+
+%% ─── Color Palette ───────────────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{stegoblue}{RGB}{30,64,175}      % deep blue — headings & rules
+\definecolor{stegorule}{RGB}{96,165,250}     % mid blue  — decorative rules
+\definecolor{stegolight}{RGB}{239,246,255}   % pale blue — abstract background
+\definecolor{stegoaccent}{RGB}{14,116,144}   % teal      — sub-headings
+
+%% ─── Section & Heading Styles ────────────────────────────────────────────────
+\usepackage{titlesec}
+
+% Numbered section: right-aligned, deep-blue bold + full-width rule below
+\titleformat{\section}[block]
+  {\large\bfseries\color{stegoblue}\raggedleft}
+  {\thesectiondis}{0.5em}{}
+  [\vspace{-0.5ex}\color{stegorule}\rule{\linewidth}{1.8pt}\vspace{0.3ex}]
+\titlespacing*{\section}{0pt}{3ex plus 1ex minus .4ex}{0.8ex plus .2ex}
+
+% Unnumbered section (abstract title, references, etc.)
+\titleformat{name=\section,numberless}[block]
+  {\large\bfseries\color{stegoblue}\raggedleft}
+  {}{0em}{}
+  [\vspace{-0.5ex}\color{stegorule}\rule{\linewidth}{1.8pt}\vspace{0.3ex}]
+\titlespacing*{name=\section,numberless}{0pt}{3ex plus 1ex minus .4ex}{0.8ex plus .2ex}
+
+% Subsection: right-aligned bold + thin rule
+\titleformat{\subsection}[block]
+  {\normalsize\bfseries\color{stegoblue!85!black}\raggedleft}
+  {\thesubsectiondis}{0.5em}{}
+  [\vspace{-0.4ex}\color{stegorule!55}\rule{\linewidth}{0.7pt}\vspace{0.2ex}]
+\titlespacing*{\subsection}{0pt}{2ex plus .5ex minus .2ex}{0.5ex plus .2ex}
+
+% Subsubsection: right-aligned italic teal, no rule
+\titleformat{\subsubsection}[block]
+  {\normalsize\itshape\color{stegoaccent}\raggedleft}
+  {\thesubsubsectiondis}{0.5em}{}[]
+\titlespacing*{\subsubsection}{0pt}{1.5ex plus .3ex minus .2ex}{0.3ex plus .2ex}
+
+% Paragraph: run-in bold heading (IEEE style)
+\titleformat{\paragraph}[runin]
+  {\normalsize\bfseries\color{stegoblue!80}}
+  {}{0em}{}[.]
+\titlespacing{\paragraph}{0pt}{1ex plus .2ex minus .1ex}{0.8em}
+
+%% ─── Running Header / Footer ─────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small\color{stegoblue}\textit{الإخفاء اللغوي المدرك للسياق}}
+\fancyhead[L]{\small\color{stegoblue}\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\fancyfoot{}
+
+%% ─── Abstract Box ────────────────────────────────────────────────────────────
+\usepackage{mdframed}
+\mdfdefinestyle{abstractbox}{
+  skipabove=4pt, skipbelow=6pt,
+  rightline=true,  leftline=false, topline=false, bottomline=false,
+  linewidth=3.5pt,
+  linecolor=stegoblue,
+  backgroundcolor=stegolight,
+  innerleftmargin=14pt, innerrightmargin=10pt,
+  innertopmargin=8pt,   innerbottommargin=8pt,
+}
+\mdfdefinestyle{preprintbox}{
+  skipabove=2pt, skipbelow=8pt,
+  linecolor=stegorule, linewidth=0.8pt,
+  topline=true, bottomline=true, rightline=false, leftline=false,
+  backgroundcolor=stegolight!55,
+  innerleftmargin=10pt, innerrightmargin=10pt,
+  innertopmargin=5pt,   innerbottommargin=5pt,
+}
+
+\renewcommand{\abstractname}{الملخص}
+\renewenvironment{abstract}{%
+  \begin{mdframed}[style=abstractbox]%
+  \noindent\textbf{\color{stegoblue}\abstractname---}\enskip\ignorespaces
+}{%
+  \end{mdframed}%
+}
+
+%% ─── Math, Tables, Figures ───────────────────────────────────────────────────
 \usepackage{cite}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
@@ -22,16 +105,17 @@
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage{enumitem}
-\usepackage{xcolor}
 \usepackage{listings}
 \usepackage{placeins}
 \usepackage{url}
 
-\captionsetup[figure]{skip=4pt,font=small}
+\captionsetup[figure]{skip=4pt, font=small, labelfont={color=stegoblue,bf}}
+\captionsetup[table] {skip=4pt, font=small, labelfont={color=stegoblue,bf}, position=top}
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\floatsep}{6pt plus 2pt minus 2pt}
 \setlength{\intextsep}{6pt plus 2pt minus 2pt}
 
+%% ─── Shortcuts & IEEEtran Overrides ──────────────────────────────────────────
 \newcommand{\EN}[1]{\textenglish{#1}}
 \let\origtexttt\texttt
 \renewcommand{\texttt}[1]{\EN{\origtexttt{#1}}}
@@ -39,30 +123,27 @@
 \renewcommand{\IEEEkeywordsname}{الكلمات المفتاحية}
 \renewcommand{\refname}{المراجع}
 
+%% ─── Title Block ─────────────────────────────────────────────────────────────
 \makeatletter
 \renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thesectiondis}{\thesection.}
-\renewcommand{\section}{\@startsection{section}{1}{\z@}%
-  {2.4ex plus 1ex minus .4ex}%
-  {0.9ex plus .3ex}%
-  {\normalfont\large\bfseries\raggedleft}}
-\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-  {1.5ex plus 0.5ex minus .2ex}%
-  {0.5ex plus .2ex}%
-  {\normalfont\normalsize\bfseries\raggedleft}}
-\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
-  {1.2ex plus 0.4ex minus .2ex}%
-  {0.4ex plus .2ex}%
-  {\normalfont\normalsize\itshape\raggedleft}}
+% Append a thick colored rule below the IEEEtran maketitle block
 \let\IEEEorigmaketitle\@maketitle
-\def\@maketitle{{\let\centering\raggedleft\IEEEorigmaketitle}}
+\def\@maketitle{{%
+  \let\centering\raggedleft
+  \IEEEorigmaketitle
+  \vspace{-1ex}%
+  \noindent\color{stegoblue}\rule{\linewidth}{2.5pt}\par\vspace{0.8ex}
+}}
 \makeatother
 
+%% ─── Document Metadata ───────────────────────────────────────────────────────
 \title{الإخفاء اللغوي للمعلومات المدرك للسياق: سير عمل توليدي باستخدام نماذج اللغة الكبيرة}
 
 \author{نسوح العلبي ورياض سنبل%
 \thanks{ينتمي المؤلفان إلى المعهد العالي للعلوم التطبيقية والتكنولوجيا، دمشق، سوريا.}}
 
+%% ─── Document Body ───────────────────────────────────────────────────────────
 \begin{document}
 
 \maketitle
@@ -72,11 +153,14 @@
 \end{abstract}
 
 \begin{IEEEkeywords}
-إخفاء المعلومات اللغوي، نماذج اللغة الكبيرة، \EN{LLMs}، معالجة اللغة الطبيعية، إخفاء المعلومات بنموذج الصندوق الأسود، التضمين الدلالي، سير العمل الوكيلي، اللامحسوسية.
+إخفاء المعلومات اللغوي، نماذج اللغة الكبيرة، \EN{LLMs}، معالجة اللغة الطبيعية،
+إخفاء المعلومات بنموذج الصندوق الأسود، التضمين الدلالي، سير العمل الوكيلي، اللامحسوسية.
 \end{IEEEkeywords}
 
 \section*{ملاحظة ما قبل النشر}
-هذه المخطوطة نسخة ما قبل النشر مؤرخة في 21 حزيران/يونيو 2026.
+\begin{mdframed}[style=preprintbox]
+\small هذه المخطوطة نسخة ما قبل النشر مؤرخة في 21 حزيران/يونيو 2026.
+\end{mdframed}
 
 \input{sections/introduction.tex}
 \input{sections/background.tex}
