@@ -9,6 +9,12 @@
 5. don't modify the Agents.md file without me explicitly asking you to
 6. don't creat Verification Plans just focus on the writing style it's 100% garentee the chaanges will be applied if you simply adhear to LaTeX syntax
 
+## Preferred Translations
+
+- context-aware: مدرك للسياق
+- use توافق instead of توليف
+- use تضمين instead of ترميز
+
 ## Human Writer Notes
  
 ### the core of our approach

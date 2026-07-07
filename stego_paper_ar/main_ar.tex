@@ -95,6 +95,8 @@
 \usepackage{caption}
 \usepackage{tabularx}
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -122,23 +124,63 @@
   \par\vspace{0.8em}%
 }
 
-%% ─── Title / Author ──────────────────────────────────────────────────────────
-\title{%
-  \bfseries\large
-  الإخفاء اللغوي للمعلومات المدرك للسياق:\\[0.4em]
-  سير عمل توليدي باستخدام نماذج اللغة الكبيرة%
+%% ─── Cover Page ──────────────────────────────────────────────────────────────
+\newcommand{\makehiastcover}{%
+  \begin{titlepage}
+  \thispagestyle{empty}
+  \setstretch{1.15}
+  \vspace*{0.70cm}
+  \begin{LTR}
+  \noindent\makebox[\textwidth]{%
+    \begin{minipage}[t]{0.40\textwidth}
+      \centering\includegraphics[width=4.3cm]{figures/hiast_logo.png}
+    \end{minipage}%
+    \hfill
+    \raisebox{2.25cm}{\begin{minipage}[t]{0.46\textwidth}
+      \begin{RTL}
+      \centering\small
+      الجمهورية العربية السورية\\
+      المعهد العالي للعلوم التطبيقية والتكنولوجيا\\
+      قسم المعلوماتية
+      \end{RTL}
+    \end{minipage}}%
+  }
+  \end{LTR}
+
+  \vspace*{3.05cm}
+  \begin{center}
+  {\bfseries\Large أطروحة دكتوراه\par}
+
+  \vspace{2.05cm}
+  {\bfseries\Large
+  الإخفاء اللغوي للمعلومات المدرك للسياق:\\[0.25em]
+  سير عمل توليدي باستخدام نماذج اللغة الكبيرة\par}
+
+  \vspace{1.75cm}
+  {\bfseries إعداد\par}
+
+  \vspace{0.55cm}
+  {\bfseries\Large نسوح العلبي \quad ورياض سنبل\par}
+
+  \vspace{1.45cm}
+  {\bfseries\Large إشراف\par}
+
+  \vspace{0.55cm}
+  \makebox[11.5cm][s]{\bfseries\Large د. غيداء الربداوي\hfill د. ندى غنيم}
+
+  \vspace{0.90cm}
+  {\normalsize
+  أعدت هذه الأطروحة لنيل درجة الدكتوراه في المعلوماتية\\
+  ( الذكاء الصنعي ومعالجة اللغات الطبيعية )\\
+  2026\par}
+  \end{center}
+  \end{titlepage}
 }
-\author{%
-  نسوح العلبي\thanks{المعهد العالي للعلوم التطبيقية والتكنولوجيا، دمشق، سوريا.}%
-  \quad ورياض سنبل%
-}
-\date{}
 
 %% ─── Document Body ───────────────────────────────────────────────────────────
 \begin{document}
 
-\maketitle
-\thispagestyle{plain}
+\makehiastcover
 
 \begin{abstract}
 \input{sections/abstract.tex}
@@ -163,9 +205,10 @@
 \input{sections/evaluation.tex}
 \input{sections/conclusion.tex}
 
-\begin{LTR}
+\begin{otherlanguage}{english}
+\renewcommand{\refname}{المراجع}
 \bibliographystyle{IEEEtran}
 \bibliography{references/bibliography}
-\end{LTR}
+\end{otherlanguage}
 
 \end{document}
