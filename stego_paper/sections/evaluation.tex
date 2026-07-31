@@ -1,53 +1,43 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-This section reports an artifact-based assessment of the workflow, focusing on (i) embedding capacity of the selection channel, (ii) naturalness and distributional divergence of successful stego samples, and (iii) operational reliability under the sender-side verification loop. We center results on a single clean end-to-end run artifact set and explicitly separate generation/decode failures from infrastructure errors.
+This section reports the audited paired benchmark for the context-weighted method and the official zero-shot generative linguistic steganography (ZLG) baseline. The final comparison contains 304 decode-verified pairs from 100 source posts. Because repeated samples from the same post are not independent, primary comparisons are post-clustered; failed attempts remain in the attempt counts and are not silently discarded.
 
 \subsection{Capacity Analysis}
-The channel capacity of Layer~2 is fundamentally dependent on the size of the shared, deterministically reconstructed angle set. If the reconstructed set contains $N$ Angles, then Layer~2 contributes $\log_2 N$ bits per message instance (rounded up to an integer bit-width in the implementation). In practice, broader threads and richer research corpora tend to yield larger and more diverse angle sets than narrowly constrained topics, increasing available capacity.
 
-\subsection{Perceptual \& Statistical Imperceptibility}
-Imperceptibility is evaluated through the dual lenses of semantic coherence and contextual integration. Unlike traditional steganographic methodologies that risk producing disjointed or statistically anomalous text, our intent-based approach aims to ensure that each stego contribution maintains a clear thematic alignment with the surrounding discourse. In this work we report GPT-2 perplexity and word-unigram KL/JSD as coarse statistical proxies, noting that these metrics do not fully capture long-context semantic quality \cite{wang2022perplexity} and do not replace dedicated steganalysis benchmarks.
+For one recoverable frame, the selection-channel capacity is
+$\lfloor\log_2 C\rfloor + \lfloor\log_2 A\rfloor$ bits, where $C$ is the number of selectable reply targets and $A$ is the number of flattened Angles. The floors are essential: when a choice count is not a power of two, the remaining index states are not counted as uniquely decodable payload states. Larger payloads require multiple independently recoverable frames. In this benchmark the Angle list was capped at 32 entries, so the angle component contributed at most 5 recoverable bits per frame.
 
-Table~\ref{tab:method-metrics} summarizes perplexity (GPT-2) and word-unigram divergence against two within-run reference distributions: the matched primary post and a global comment corpus. Values are computed over the successful, receiver-validated stego samples from a single clean end-to-end run (\texttt{requested}=200, \texttt{succeeded}=183).
+\subsection{Paired Benchmark Results}
+
+The full run attempted 627 samples with our method and produced 554 successes (88.4\%). The baseline lane received those 554 successful outputs and accepted 304 (54.9\%) after its quality gate, cover-sentence extraction, and prompt-leakage checks; all 304 baseline outputs were hide/reveal decode-verified. The project-side paired rows used audit-assisted compressed-bitstring recovery, so they validate selection/angle artifacts rather than demonstrating blind recovery of the complete compressed payload. The baseline used the server-matched EGS parameters $(\text{threshold}=0.01,\text{temperature}=0.7,\text{alpha}=1.0,\text{max\_bpw}=2)$ throughout.
 
 \begin{table}[t]
-	\centering
-	\caption{Perplexity and distribution divergence for stego comments (GPT-2 PPL; KL/JSD on word unigrams).}
-	\label{tab:method-metrics}
-	\small
-	\begin{tabularx}{\columnwidth}{@{}l l X c X@{}}
-		\toprule
-		Category & Metric & Reference set (this run) & Mean & Range (min / max) \\
-		\midrule
-		Perplexity & PPL (GPT-2) & 183 successful stego strings & $\approx 142.3$ & 22.8 -- 653.8 \\
-		\midrule
-		Divergence & KL & Matched primary post & $\approx 9.24$ & --- \\
-		Divergence & KL & Global comment corpus & $\approx 6.50$ & --- \\
-		Divergence & JSD & Matched primary post & $\approx 0.590$ & --- \\
-		Divergence & JSD & Global comment corpus & $\approx 0.588$ & --- \\
-		\bottomrule
-	\end{tabularx}
+\centering
+\caption{Post-clustered paired results over 100 source posts. Lower is better for GPT-2 perplexity; the lexical quality index ranges from 0 to 100.}
+\label{tab:paired-results}
+\small
+\begin{tabularx}{\columnwidth}{@{}l c c X@{}}
+\toprule
+Metric & Our method & ZLG & Paired result \\
+\midrule
+Recoverable capacity (bits/comment) & 15.14 & 16.00 & ZLG higher; Holm-adjusted sign-test $p<0.001$ \\
+GPT-2 perplexity & 68.15 & 53.70 & ZLG lower; $p=0.0001$ \\
+Lexical quality index & 99.36 & 98.45 & Ours higher; $p=0.0015$ \\
+Word count & 22.4 & 17.3 & Ours longer; $p<0.001$ \\
+BERTScore F1 & 0.842 & 0.848 & Comparable; no significance claim \\
+\bottomrule
+\end{tabularx}
 \end{table}
 
-\paragraph{Definitions.}
-Perplexity is computed from average per-token log-probability,
-$2^{-\frac{1}{n} \sum_{i=1}^{n} \log_2 P(x_i \mid x_{<i})}$:
-lower PPL indicates more natural continuations under the model; higher PPL indicates surprising or awkward text.
-The observed maximum ($\sim$654) likely reflects a small number of pathological samples that are highly unnatural to GPT-2.
+The two methods therefore occupy different points in the trade-off space: ZLG leads on raw recoverable capacity and GPT-2 perplexity, while our method has a slightly higher exploratory lexical-quality score but produces longer replies. The capacity gap is narrow in this configuration because the angle pool was capped at 32; it should not be presented as a general upper bound on either system. BERTScore is close descriptively, but this benchmark does not establish a security advantage for either method.
 
-Kullback--Leibler (KL) divergence compares stego word unigrams $P_S$ to a baseline $P_C$ via
-$\sum_w p_{\text{stego}}(w) \log \frac{p_{\text{stego}}(w)}{p_{\text{baseline}}(w)}$;
-lower KL indicates closer statistical match to the baseline.
-KL being lower against the global corpus than against the matched post suggests stego wording drifts toward generic phrasing rather than thread-specific vocabulary.
+\subsection{Failure Analysis and Recovery}
 
-Jensen--Shannon divergence (JSD) is the symmetric, bounded counterpart,
-$D_{\mathrm{JS}}(P_C \,\|\, P_S) = \frac{1}{2} D_{\mathrm{KL}}\bigl(P_C \,\|\, \frac{P_C + P_S}{2}\bigr) + \frac{1}{2} D_{\mathrm{KL}}\bigl(P_S \,\|\, \frac{P_C + P_S}{2}\bigr)$,
-often used to upper-bound distinguishability from the true language distribution.
-Word pairs absent from one side of the comparison are handled with Laplace-style smoothing (e.g., $\alpha = 10^{-6}$) so KL and JSD remain well defined.
+Our method's 73 failed attempts consisted of 70 sender/receiver angle mismatches and 3 generation failures. In the baseline lane, the 250 rejected attempts consisted of 134 quality-gate failures, 94 failures caused by insufficient cover sentences, and 22 prompt-leakage detections. These categories describe attempted-output reliability. They do not prove recovery of the full protected payload for the project arm, because the paired artifacts record audit-assisted compressed bits.
 
-\subsection{System Robustness \& Recovery Rate}
-The sender-side verification loop improves operational reliability by rejecting candidates that do not decode back to the selected Angle. In a representative clean run (\texttt{requested}=200), the pipeline produced 183 successful, receiver-validated samples and 17 failures after exhausting the retry budget. The primary failure modes were (i) decoding validation failures (10/17) and (ii) malformed synthesis output that did not match the required JSON schema (7/17). These failures highlight that reliability is primarily limited by the ability to synthesize a decodable witness under stochastic generation, rather than by payload recovery after validation.
+\subsection{Sampling Caveats and Security Scope}
 
-\subsection{Resistance to Automated Steganalysis}
-The design objective of the framework is to reduce semantic and pragmatic anomalies by conditioning synthesis on the full thread context and by encoding information in conversational decisions (reply targeting and Angle selection) rather than local token artifacts. We therefore expect detection to require thread-level pragmatic reasoning rather than relying solely on token-level distribution cues \cite{Wang_2023}. A dedicated steganalysis benchmark evaluation is left to future work; here we limit claims to the measured distributional and operational metrics reported above.
+Only 244 of the 304 our-method stegotexts were textually unique. The run used 167 researched posts, with 35 posts contributing the maximum ten samples; this reuse and the resulting dependence are disclosed rather than treated as independent trials. The 94 baseline cover-extraction failures were concentrated in 21 posts, so their aggregate count is not 94 independent observations.
+
+Search quotas limited the supply of fresh posts, and post reuse produced 244 unique project texts among 304 rows. The comparison uses one angle-capacity configuration and one baseline service configuration, so it should be interpreted as an audited configuration comparison, not a universal ranking. Exploratory historical analyses found surface separability and recurring template signals; this benchmark does not establish resistance to an adaptive steganalyst or editing attacks. A blind, dedicated steganalysis and robustness evaluation remains future work.

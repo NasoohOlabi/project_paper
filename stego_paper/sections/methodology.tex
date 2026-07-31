@@ -1,7 +1,7 @@
 \section{Methodology}
 \label{sec:methodology}
 
-This paper proposes a black-box steganographic technique that embeds information within the semantic architecture of a conversation. The methodology is predicated on a standard covert communication scenario involving Alice (the sender) and Bob (the receiver), communicating over a public social media platform. While this study utilizes Reddit as a primary case study, the underlying principles are platform-agnostic and transferable to any threaded discussion environment. Figure~\ref{fig:end-to-end} sketches the end-to-end covert scenario and shared synchronization assumptions.
+This paper proposes a black-box steganographic technique that embeds information within the semantic architecture of a conversation. The methodology is predicated on a standard covert communication scenario involving Alice (the sender) and Bob (the receiver), communicating over a public social media platform. While this study utilizes Reddit-style data as a primary case study, the design is intended for threaded discussion environments; transfer to other platforms remains to be evaluated. Figure~\ref{fig:end-to-end} sketches the end-to-end covert scenario and shared synchronization assumptions.
 %
 % ------------------------------------------------------------------
 % AI IMAGE PROMPT (fig:end-to-end) -> figures/end_to_end_scenario.(png|pdf)
@@ -85,7 +85,7 @@ To ensure that both Alice and Bob visualize an identical state of the conversati
     \item \textbf{Sender Side:} Alice captures a snapshot of the discussion thread at time $t_{start}$, performs the multi-layer embedding, and subsequently publishes the generated stego-comment at $t_{publish}$.
     \item \textbf{Receiver Side:} Upon identifying the stego-contribution published at $t_{publish}$, Bob filters the thread's historical state to include only those comments established prior to $t_{publish} - T_{sync}$.
 \end{enumerate}
-The agreed-upon duration $T_{sync}$ ensures that the "Comment Chain" retrieved by the receiver precisely replicates the context available to the sender at $t_{start}$, even if new comments were published during the sender's computational cycle. This prevents state divergence and ensures that the decoder can confidently identify the exact parent comment and conversational state used for encoding. Figure~\ref{fig:tsync} shows the temporal window relative to $t_{start}$ and $t_{publish}$.
+The agreed-upon duration $T_{sync}$ is an external synchronization requirement: the receiver must supply a pre-publication snapshot or apply the timestamp cutoff before reconstruction. The current receiver removes the sender comment and rebuilds from the supplied post, but does not itself enforce this timestamp cutoff. Figure~\ref{fig:tsync} shows the intended temporal window relative to $t_{start}$ and $t_{publish}$.
 %
 % ------------------------------------------------------------------
 % AI IMAGE PROMPT (fig:tsync) -> figures/temporal_sync_window.(png|pdf)
@@ -200,7 +200,7 @@ Figure~\ref{fig:two-layer} provides the schematic overview of how the two embedd
 The primary embedding layer determines the \textit{architectural placement} of the steganographic contribution.
 \begin{enumerate}
     \item The system flattens the nested comment tree with a deterministic depth-first walk.
-    \item The bit-width for this layer is dynamically calculated as $w_1 = \lceil \log_2(n + 1) \rceil$, where $n$ is the number of available comments.
+    \item The physical index width is computed from the available choices, but the lossless payload width is $\lfloor\log_2 C\rfloor$, where $C$ is the number of selectable reply targets. This excludes non-injective index encodings when the choice count is not a power of two.
     \item Index 0 corresponds to a top-level reply to the post, while any non-zero index selects a comment whose parent chain is reconstructed through parent-identifier and link-identifier lookups.
 \end{enumerate}
 
@@ -209,7 +209,7 @@ The primary embedding layer determines the \textit{architectural placement} of t
 The secondary layer determines the \textit{communicative intent}.
 \begin{enumerate}
     \item \textbf{Angle Set Reconstruction:} Using the deterministic preprocessing chain (Section \ref{sec:search_determinism}) and the filtered thread snapshot, both parties regenerate the same ordered list of candidate Angles, each described by a category label, a source quote, and a tangent field (the thematic direction).
-    \item \textbf{Dynamic Bit-Mapping:} The bit-width for this layer is computed from the total number of Angles, and the flattened list is assigned sequential \texttt{idx} values.
+    \item \textbf{Dynamic Bit-Mapping:} The flattened list is assigned sequential \texttt{idx} values. The lossless bit width is $\lfloor\log_2 A\rfloor$ for $A$ available Angles; unused, aliased bit patterns are not counted as recoverable capacity.
     \item \textbf{Angle Selection:} The corresponding payload bits are mapped to a specific Angle index. During synthesis, the selected Angle is paired with the reply context and relevant research excerpts to produce a plausible cover reply.
 \end{enumerate}
 
@@ -261,5 +261,5 @@ To recover the hidden intent (Layer 2), the receiver first reconstructs the pre-
               \textit{"Identify the specific Angle from the provided candidates... return the index only."}
           \end{quote}
 \end{enumerate}
-If the discriminator returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlist; otherwise it falls back to the top semantic match. Combined with Layer~1 (reply targeting), the recovered indices reconstruct the same selection bits and allow recovery of the compressed payload.
+If the discriminator returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlist; otherwise it falls back to the top semantic match. The decode temperature and shortlist size are configurable, so this stage is not inherently deterministic. Recovery may be pure selection-channel recovery or audit-assisted when sender metadata is available. Combined with Layer~1 (reply targeting), the recovered indices reconstruct the selection bits.
 \FloatBarrier
