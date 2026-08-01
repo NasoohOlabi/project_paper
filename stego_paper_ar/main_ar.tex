@@ -31,16 +31,24 @@
 
 %% ─── Section Heading Styles ──────────────────────────────────────────────────
 \usepackage{titlesec}
+\usepackage{tocloft}
 
-%% Numbered sections: right-aligned bold, no decorative rules
+%% Thesis-style chapters and numbered sections
 \renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
 
-\titleformat{\section}[block]
-  {\large\bfseries\raggedleft}
-  {\thesection.}{0.5em}{}[]
-\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .4ex}{1.5ex plus .3ex}
+\newcommand{\arabicchapterlabel}{%
+  \ifcase\value{section}\or الفصل الأول\or الفصل الثاني\or الفصل الثالث\or الفصل الرابع\or الفصل الخامس\or الفصل السادس\or الفصل السابع\or الفصل الثامن\or الفصل التاسع\or الفصل العاشر\fi}
+
+\titleformat{\section}[display]
+  {\bfseries}
+  {\Large\makebox[\linewidth][r]{\arabicchapterlabel}}
+  {2.2ex}
+  {\Huge\centering}
+  []
+\titlespacing*{\section}{0pt}{0pt}{3.5ex}
+\newcommand{\sectionbreak}{\clearpage}
 
 %% Unnumbered sections (abstract, references, preprint note): large, centered
 \titleformat{name=\section,numberless}[block]
@@ -57,6 +65,17 @@
   {\normalsize\bfseries\raggedleft}
   {\thesubsubsection.}{0.5em}{}[]
 \titlespacing*{\subsubsection}{0pt}{2ex plus .3ex minus .2ex}{0.8ex plus .2ex}
+
+%% Table of contents: compact thesis-style dotted leaders
+\renewcommand{\contentsname}{المحتويات}
+\renewcommand{\listfigurename}{قائمة الأشكال}
+\renewcommand{\listtablename}{قائمة الجداول}
+\setcounter{tocdepth}{2}
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsecpagefont}{\bfseries}
+\setlength{\cftbeforesecskip}{0.35em}
+\setlength{\cftbeforesubsecskip}{0pt}
+\renewcommand{\cftdotsep}{1.2}
 
 %% Paragraph: run-in bold (definitions, named sub-points)
 \titleformat{\paragraph}[runin]
@@ -182,6 +201,11 @@
 
 \makehiastcover
 
+% Front matter follows the reference thesis: Roman page numbers and a clear
+% contents section before the numbered chapters.
+\pagenumbering{roman}
+\setcounter{page}{1}
+
 \begin{abstract}
 \input{sections/abstract.tex}
 \end{abstract}
@@ -196,6 +220,17 @@
 \small هذه المخطوطة نسخة ما قبل النشر مؤرخة في 21 حزيران/يونيو 2026.
 \end{center}
 \bigskip
+
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
 
 \input{sections/introduction.tex}
 \input{sections/background.tex}
