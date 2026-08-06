@@ -14,7 +14,7 @@ The full run attempted 627 samples with our method and produced 554 successes (8
 
 \begin{table}[t]
 \centering
-\caption{Post-clustered paired results over 100 source posts. Lower is better for GPT-2 perplexity; the lexical quality index ranges from 0 to 100.}
+\caption{Post-clustered paired results over 100 source posts. Lower is better for GPT-2 perplexity. MATTR is shown on this run's 0--100 rescaling ($55\cdot\mathrm{MATTR}+45$). BERTScore is baseline-rescaled.}
 \label{tab:paired-results}
 \small
 \begin{tabularx}{\columnwidth}{@{}l c c X@{}}
@@ -23,14 +23,15 @@ Metric & Our method & ZLG & Paired result \\
 \midrule
 Recoverable capacity (bits/comment) & 15.14 & 16.00 & ZLG higher; Holm-adjusted sign-test $p<0.001$ \\
 GPT-2 perplexity & 68.15 & 53.70 & ZLG lower; $p=0.0001$ \\
-Lexical quality index & 99.36 & 98.45 & Ours higher; $p=0.0015$ \\
+MATTR (rescaled 0--100) & 99.36 & 98.45 & Ours higher; $p=0.0015$ \\
 Word count & 22.4 & 17.3 & Ours longer; $p<0.001$ \\
-BERTScore F1 & 0.842 & 0.848 & Comparable; no significance claim \\
+BERTScore Precision & 0.083 & 0.154 & ZLG higher; Holm-adjusted $p\approx0.0045$ \\
+BERTScore F1 & 0.068 & 0.114 & ZLG higher descriptively; Holm-adjusted $p=0.12$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The two methods therefore occupy different points in the trade-off space: ZLG leads on raw recoverable capacity and GPT-2 perplexity, while our method has a slightly higher exploratory lexical-quality score but produces longer replies. The capacity gap is narrow in this configuration because the angle pool was capped at 32; it should not be presented as a general upper bound on either system. BERTScore is close descriptively, but this benchmark does not establish a security advantage for either method.
+The two methods therefore occupy different points in the trade-off space: ZLG leads on raw recoverable capacity and GPT-2 perplexity, while our method has slightly higher MATTR (lexical diversity on the run's rescaling) but produces longer replies. The capacity gap is narrow in this configuration because the angle pool was capped at 32; it should not be presented as a general upper bound on either system. On this run the former lexical-quality index reduces exactly to $55\cdot\mathrm{MATTR}+45$, so the MATTR row is a diversity signal rather than an independent multi-factor quality win. BERTScore is baseline-rescaled; only Precision remains Holm-significant for ZLG ($p\approx0.0045$), while F1 stays non-significant after correction. Reference-overlap scores (BLEU, ROUGE, BERTScore) also carry a thread-copy caveat: ZLG's cover sentence is drawn from the thread and can regurgitate text used as the overlap reference (about 5.9\% of ZLG rows share a 5-gram with the BLEU reference versus 0.3\% for ours). Mean BLEU gaps are therefore outlier-driven; medians are closer (1.46 versus 1.59). This benchmark does not establish a security advantage for either method.
 
 \subsection{Failure Analysis and Recovery}
 
