@@ -85,7 +85,7 @@ To ensure that both Alice and Bob visualize an identical state of the conversati
     \item \textbf{Sender Side:} Alice captures a snapshot of the discussion thread at time $t_{start}$, performs the multi-layer embedding, and subsequently publishes the generated stego-comment at $t_{publish}$.
     \item \textbf{Receiver Side:} Upon identifying the stego-contribution published at $t_{publish}$, Bob filters the thread's historical state to include only those comments established prior to $t_{publish} - T_{sync}$.
 \end{enumerate}
-The agreed-upon duration $T_{sync}$ is an external synchronization requirement: the receiver must supply a pre-publication snapshot or apply the timestamp cutoff before reconstruction. The current receiver removes the sender comment and rebuilds from the supplied post, but does not itself enforce this timestamp cutoff. Figure~\ref{fig:tsync} shows the intended temporal window relative to $t_{start}$ and $t_{publish}$.
+The agreed-upon duration $T_{sync}$ is an external synchronization requirement: the receiver must supply a pre-publication snapshot or apply the timestamp cutoff before reconstruction. The current receiver removes the sender comment and rebuilds from the supplied post, but does not itself enforce this timestamp cutoff; enforcement is an operational responsibility of the caller or acquisition layer. Figure~\ref{fig:tsync} shows the intended temporal window relative to $t_{start}$ and $t_{publish}$.
 %
 % ------------------------------------------------------------------
 % AI IMAGE PROMPT (fig:tsync) -> figures/temporal_sync_window.(png|pdf)
@@ -261,5 +261,5 @@ To recover the hidden intent (Layer 2), the receiver first reconstructs the pre-
               \textit{"Identify the specific Angle from the provided candidates... return the index only."}
           \end{quote}
 \end{enumerate}
-If the discriminator returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlist; otherwise it falls back to the top semantic match. The decode temperature and shortlist size are configurable, so this stage is not inherently deterministic. Recovery may be pure selection-channel recovery or audit-assisted when sender metadata is available. Combined with Layer~1 (reply targeting), the recovered indices reconstruct the selection bits.
+If the discriminator returns a 1-based rank rather than a raw index, the pipeline maps the rank back to the shortlist; otherwise it falls back to the top semantic match. The decode temperature and shortlist size are configurable, so this stage is not inherently deterministic. Recovery may therefore be pure selection-channel recovery only when the receiver reconstructs the same inputs and decoder contract, or audit-assisted when sender metadata is available. Combined with Layer~1 (reply targeting), the recovered indices reconstruct the selection bits.
 \FloatBarrier

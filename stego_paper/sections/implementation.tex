@@ -1,7 +1,7 @@
 \section{Implementation}
 \label{sec:implementation}
 
-The practical implementation follows the same stage order as the workflow runner: data load, research, angle generation, stego synthesis, and decode. Each stage persists artifacts to disk so later stages can reuse the exact same corpus and hashes, which keeps the sender and receiver aligned across retries.
+The practical implementation follows the same stage order as the workflow runner: data load, research, angle generation, stego synthesis, and decode. Each stage persists artifacts to disk so later stages can reuse the same corpus and hashes. Reproducibility is conditional on identical inputs, model/backend configuration, search responses or cached artifacts, and decoder settings; synthesis and semantic decoding remain configurable rather than universally deterministic.
 
 \subsection{Architectural Components}
 The system is operationalized through a series of deterministic pipeline stages. Core components include:
