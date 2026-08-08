@@ -1,4 +1,4 @@
-# Arabic scientific terminology audit — 2026-08-08
+﻿# Arabic scientific terminology audit — 2026-08-08
 
 This is a terminology review of the Arabic manuscript. It uses the paper's own glossary, the project writing rules, and Arabic steganography literature terminology. The protected human-authored Arabic abstract was not edited.
 
@@ -19,7 +19,7 @@ This is a terminology review of the Arabic manuscript. It uses the paper's own g
 | contextual / context-aware | مدرك للسياق | Required by `project_paper/AGENTS.md`; do not replace with an improvised synonym. |
 | selection channel | قناة الانتقاء | More precise than “قناة الاختيار” for a channel whose states are selected from a finite set. Define it once. |
 | reply target / parent comment | هدف الرد / التعليق الأب | Use “التعليق الأب” for the graph/tree relation and “هدف الرد” for the selected carrier location. |
-| angle | زاوية | Retain as the paper’s named data object; define it as a semantic framing or line of inquiry, not a geometric angle. |
+| angle | وجهة نظر / رأي | Use `وجهة نظر` for the semantic framing carried by the channel; use `رأي` when the surrounding sentence is conversational. Do not use `زاوية` in the Arabic manuscript. |
 | tangent | مماس موضوعي / اتجاه موضوعي | Use “مماس موضوعي” only if the data object is explicitly called tangent; otherwise “اتجاه موضوعي” is clearer Arabic prose. Do not alternate without definition. |
 | payload | حمولة | Standard in communication/security contexts; clarify that it is the secret bitstream. |
 | capacity | سعة | Use “السعة القابلة للاسترجاع” for verified capacity, not merely physical index width. |
@@ -34,7 +34,7 @@ This is a terminology review of the Arabic manuscript. It uses the paper's own g
 
 ## Consistency issues to resolve in a future Arabic revision
 
-1. The manuscript alternates between “الزاوية” and descriptions of “tangent.” Keep “زاوية” as the named object and define its fields as category, source quote, and اتجاه/مماس موضوعي.
+1. Replace the former “وجهة النظر” terminology with `وجهة نظر` or `رأي`; define its fields as category, source quote, and اتجاه موضوعي.
 2. “الاسترجاع” and “فك الترميز” are related but not interchangeable: recovery is the outcome; decoding is the mapping operation.
 3. “حتمي” must be limited to deterministic preprocessing and explicitly fixed decoder configurations. The semantic shortlist/discriminator stage is configurable and is not inherently deterministic.
 4. “السعة القابلة للاسترجاع” must exclude unused states when a choice count is not a power of two. This is a scientific accounting rule, not a stylistic preference.
