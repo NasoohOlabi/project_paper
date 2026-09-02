@@ -1,22 +1,55 @@
 \section{Implementation}
 \label{sec:implementation}
 
-The practical implementation follows the same stage order as the workflow runner: data load, research, angle generation, stego synthesis, and decode. Each stage persists artifacts to disk so later stages can reuse the same corpus and hashes. Reproducibility is conditional on identical inputs, model/backend configuration, search responses or cached artifacts, and decoder settings; synthesis and semantic decoding remain configurable rather than universally deterministic.
+The runnable pipeline is five stages: data load, research, Angle generation, stego encoding, and decode.
+Each stage writes artifacts to disk so later stages can reuse the same corpus and hashes.
+Search-term generation and Angle extraction run at \texttt{temperature=0} from the same inputs.
+Comment writing and Angle identification do not: both use the shared stego temperature (0.7 on the balanced profile).
 
-\subsection{Architectural Components}
-The system is operationalized through a series of deterministic pipeline stages. Core components include:
+\subsection{Pipeline stages}
 \begin{itemize}
-    \item \textbf{Data load stage:} Fetches unresolved URL content and replaces the post body with the extracted text.
-    \item \textbf{Research stage:} Generates search terms from the post title, text, and URL using a deterministic LLM configuration (e.g., \texttt{temperature=0}), queries a fixed-shape search backend, removes duplicate links and PDFs, and fetches page text in bounded batches. The stage persists a flat search-results corpus together with reproducibility hashes.
-    \item \textbf{Angle generation stage:} Flattens the corpus assembled from the post text, search-results corpus, and comments, then calls the angle runner to produce triplets consisting of a category, a source quote, and a tangent. Long inputs are split into 30k-character segments and batched up to 150k characters. If the backend path fails, the pipeline falls back to a direct LLM prompt that uses the same JSON schema.
-    \item \textbf{Stego and decode stages:} Combine the compression layer, comment targeting, semantic shortlist, and verification loop. The encoder generates a small fixed number of candidate comments for the selected Angle, decodes them immediately, and retries synthesis if the selected Angle is not recoverable.
+    \item Data load fetches unresolved URL content and replaces the post body with the extracted text.
+    \item Research generates search terms from the post title, body, and URL at temperature 0, trims them to the profile cap (8 on balanced), queries a fixed-shape search backend with fallbacks after Google, drops duplicate links and PDFs, and fetches page text in batches of three. It stores the flat search-results corpus and integrity hashes.
+    \item Angle generation flattens the chosen input documents and extracts triplets of category, source quote, and tangent. Long inputs are split into 30k-character segments and batched up to 80k characters by default. If the backend path fails, the pipeline falls back to a direct LLM prompt with the same JSON schema. The reported runs used a context-weighted sampler at this stage, once per post.
+    \item Encoding protects and compresses the payload, spends bits on a reply target and an Angle, writes three candidate comments, and keeps a candidate only if a strict local decode hits the selected Angle and a contextuality gate passes.
+    \item Decode shortlists Angles with MiniLM cosine similarity, reranks with lexical overlap, and asks for \texttt{idx: N} at the stego temperature. The full reconstruction path can rebuild research and Angles; the reported workloads decode against the sender's already-angled post and pass the audit bitstring.
 \end{itemize}
+Figure~\ref{fig:impl-pipelines} aligns these stages with the on-disk artifacts.
 
-\subsection{Codec Module and Sender--Receiver Contract}
-The bit layer described in Sections~\ref{sec:compression}--\ref{sec:multiframe} is implemented once, as a module of pure functions shared by both pipelines. Dictionary construction, the field-width function $W$, the token grammar, and the physical-versus-recoverable width rules each have exactly one definition in that module: the sender and receiver pipelines call into it rather than reimplementing any of it, so encoding and decoding stay exact inverses given the same dictionary $D$. This is also what makes the contract testable offline: round-trip tests can drive the codec directly with fixtures, without a model or a network in the loop. It is why the pipelines themselves are restricted to I/O, caching, and orchestration.
+\subsection{Shared codec}
+The bit layer in Sections~\ref{sec:compression}--\ref{sec:multiframe} lives in one module of pure functions.
+Dictionary construction for compression, the field-width function $W$, the token grammar, and the physical-versus-recoverable width rules each have one definition there.
+The sender and receiver call that module rather than reimplementing it, so round-trip tests can drive the codec with fixtures and no model.
 
-Three configuration choices change the bit layer, so sender and receiver must agree on all of them: which payload transform is used (\texttt{plain}, \texttt{hmac\_xor\_v1}, or \texttt{secure\_compact\_v2}), the pre-shared secret required for \texttt{hmac\_xor\_v1} and \texttt{secure\_compact\_v2}, and whether the dictionary capacity profile is applied. The sender records the selected transform in the run audit, so the receiver reproduces it rather than having to infer it. The capacity profile is off by default because dictionary indices are positional: turning it on for only one side would leave the compressor and decompressor referring to different blocks under the same index.
-Figure~\ref{fig:impl-pipelines} aligns these components with the staged implementation and on-disk artifacts.
+The pipelines around it still own parent lookup, Angle regeneration, semantic search, the discriminator, audit override, and revision.
+They are not limited to I/O.
+
+Three configuration choices change the bit layer, so both sides must agree: the payload transform (\texttt{plain}, \texttt{hmac\_xor\_v1}, or \texttt{secure\_compact\_v2}), the pre-shared secret required by the keyed modes, and whether the compressor’s dictionary capacity profile is on.
+The sender records the transform in the run audit.
+The compressor capacity profile is off by default because dictionary indices are positional.
+
+Table~\ref{tab:token-layout} is the token layout used by the dictionary parse.
+A literal is flag \texttt{0}, an 8-bit character length, then UTF-8 bytes.
+A reference is flag \texttt{1} plus index, offset, and length fields sized by $W$.
+Decoding is sequential: a token’s start depends on where the previous token ended.
+
+\begin{table}[t]
+\centering
+\caption{Token layout of the compressed payload stream. Every field has a fixed width given the session dictionary $D$, but decoding is sequential: a token's start position depends on where the previous token ended.}
+\label{tab:token-layout}
+\small
+\begin{tabularx}{\columnwidth}{@{}l X l@{}}
+\toprule
+Token & Field layout & Cost (bits) \\
+\midrule
+Literal & \texttt{0} $\Vert$ length $\ell$ (8 bits) $\Vert$ UTF-8 bytes & $9+8b$ \\
+Reference & \texttt{1} $\Vert$ index $j$ ($W(|D|)$ b) $\Vert$ offset ($W(|d_j|)$ b) $\Vert$ length ($W(L_{\max})$ b) & $1+W(|D|)+W(|d_j|)+W(L_{\max})$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The single-comment encoder writes physical widths and wraps overflow with modulo.
+The multi-frame planner uses the lossless writer that stores only recoverable widths.
 %
 % ------------------------------------------------------------------
 % AI IMAGE PROMPT (fig:impl-pipelines) -> figures/implementation_pipelines.(png|pdf)
@@ -42,15 +75,16 @@ Figure~\ref{fig:impl-pipelines} aligns these components with the staged implemen
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/implementation_pipelines}
-	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting deterministic replay and sender--receiver alignment.}
-	\caption{Implementation stages and persisted artifacts align with the methodology: each stage is deterministic and replayable where required for sender--receiver parity.}
+	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting replay and sender--receiver alignment.}
+	\caption{Implementation stages and persisted artifacts. Search-term and Angle stages replay at temperature 0 when the inputs match; comment writing and Angle identification remain stochastic.}
 	\label{fig:impl-pipelines}
 \end{figure*}
 
-\subsection{Model Configuration}
-The implementation uses different model roles for different stages, but the exact model IDs are treated as configurable parameters:
+\subsection{Model roles}
+Exact model IDs are configuration.
+The roles are not:
 \begin{itemize}
-    \item \textbf{Deterministic stages (term/angle generation):} Run at \texttt{temperature=0} to ensure reproducible reconstruction from the same inputs.
-    \item \textbf{Stego synthesis:} Runs at non-zero temperature to generate diverse candidate replies for a fixed embedding choice.
-    \item \textbf{Semantic matching and decode:} Uses a semantic similarity model for shortlist ranking, followed by a deterministic discriminative identification prompt (e.g., \texttt{temperature=0}) to select the final Angle index.
+    \item Search-term generation and Angle extraction run at \texttt{temperature=0} so both parties can rebuild the same lists from the same inputs.
+    \item Comment writing runs at nonzero temperature (0.7 on balanced) so retries produce different wording for the same parent and Angle.
+    \item Angle identification uses MiniLM cosine similarity, a default shortlist of 20 with lexical rerank, then the same stego temperature for an \texttt{idx: N} prompt. It is not a temperature-0 oracle.
 \end{itemize}

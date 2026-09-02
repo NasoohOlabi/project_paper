@@ -1,6 +1,13 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-This research introduces a context-aware semantic steganography framework for threaded discussions that redefines the embedding domain as a \textit{selection channel}. Payload bits select a reply target and an Angle, while an LLM realizes the selected choice as visible text. The design avoids token-level payload insertion and supports black-box LLM access, but its recoverable capacity is limited by the available comment and Angle states.
+This work hides a payload in a threaded discussion by choosing a reply target and an Angle, then asking an LLM to write an ordinary comment.
+Capacity is whatever those two lists uniquely decode.
+The design does not insert bits into next-token sampling, and it does not need white-box logits.
 
-The historical audited run attempted 627 samples with our method and obtained 554 successes; the baseline was invoked on 460 of these and 304 of its outputs were hide/reveal decode-verified. Across 100 post-clustered source posts, ZLG had higher recoverable capacity (16.00 versus 15.14 bits/comment) and lower GPT-2 perplexity (53.70 versus 68.15), whereas our method had slightly higher MATTR on this run's 0--100 rescaling (99.36 versus 98.45) and longer replies. The project-side rows used audit-assisted compressed-bitstring recovery, and the source posts were reused, so these results show a configuration trade-off rather than current decision-grade evidence or blind end-to-end superiority. Future work should establish a clean symmetric manifest, rerun blind decoding, reduce dependence on reused posts and exhausted search quotas, and test dedicated steganalysis and editing attacks.
+An independent LLM-judge run on 244 unique-output pairs found ZLG harder to pick in a same-thread lineup (28.3\% versus 51.6\% standout detection) and our method higher on register-fit (3.193 versus 2.791, paired sign-test $p=0.00374$).
+The source campaign succeeded on 2{,}543 of 4{,}044 LUCID attempts, all with audit-assisted recovery.
+A historical 2026-07-30 configuration, post-clustered over 100 posts, had recoverable capacity 16.00 versus 15.14 bits/comment and GPT-2 perplexity 53.70 versus 68.15, with 554 of 627 project-side attempts succeeding.
+Those two artifacts answer different questions.
+Neither is a blind, capacity-matched ranking, and neither establishes resistance to an adaptive steganalyst.
+Future work should freeze a symmetric manifest, score GPT-2 and divergence on that freeze, decode without sender audit files, and test dedicated steganalysis and editing attacks.
