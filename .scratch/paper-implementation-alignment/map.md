@@ -4,7 +4,7 @@ Label: wayfinder:map
 
 ## Destination
 
-The English paper, then the Arabic twin, describes the live `stego-side-wing` selection-channel method as it actually runs: a reader can follow how bits become a Reddit-style reply, and the evaluation reports the real tests including the independent LLM judge, with brief calculation notes and tables that match frozen artifacts rather than the stale 304-pair audit alone.
+Reached. The English paper and the Arabic twin describe the live `stego-side-wing` selection-channel method: bits choose a reply target and an Angle, then an LLM writes an ordinary comment. Evaluation reports the 244-pair independent LLM judge, source-run ITT, and the dated 2026-07-30 historical table, with explicit denominators. Figures match those labels.
 
 ## Notes
 
@@ -32,7 +32,7 @@ The English paper, then the Arabic twin, describes the live `stego-side-wing` se
 
 ## Not yet specified
 
-- None. Method figures were redrawn on `paper/redraw-figures-to-live-method` to match live labels.
+- None. Tickets 01–10 are resolved. Method figures and the compression diagram were redrawn. English and Arabic both compile.
 
 ## Out of scope
 
