@@ -1,13 +1,19 @@
 \section{Background}
 \label{sec:background}
 
-Among the classical concerns of information security---protecting content through encryption, preserving user privacy, and concealing the existence of communication itself---this work is concerned with the last. \textbf{Steganography} differs from encryption in a fundamental way: rather than making a message unreadable, it makes the message invisible by embedding it inside an ordinary carrier, such as an image or a piece of text, so that an observer has no reason to suspect anything is hidden. \textbf{Imperceptibility} is therefore the primary objective, not confidentiality per se.
+This paper is about hiding that communication is happening, not about encrypting the bytes.
+\textbf{Steganography} embeds a message in an ordinary carrier, such as an image or a piece of text, so an observer has no reason to look for a hidden channel.
+\textbf{Imperceptibility} is the primary objective, not confidentiality as such.
 
 Text is a particularly challenging carrier due to its low redundancy and strict semantic constraints. The classical ``Prisoners' Problem'' \cite{simmons1984prisoners} illustrates the goal: two parties, Alice and Bob, must exchange hidden information without alerting a watchful adversary.
 
 Textual steganography methods are typically divided into \textbf{format-based} approaches, which exploit layout or structural features, and \textbf{linguistic-based} approaches, which modify linguistic form. Within the latter, early techniques such as \textbf{synonym substitution} embed bits by altering lexical choices, but suffer from low capacity and high detectability.
 
-More formally, generative linguistic steganography operates through an \textbf{embedding function} $f_{emb}$ that establishes a cryptographic and linguistic mapping to hide secret messages within generated text. The algorithm takes as inputs a language model $\mathcal{L}$ and a secret message $m$ (represented as a uniformly distributed bitstream). At each generation step, rather than sampling freely from the language model's conditional distribution $p_{LM}$, the embedding function $f_{emb}$ \textbf{restricts or modifies} the token selection process according to the message bits being embedded. This specialized process is known as \textbf{steganographic sampling}, producing a steganographic text (stegotext) $y$. The security of the system depends on minimizing the divergence between the original language model distribution $p_{LM}$ and the modified distribution $q$ induced by $f_{emb}$ \cite{zhang2021provably}.
+Most published generative methods hide bits by biasing next-token sampling.
+Given a language model and a secret bitstream, the encoder restricts which token may be emitted at each step so that the choice encodes message bits.
+That process is often called steganographic sampling \cite{zhang2021provably}.
+It is the literature's token-level model, not the method in Section~\ref{sec:methodology}.
+Security arguments for those systems turn on keeping the modified sampling distribution close to the model's original next-token distribution.
 
 Traditional linguistic approaches offer limited embedding capacity and often leave statistical artifacts. Advances in deep learning and \textbf{Large Language Models (LLMs)} now enable generative methods that achieve higher text quality and more secure embedding. Evaluating such systems requires several dimensions of imperceptibility: \textbf{perceptual} (human naturalness), \textbf{statistical} (distributional similarity to natural text), and \textbf{cognitive} (semantic and contextual fidelity) \cite{ding2023context}.
 
@@ -20,18 +26,25 @@ The PSIC effect therefore shows that \textbf{perceptual imperceptibility} and \t
 \subsection{Large Language Models as Text Generators}
 \label{sec:background-llm-generators}
 
-Large Language Models (LLMs) are autoregressive, generative systems based on the Transformer architecture \cite{vaswani2017attention} that approximate high-dimensional distributions over natural-language sequences \cite{kaptchuk2021meteor,radford2019language}. Given a prefix, an LLM emits a probability vector over the vocabulary; the next token is sampled from this vector and appended to the prefix, and the process repeats until a stopping criterion is met. During pre-training, billions of parameters are tuned on large text corpora so that the model's predictive distribution approximates patterns in the training data \cite{brown2020language}. As a consequence, modern LLMs can produce text with high fluency, coherence, and stylistic control \cite{bubeck2023sparks}. The learned representations capture stylistic and semantic regularities that generalize across domains, enabling applications requiring nuanced linguistic mimicry \cite{reif2022recipe}.
+Large Language Models (LLMs) predict the next token from a prefix \cite{vaswani2017attention,kaptchuk2021meteor,radford2019language}.
+That is why token-level steganography can ride sampling, and why this paper does not: we never modify the next-token distribution.
 
 \subsection{Large Language Models in Generative Linguistic Steganography}
 \label{sec:background-llm-stego}
 
 Because text produced by modern LLMs can closely resemble ordinary human-authored text, these models provide effective engines for generative text steganography. Rather than editing an existing cover, a growing line of work treats the model itself as a steganographic sampler: the hidden message steers generation, so the stego text is drawn from a realistic communication distribution from the start. The public availability of high-quality models, together with the efficiency of sampling-based embedding, has made this route more practical than earlier designs.
 
-LLMs like \textbf{GPT-2} \cite{radford2019language}, \textbf{LLaMA} \cite{touvron2023llama2}, and \textbf{Baichuan2} \cite{yang2023baichuan2} are commonly used as basic generative models for steganography. Most such schemes couple the language model with a steganographic code that ties message bits to token choices: at each generation step, the bits to be hidden determine which candidate token is emitted from the model's next-token distribution. However, traditional ``white-box'' methods necessitate sharing the exact language model and training vocabulary, which limits fluency, logic, and diversity compared to texts generated by modern black-box LLM APIs. These methods inevitably alter sampling probability distributions when embedding messages, posing security risks \cite{wu2024generative}. \textbf{Black-box approaches} avoid these limitations by leveraging state-of-the-art hosted models to deliver better text quality, faster generation speeds, and minimal local resource requirements. However, this paradigm trades fine-grained control over internal sampling for these practical advantages. Conversely, \textbf{white-box access} enables precise parameter control and stronger security guarantees, but demands substantial computational resources, engineering effort, and higher latency---raising deployment barriers. This trade-off between access paradigms is central to evaluating the robustness and applicability of modern linguistic steganography, and it directly motivates the black-box design adopted in Section~\ref{sec:methodology}.
+LLMs such as GPT-2 \cite{radford2019language}, LLaMA \cite{touvron2023llama2}, and Baichuan2 \cite{yang2023baichuan2} are common backbones.
+Most schemes still tie message bits to token choices: at each step the bits pick which candidate is emitted.
+White-box methods need the exact model and vocabulary, and they change the sampling distribution when they embed \cite{wu2024generative}.
+Black-box methods call an API or UI and never see logits.
+That is the distinction this paper needs.
+Section~\ref{sec:methodology} is black-box in that sense: the writer is an ordinary generation call.
+Layer~2 recovery is still an LLM identification prompt, not a logit decoder.
 
 New approaches, such as \textbf{LLM-Stega} \cite{wu2024generative}, explore black-box generative text steganography using the user interfaces (UIs) of LLMs, which removes any need to observe internal sampling distributions. Secret bits are encrypted and mapped onto a prearranged keyword set that steers generation, and candidate outputs from which the message cannot be recovered are discarded via reject sampling, preserving both extraction accuracy and semantic quality \cite{wu2024generative}.
 
-Another framework, \textbf{Co-Stega}, leverages LLMs to address the challenge of low capacity in social media. It expands the space available for hiding messages through context retrieval and uses purpose-built prompts to raise the entropy of the generated replies, which in turn enlarges the embedding capacity while keeping the output fluent and topically relevant \cite{liao2024co}.
+\textbf{Co-Stega} retrieves recent posts and uses prompts to raise reply entropy, aiming at higher capacity in social-media settings without dropping fluency \cite{liao2024co}.
 
 \textbf{Zero-shot linguistic steganography} instead relies on in-context learning: covertext samples are supplied in the prompt, and the stego text is produced within a question--answer (QA) exchange, so the output reads as a natural reply rather than as free-standing generated text \cite{lin2024zero}.
 
