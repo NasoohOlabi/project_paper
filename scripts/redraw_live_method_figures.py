@@ -376,6 +376,63 @@ def draw_token_vs_intent() -> None:
     _save(fig, "token_vs_intent_embedding.png")
 
 
+def draw_compression() -> None:
+    fig, ax = plt.subplots(figsize=(14.6, 8.2))
+    ax.set_xlim(0, 14.6)
+    ax.set_ylim(0, 8.2)
+    ax.axis("off")
+    ax.set_facecolor(BG)
+
+    ax.text(0.4, 7.8, "Session dictionary D  (order is positional)", fontsize=12, fontweight="bold", color=SLATE)
+    _box(ax, 0.4, 6.45, 3.3, 1.1, "Post body", fc=LIGHT_AMBER, ec=AMBER, size=9)
+    _box(ax, 4.0, 6.45, 3.3, 1.1, "Search-result texts", fc=LIGHT_TEAL, ec=TEAL, size=9)
+    _box(ax, 7.6, 6.45, 3.3, 1.1, "Flattened comment bodies", fc=LIGHT_SLATE, ec=SLATE, size=9)
+    _box(ax, 11.2, 6.45, 3.0, 1.1, "D = (d1 ... d|D|)", fc=CARD, size=9)
+    _arrow(ax, 3.7, 7.0, 4.0, 7.0)
+    _arrow(ax, 7.3, 7.0, 7.6, 7.0)
+    _arrow(ax, 10.9, 7.0, 11.2, 7.0)
+
+    ax.text(0.4, 5.9, "Compressor output", fontsize=12, fontweight="bold", color=SLATE)
+    _box(ax, 0.4, 4.45, 2.5, 1.15, "1-bit\nmode flag", fc=LIGHT_ROSE, ec="#E11D48", size=9)
+    _box(ax, 3.4, 4.45, 5.0, 1.15, "Keep dictionary parse only if\nstrictly shorter than UTF-8", fc=LIGHT_TEAL, ec=TEAL, size=8.5)
+    _box(ax, 8.8, 4.45, 5.4, 1.15, "Otherwise emit raw UTF-8 bits\nworst-case expansion: 1 bit", fc=LIGHT_AMBER, ec=AMBER, size=8.5)
+    _arrow(ax, 2.9, 5.02, 3.4, 5.02)
+    _arrow(ax, 8.4, 5.02, 8.8, 5.02)
+
+    ax.text(0.4, 3.9, "Token layout once the dictionary mode is kept", fontsize=12, fontweight="bold", color=SLATE)
+    _box(
+        ax,
+        0.4,
+        2.15,
+        6.7,
+        1.5,
+        "Literal\nflag 0  |  length (8 bits)  |  UTF-8 bytes\nliteral runs capped at 250 characters",
+        fc=CARD,
+        size=8.5,
+    )
+    _box(
+        ax,
+        7.5,
+        2.15,
+        6.7,
+        1.5,
+        "Reference\nflag 1  |  index j  |  offset  |  length\npointers only for matches of 3+ characters",
+        fc=CARD,
+        size=8.5,
+    )
+    _box(
+        ax,
+        0.4,
+        0.35,
+        13.8,
+        1.5,
+        "This dictionary is not the Angle-input sampler.\nA payload that does not fit in w1+w2 physical bits leaves a surplus in the sender audit.",
+        fc=LIGHT_SLATE,
+        size=9,
+    )
+    _save(fig, "payload_compression_dp.png")
+
+
 def main() -> None:
     draw_verify_and_decode()
     draw_two_layer()
@@ -384,6 +441,7 @@ def main() -> None:
     draw_research_pipeline()
     draw_implementation()
     draw_token_vs_intent()
+    draw_compression()
 
 
 if __name__ == "__main__":
