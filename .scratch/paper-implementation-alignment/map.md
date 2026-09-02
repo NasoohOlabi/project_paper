@@ -32,7 +32,7 @@ The English paper, then the Arabic twin, describes the live `stego-side-wing` se
 
 ## Not yet specified
 
-- Whether figures need redraws, or only captions and surrounding prose.
+- None. Method figures were redrawn on `paper/redraw-figures-to-live-method` to match live labels.
 
 ## Out of scope
 
