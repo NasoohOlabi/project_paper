@@ -1,20 +1,146 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-This section reports a historical audited configuration comparison between the context-weighted method and the official zero-shot generative linguistic steganography (ZLG) baseline. It contains 304 decode-verified baseline pairs associated with 100 source-post clusters. Because repeated samples from the same post are not independent, comparisons are post-clustered; failed attempts remain in the attempt counts and are not silently discarded. The current research-state record does not treat this artifact as a clean, symmetric, decision-grade benchmark, so the results document observed trade-offs rather than a universal ranking.
+This section reports two dated comparisons against the official zero-shot generative linguistic steganography (ZLG) baseline.
+They do not share a denominator, and they do not measure the same thing.
 
-\subsection{Capacity Analysis}
+The current quality table is an independent LLM-judge evaluation on 244 unique-output pairs drawn from the 2026-08-15 LUCID versus ZLG freeze.
+Generation and acceptance rates for that source run sit beside it.
+The second table is a historical configuration comparison from 2026-07-30: 304 accepted pairs, then averaged over 100 source posts.
+Neither comparison is a capacity-matched, blind-receiver, decision-grade ranking.
 
-For one recoverable frame, the selection-channel capacity is
-$\lfloor\log_2 C\rfloor + \lfloor\log_2 A\rfloor$ bits, where $C$ is the number of selectable reply targets and $A$ is the number of flattened Angles. The floors are essential: when a choice count is not a power of two, the remaining index states are not counted as uniquely decodable payload states. Larger payloads require multiple independently recoverable frames. In this benchmark the Angle list was capped at 32 entries, so the angle component contributed at most 5 recoverable bits per frame.
+\subsection{How the numbers are computed}
 
-\subsection{Paired Benchmark Results}
+Recoverable capacity for our method is the uniquely decodable selection-channel width,
+\[
+\lfloor\log_2 C\rfloor + \lfloor\log_2 A\rfloor,
+\]
+where $C$ is the number of reply targets (flattened comments plus the post itself) and $A$ is the number of flattened Angles.
+When a count is not a power of two, leftover index states are not counted.
+On the 2026-08-15 freeze this is the field stored as encoded payload bits for our method.
+ZLG's displayed bits are useful payload bits on successful hides in a capacity-matched setting, not ZLG's native token-channel maximum.
 
-The full run attempted 627 samples with our method and produced 554 successes (88.4\%). The baseline lane received those 554 successful outputs. In 94 cases our cover-sentence extraction failed before any request was issued, so the baseline was invoked on 460 of them and accepted 304 (66.1\%) after its quality gate and prompt-leakage checks; all 304 baseline outputs were hide/reveal decode-verified. We report acceptance over the 460 invocations rather than over all 554 outputs, because the 94 extraction failures are a property of our harness and not of the baseline. Of the 156 genuine baseline failures, 133 were quality-gate rejections, 22 were prompt leakage, and one was a server fault. The project-side paired rows used audit-assisted compressed-bitstring recovery, so they validate selection/angle artifacts rather than demonstrating blind recovery of the complete compressed payload. The baseline used the server-matched EGS parameters $(\text{threshold}=0.01,\text{temperature}=0.7,\text{alpha}=1.0,\text{max\_bpw}=2)$ throughout.
+Reliability uses two denominators.
+Intention-to-treat counts every attempted sample, including failures.
+Successful-output-only scores, including the judge table, are computed only on accepted generations.
+Failed attempts stay in the attempt counts.
+
+GPT-2 perplexity is $\exp(\sum \mathrm{NLL}/\sum \text{scored tokens})$ per text, then averaged.
+Lower means more GPT-2-predictable, not more human.
+The 2026-08-15 freeze skipped GPT-2, KL, JSD, BLEU, ROUGE, and BERTScore, so those columns appear only in the historical table.
+
+Word count on the 2026-08-15 freeze uses the publication tokenizer.
+The historical table used a narrower token pattern, so the two word-count rows are not interchangeable.
+
+The independent LLM judge is not G-Eval.
+G-Eval is an older 1--5 quality path with a matched human reference.
+The judge here is a Codex Luna, high-reasoning run of five blinded criteria on already-generated comments.
+Slates are seeded.
+The model is not deterministic.
+Scores are not a reader study, and they are not proof of authorship or security.
+
+\subsection{Independent LLM judge}
+
+The source freeze is 1{,}608 complete pairs from 339 posts.
+The judge subset keeps, in sorted pair order, the first pair per post whose ZLG comment is globally unique in that pool: 244 pairs from 244 posts, 244 unique texts on each arm.
+Ninety-five posts with no unique ZLG output were excluded.
+The five criteria reuse those pairs.
+They are not 2{,}928 independent generated samples.
+All 2{,}928 tasks completed with no task errors.
+
+\paragraph{Standout detection.}
+One generated comment is inserted into nine human comments from the same post.
+The judge names the inserted slot.
+Chance is 10\%.
+Lower is better.
+
+\paragraph{Weakest text.}
+One slate holds a human comment, our comment, and the ZLG comment.
+The judge names the weakest of the three.
+Chance is 33\%.
+Lower is better.
+The three pick rates share the same 244 slates and sum to 100\%.
+
+\paragraph{Suspicion AUROC.}
+Each arm, including a held-out human comment, receives a 0--100 suspicion score.
+The table cell is Mann--Whitney AUROC of that method's scores against the human arm, with ties counted as 0.5.
+Chance is 0.5.
+Lower is closer to the human distribution.
+The reported $p=0.385$ is a sign test on paired raw scores, not a test of the AUROC gap.
+
+\paragraph{Thread attribution.}
+The judge picks which of four thread blurbs a comment belongs to.
+Chance is 25\%.
+Higher means stronger thread-specific linkage.
+This row is descriptive: there is no paired sign test in the scoring artifact.
+
+\paragraph{Register-fit.}
+Using five genuine subreddit comments as examples, the judge scores style on a 1--5 \texttt{overall} field.
+The table cell is the arithmetic mean of that field.
+Higher is better.
+This is the only criterion with a claimed paired post-cluster sign test.
 
 \begin{table}[t]
 \centering
-\caption{Post-clustered paired results over 100 source posts. Lower is better for GPT-2 perplexity. MATTR is shown on this run's 0--100 rescaling ($55\cdot\mathrm{MATTR}+45$). BERTScore is baseline-rescaled.}
+\caption{Independent LLM-judge result on 244 unique-output post pairs (Codex Luna, high reasoning). Lower is better for standout, weakest-text, and suspicion AUROC. Higher is better for attribution and register-fit. Chance is 10\%, 33\%, 0.5, and 25\% for the first four rows.}
+\label{tab:llm-judge}
+\small
+\begin{tabularx}{\columnwidth}{@{}l c c X@{}}
+\toprule
+Criterion & Our method & ZLG & Note \\
+\midrule
+Standout detection & 126/244 (51.6\%) & 69/244 (28.3\%) & ZLG less often picked in the 10-way slate \\
+Weakest text picked & 71/244 (29.1\%) & 116/244 (47.5\%) & Human control 57/244 (23.4\%) \\
+Suspicion AUROC vs human & 0.661 & 0.650 & No clear raw-score difference ($p=0.385$) \\
+Thread attribution & 89.3\% & 75.0\% & Descriptive only \\
+Register-fit (1--5) & 3.193 & 2.791 & $+0.402$ post-cluster; 106/67/71; $p=0.00374$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+ZLG is harder to pick out of a same-thread lineup.
+Our comments are named weakest less often than ZLG's, though still more often than the human control.
+Register-fit favors our method on the paired sign test.
+Suspicion AUROC is close for both arms.
+None of this is a security result, and none of it uses the 244 unique-text count from the 2026-07-30 run.
+
+\subsection{Reliability of the 2026-08-15 source run}
+
+Do not mix these denominators with Table~\ref{tab:llm-judge}.
+
+The LUCID campaign that fed the comparison requested 4{,}044 samples and recorded 2{,}543 successes and 1{,}501 failures (846 generation failures, 613 Angle mismatches, 42 invalid JSON).
+Every recorded success used audit-assisted compressed-bitstring recovery.
+That is an engineering check, not blind recovery from a public thread.
+
+The ZLG freeze that produced the 1{,}608-pair source file attempted 1{,}711 hides, accepted 1{,}610, and decode-verified 1{,}603 (96 quality-gate failures, 5 leakage-check failures, 0 harness skips).
+Our paired rows in that freeze are also 1{,}608, all marked audit-assisted.
+A later completed ZLG file in the same run directory processed all 2{,}543 LUCID successes and accepted 2{,}340.
+The judge did not use that larger file.
+
+On the 1{,}608-pair freeze, post-clustered means over 339 posts give recoverable encoded bits of 13.42 per comment for our method and 13.90 for ZLG, with ZLG higher on 230 posts (Holm-adjusted sign-test $p=1.49\times 10^{-14}$).
+Mean word counts are 23.86 versus 15.91.
+The lexical-quality index is 99.37 versus 96.93.
+GPT-2 perplexity and unigram KL/JSD were not scored on this freeze.
+
+\subsection{Historical configuration comparison}
+
+Table~\ref{tab:paired-results} is the 2026-07-30 \texttt{context\_weighted\_v2} run, not the 2026-08-15 freeze.
+Our method attempted 627 samples and succeeded on 554 (88.4\%).
+Failures were 70 Angle mismatches and 3 generation failures.
+ZLG was fed those 554 successes in a capacity-matched setting with EGS parameters $(\text{threshold}=0.01,\text{temperature}=0.7,\text{alpha}=1.0,\text{max\_bpw}=2)$.
+The original writeup counts 304 accepted of 554 (54.9\%), with 250 failures: 134 quality-gate, 94 cover-sentence extraction, 22 prompt leakage.
+A 2026-07-31 recode of the same run treats the 94 extraction skips as harness faults, leaving 460 server invocations, 304 accepted (66.1\%), and 156 genuine ZLG failures (133 quality-gate, 22 leakage, 1 HTTP 500).
+Keep both accountings.
+The metric table is successful-output-only, then averaged over 100 source posts.
+
+The Angle list was capped at 32, so the angle component contributed at most 5 recoverable bits per frame.
+Project-side rows used audit-assisted compressed-bitstring recovery.
+The research pool was 167 posts, 35 of them sampled ten times, and 244 of the 304 our-method texts were unique.
+That 244 is not the judge subset.
+
+\begin{table}[t]
+\centering
+\caption{Historical post-clustered paired results over 100 source posts (2026-07-30). Lower is better for GPT-2 perplexity. Lexical quality is the run's 0--100 index, not a raw MATTR column. BERTScore F1 is the unrescaled figure from that report.}
 \label{tab:paired-results}
 \small
 \begin{tabularx}{\columnwidth}{@{}l c c X@{}}
@@ -23,22 +149,23 @@ Metric & Our method & ZLG & Paired result \\
 \midrule
 Recoverable capacity (bits/comment) & 15.14 & 16.00 & ZLG higher; Holm-adjusted sign-test $p<0.001$ \\
 GPT-2 perplexity & 68.15 & 53.70 & ZLG lower; $p=0.0001$ \\
-MATTR (rescaled 0--100) & 99.36 & 98.45 & Ours higher; $p=0.0015$ \\
+Lexical quality index (0--100) & 99.36 & 98.45 & Ours higher; $p=0.0015$ \\
 Word count & 22.4 & 17.3 & Ours longer; $p<0.001$ \\
-BERTScore Precision & 0.083 & 0.154 & ZLG higher; Holm-adjusted $p\approx0.0045$ \\
-BERTScore F1 & 0.068 & 0.114 & ZLG higher descriptively; Holm-adjusted $p=0.12$ \\
+BERTScore F1 & 0.842 & 0.848 & Comparable in that report \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The two methods therefore occupy different points in the trade-off space: ZLG leads on raw recoverable capacity and GPT-2 perplexity, while our method has slightly higher MATTR (lexical diversity on the run's rescaling) but produces longer replies. The capacity gap is narrow in this configuration because the angle pool was capped at 32; it should not be presented as a general upper bound on either system. On this run the former lexical-quality index reduces exactly to $55\cdot\mathrm{MATTR}+45$, so the MATTR row is a diversity signal rather than an independent multi-factor quality win. BERTScore is baseline-rescaled; only Precision remains Holm-significant for ZLG ($p\approx0.0045$), while F1 stays non-significant after correction. Reference-overlap scores (BLEU, ROUGE, BERTScore) also carry a thread-copy caveat: ZLG's cover sentence is drawn from the thread and can regurgitate text used as the overlap reference (about 5.9\% of ZLG rows share a 5-gram with the BLEU reference versus 0.3\% for ours). Mean BLEU gaps are therefore outlier-driven; medians are closer (1.46 versus 1.59). This benchmark does not establish a security advantage for either method.
+On that configuration ZLG leads on recoverable channel width and GPT-2 perplexity.
+Our replies are longer and score slightly higher on the lexical-quality index.
+The capacity gap is narrow because the Angle pool was capped at 32.
+It is not a general upper bound on either system.
 
-\subsection{Failure Analysis and Recovery}
+\subsection{What these comparisons do not show}
 
-Our method's 73 failed attempts consisted of 70 sender/receiver angle mismatches and 3 generation failures. In the baseline lane, the 250 rejected attempts consisted of 134 quality-gate failures, 94 failures caused by insufficient cover sentences, and 22 prompt-leakage detections. These categories describe attempted-output reliability. They do not prove recovery of the full protected payload for the project arm, because the paired artifacts record audit-assisted compressed bits.
-
-\subsection{Sampling Caveats and Security Scope}
-
-Only 244 of the 304 our-method stegotexts were textually unique. The run used 167 researched posts, with 35 posts contributing the maximum ten samples; this reuse and the resulting dependence are disclosed rather than treated as independent trials. The 94 baseline cover-extraction failures were concentrated in 21 posts, so their aggregate count is not 94 independent observations.
-
-Search quotas limited the supply of fresh posts, and post reuse produced 244 unique project texts among 304 rows. The comparison uses one angle-capacity configuration and one baseline service configuration, so it should be interpreted as an audited configuration comparison, not a universal ranking. Exploratory historical analyses found surface separability and recurring template signals; this benchmark does not establish resistance to an adaptive steganalyst or editing attacks. A blind, dedicated steganalysis and robustness evaluation remains future work.
+The judge result is about the unique-ZLG-output subset, one pair per post.
+The historical table is one angle-capacity configuration and one baseline service configuration, with reused posts and audit-assisted project-side recovery.
+KL/JSD, synthetic detection, and grouped passive-detector ROC-AUC are computed by later runners and are not in the 2026-08-15 freeze.
+A dedicated steganalysis and editing-attack evaluation remains future work.
+This paper does not claim a security advantage for either method.
+\FloatBarrier
