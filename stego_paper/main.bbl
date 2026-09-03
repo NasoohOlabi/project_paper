@@ -1,4 +1,4 @@
-\begin{thebibliography}{54}
+\begin{thebibliography}{51}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -113,33 +113,6 @@ Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya
 \newblock Language models are unsupervised multitask learners.
 \newblock Technical report, OpenAI, 2019{\natexlab{a}}.
 
-\bibitem[Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal,
-  Neelakantan, Shyam, Sastry, Askell, et~al.]{brown2020language}
-T.~Brown, B.~Mann, N.~Ryder, M.~Subbiah, J.~D. Kaplan, P.~Dhariwal,
-  A.~Neelakantan, P.~Shyam, G.~Sastry, A.~Askell, et~al.
-\newblock Language models are few-shot learners.
-\newblock \emph{Advances in Neural Information Processing Systems},
-  33:\penalty0 1877--1901, 2020.
-
-\bibitem[Bubeck et~al.(2023)Bubeck, Chandrasekaran, Eldan, Gehrke, Horvitz,
-  Kamar, Lee, Lee, Li, Lundberg, et~al.]{bubeck2023sparks}
-S{\'e}bastien Bubeck, Varun Chandrasekaran, Ronen Eldan, Johannes Gehrke, Eric
-  Horvitz, Ece Kamar, Peter Lee, Yin~Tat Lee, Yuanzhi Li, Scott Lundberg,
-  et~al.
-\newblock Sparks of artificial general intelligence: Early experiments with
-  {GPT-4}.
-\newblock \emph{arXiv preprint arXiv:2303.12712}, 2023.
-
-\bibitem[Reif et~al.(2022)Reif, Ippolito, Yuan, Coenen, Callison-Burch, and
-  Wei]{reif2022recipe}
-Emily Reif, Daphne Ippolito, Ann Yuan, Andy Coenen, Chris Callison-Burch, and
-  Jason Wei.
-\newblock A recipe for arbitrary text style transfer with large language
-  models.
-\newblock In \emph{Proceedings of the 60th Annual Meeting of the Association
-  for Computational Linguistics (Volume 2: Short Papers)}, pages 837--848,
-  2022.
-
 \bibitem[Touvron et~al.(2023)Touvron, Martin, Stone, Albert, Almahairi, Babaei,
   Bashlykov, Batra, Bhargava, Bhosale, et~al.]{touvron2023llama2}
 Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine
@@ -199,6 +172,14 @@ Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya
 \newblock URL
   \url{https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf}.
 
+\bibitem[Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal,
+  Neelakantan, Shyam, Sastry, Askell, et~al.]{brown2020language}
+T.~Brown, B.~Mann, N.~Ryder, M.~Subbiah, J.~D. Kaplan, P.~Dhariwal,
+  A.~Neelakantan, P.~Shyam, G.~Sastry, A.~Askell, et~al.
+\newblock Language models are few-shot learners.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  33:\penalty0 1877--1901, 2020.
+
 \bibitem[Xi et~al.(2025)Xi, Chen, Guo, He, Ding, Hong, Zhang, Wang, Jin, Zhou,
   et~al.]{xi2025rise}
 Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, Boyang Hong, Ming
@@ -214,20 +195,6 @@ Jianfei Xiao, Yancan Chen, Yimin Ou, Hanyi Yu, Kai Shu, and Yiyong Xiao.
   summarization.
 \newblock In \emph{2024 International Joint Conference on Neural Networks
   (IJCNN)}, pages 1--8. IEEE, 2024.
-
-\bibitem[Zhang et~al.(2020)Zhang, Yang, Yang, and Huang]{zhang2020linguistic}
-Siyu Zhang, Zhongliang Yang, Jinshuai Yang, and Yongfeng Huang.
-\newblock Linguistic steganography: From symbolic space to semantic space.
-\newblock \emph{IEEE Signal Processing Letters}, 28:\penalty0 11--15, 2020.
-
-\bibitem[Zillien et~al.(2024)Zillien, Schmidbauer, Kubek, Keller, and
-  Wendzel]{huang2024oppression}
-Sebastian Zillien, Tobias Schmidbauer, Mario Kubek, Joerg Keller, and Steffen
-  Wendzel.
-\newblock Look what's there! utilizing the internet's existing data for
-  censorship circumvention with oppression.
-\newblock In \emph{Proceedings of the 19th ACM Asia Conference on Computer and
-  Communications Security}, pages 80--95, New York, NY, USA, 2024. ACM.
 
 \bibitem[Steinebach(2024)]{steinebach2024natural}
 Martin Steinebach.
@@ -310,6 +277,11 @@ Zhe Ji, Qiansiqi Hu, Yicheng Zheng, Liyao Xiang, and Xinbing Wang.
 Lingyun Xiang, Jiali Xia, Yangfan Liu, and Yan Gui.
 \newblock Cpg-ls: Causal perception guided linguistic steganography.
 \newblock \emph{IEEE Signal Processing Letters}, 30:\penalty0 1762--1766, 2023.
+
+\bibitem[Zhang et~al.(2020)Zhang, Yang, Yang, and Huang]{zhang2020linguistic}
+Siyu Zhang, Zhongliang Yang, Jinshuai Yang, and Yongfeng Huang.
+\newblock Linguistic steganography: From symbolic space to semantic space.
+\newblock \emph{IEEE Signal Processing Letters}, 28:\penalty0 11--15, 2020.
 
 \bibitem[Yi et~al.(2022)Yi, Wu, Feng, and Zhang]{yi2022alisa}
 Biao Yi, Hanzhou Wu, Guorui Feng, and Xinpeng Zhang.
