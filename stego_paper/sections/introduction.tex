@@ -7,7 +7,9 @@ Natural language has little spare room, so even small statistical quirks can giv
 Large language models changed the cover: instead of editing an existing sentence, many systems now generate the text \cite{li2023rewriting,lin2024zero,wu2024generative}.
 Those systems usually hide bits by steering next-token sampling, which can look fluent while still sitting on a modified distribution.
 
-However, existing LLM-based steganographic systems remain constrained by a fundamental trade-off between statistical security and perceptual naturalness \cite{lin2024zero,wu2024generative,li2023rewriting}. While a model may output grammatically and statistically fluent sentences, these often lack the deep semantic coherence required for specific communicative contexts, such as threaded social media discussions \cite{liao2024co,wang2023hi,zhang2024controllable}. A comment that is fluent but off-topic is conspicuous to a human reader and to a semantic checker.
+That fluency still has to fit the thread.
+A model can write a grammatical, low-perplexity sentence that does not belong in the conversation \cite{liao2024co,wang2023hi,zhang2024controllable}.
+A comment that is fluent but off-topic is conspicuous to a human reader and to a semantic checker.
 
 We hide the payload in two conversational choices rather than in token probabilities.
 Bits select (i) which comment to reply to in a depth-first flattened thread, and (ii) which \textit{Angle} to talk about from a list both parties rebuild from the public thread and a shared research procedure.
