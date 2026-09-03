@@ -1,0 +1,249 @@
+\documentclass[12pt,a4paper]{article}
+
+%% ─── Language & Fonts ────────────────────────────────────────────────────────
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage[numerals=maghrib]{arabic}
+\setotherlanguage{english}
+
+%% Body: Traditional Arabic (serif naskh — matches HIAST thesis style)
+\newfontfamily\arabicfont[
+  Script=Arabic,
+  Scale=1.0,
+  BoldFont=tradbdo.ttf,
+  ItalicFont=trado.ttf,
+  BoldItalicFont=tradbdo.ttf
+]{trado.ttf}
+\newfontfamily\arabicfonttt[Script=Arabic,Scale=1.0]{trado.ttf}
+
+%% English text embedded in Arabic document
+\newfontfamily\englishfont{Times New Roman}
+\setmainfont{Times New Roman}          % fix TU/ptm warnings from IEEEtran remnants
+
+%% ─── Page Layout ─────────────────────────────────────────────────────────────
+\usepackage[a4paper,
+            top=3cm, bottom=3cm, left=3cm, right=3cm,
+            headheight=15pt, headsep=8pt]{geometry}
+
+%% ─── Line Spacing ────────────────────────────────────────────────────────────
+\usepackage{setspace}
+\setstretch{1.7}
+
+%% ─── Section Heading Styles ──────────────────────────────────────────────────
+\usepackage{titlesec}
+\usepackage{tocloft}
+
+%% Thesis-style chapters and numbered sections
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+\newcommand{\arabicchapterlabel}{%
+  \ifcase\value{section}\or الفصل الأول\or الفصل الثاني\or الفصل الثالث\or الفصل الرابع\or الفصل الخامس\or الفصل السادس\or الفصل السابع\or الفصل الثامن\or الفصل التاسع\or الفصل العاشر\fi}
+
+\titleformat{\section}[display]
+  {\bfseries}
+  {\Large\makebox[\linewidth][r]{\arabicchapterlabel}}
+  {2.2ex}
+  {\Huge\centering}
+  []
+\titlespacing*{\section}{0pt}{0pt}{3.5ex}
+\newcommand{\sectionbreak}{\clearpage}
+
+%% Unnumbered sections (abstract, references, preprint note): large, centered
+\titleformat{name=\section,numberless}[block]
+  {\Large\bfseries\centering}
+  {}{0em}{}[]
+\titlespacing*{name=\section,numberless}{0pt}{2ex}{2.5ex}
+
+\titleformat{\subsection}[block]
+  {\normalsize\bfseries\raggedleft}
+  {\thesubsection.}{0.5em}{}[]
+\titlespacing*{\subsection}{0pt}{2.5ex plus .5ex minus .2ex}{1ex plus .2ex}
+
+\titleformat{\subsubsection}[block]
+  {\normalsize\bfseries\raggedleft}
+  {\thesubsubsection.}{0.5em}{}[]
+\titlespacing*{\subsubsection}{0pt}{2ex plus .3ex minus .2ex}{0.8ex plus .2ex}
+
+%% Table of contents: compact thesis-style dotted leaders
+\renewcommand{\contentsname}{المحتويات}
+\renewcommand{\listfigurename}{قائمة الأشكال}
+\renewcommand{\listtablename}{قائمة الجداول}
+\setcounter{tocdepth}{2}
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsecpagefont}{\bfseries}
+\setlength{\cftbeforesecskip}{0.35em}
+\setlength{\cftbeforesubsecskip}{0pt}
+\renewcommand{\cftdotsep}{1.2}
+
+%% Paragraph: run-in bold (definitions, named sub-points)
+\titleformat{\paragraph}[runin]
+  {\normalsize\bfseries}
+  {}{0em}{}[]
+\titlespacing{\paragraph}{0pt}{1ex plus .2ex}{0.8em}
+
+%% ─── Running Header / Footer ─────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small الإخفاء اللغوي للمعلومات المدرك للسياق}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot[C]{\small\thepage}
+
+%% Plain style for title page (no header/footer except page number)
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{\small\thepage}%
+}
+
+%% ─── Abstract ────────────────────────────────────────────────────────────────
+\renewcommand{\abstractname}{الملخص}
+\renewenvironment{abstract}{%
+  \section*{\abstractname}%
+  \ignorespaces
+}{%
+  \par\vspace{0.8em}%
+}
+
+%% ─── Math, Tables, Figures ───────────────────────────────────────────────────
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{placeins}
+\usepackage{url}
+
+\captionsetup[figure]{skip=5pt, font=small}
+\captionsetup[table] {skip=5pt, font=small, position=top}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+
+%% ─── Helpers & Overrides ─────────────────────────────────────────────────────
+\newcommand{\EN}[1]{\textenglish{#1}}
+\let\origtexttt\texttt
+\renewcommand{\texttt}[1]{\EN{\origtexttt{#1}}}
+\providecommand{\UseMathForPositioningText}{}
+\renewcommand{\refname}{المراجع}
+
+%% Keywords environment
+\newcommand{\keywordsname}{الكلمات المفتاحية}
+\newenvironment{arabickeywords}{%
+  \par\vspace{0.3em}\noindent\textbf{\keywordsname:}\enskip\ignorespaces
+}{%
+  \par\vspace{0.8em}%
+}
+
+%% ─── Cover Page ──────────────────────────────────────────────────────────────
+\newcommand{\makehiastcover}{%
+  \begin{titlepage}
+  \thispagestyle{empty}
+  \setstretch{1.15}
+  \vspace*{0.70cm}
+  \begin{LTR}
+  \noindent\makebox[\textwidth]{%
+    \begin{minipage}[t]{0.40\textwidth}
+      \centering\includegraphics[width=4.3cm]{figures/hiast_logo.png}
+    \end{minipage}%
+    \hfill
+    \raisebox{2.25cm}{\begin{minipage}[t]{0.46\textwidth}
+      \begin{RTL}
+      \centering\small
+      الجمهورية العربية السورية\\
+      المعهد العالي للعلوم التطبيقية والتكنولوجيا\\
+      قسم المعلوماتية
+      \end{RTL}
+    \end{minipage}}%
+  }
+  \end{LTR}
+
+  \vspace*{3.05cm}
+  \begin{center}
+  {\bfseries\Large رسالة ماجستير\par}
+
+  \vspace{2.05cm}
+  {\bfseries\Large
+  الإخفاء اللغوي للمعلومات المدرك للسياق:\\[0.25em]
+ أسلوب توليدي باستخدام نماذج اللغة الكبيرة\par}
+
+  \vspace{1.75cm}
+  {\bfseries إعداد\par}
+
+  \vspace{0.55cm}
+ {\bfseries\Large نصوح العلبي \par}
+
+  \vspace{1.45cm}
+  {\bfseries\Large إشراف\par}
+
+  \vspace{0.55cm}
+  {\bfseries\Large د.رياض سنبل\par}
+
+  \vspace{0.90cm}
+  % {\normalsize
+  % أعدت هذه الرسالة لنيل درجة الماجستير في المعلوماتية\\
+  % ( الذكاء الصنعي ومعالجة اللغات الطبيعية )\\
+  % 2026\par}
+  \end{center}
+  \end{titlepage}
+}
+
+%% ─── Document Body ───────────────────────────────────────────────────────────
+\begin{document}
+
+\makehiastcover
+
+% Front matter follows the reference thesis: Roman page numbers and a clear
+% contents section before the numbered chapters.
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\begin{abstract}
+\input{sections/abstract.tex}
+\end{abstract}
+
+\begin{arabickeywords}
+الإخفاء اللغوي للمعلومات، نماذج اللغة الكبيرة، \EN{LLMs}، معالجة اللغة الطبيعية،
+الإخفاء المعلوماتي بنموذج الصندوق الأسود، التضمين الدلالي، سير العمل الوكيلي، اللامحسوسية.
+\end{arabickeywords}
+
+\section*{ملاحظة ما قبل النشر}
+\begin{center}
+\small هذه المخطوطة نسخة ما قبل النشر مؤرخة في 2 أيلول/سبتمبر 2026.
+\end{center}
+\bigskip
+
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{sections/introduction.tex}
+\input{sections/background.tex}
+\input{sections/related_work.tex}
+\input{sections/methodology.tex}
+\input{sections/implementation.tex}
+\input{sections/evaluation.tex}
+\input{sections/conclusion.tex}
+
+\begin{otherlanguage}{english}
+\renewcommand{\refname}{المراجع}
+\bibliographystyle{IEEEtran}
+\bibliography{references/bibliography}
+\end{otherlanguage}
+
+\end{document}

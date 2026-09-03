@@ -1,4 +1,4 @@
-\begin{thebibliography}{15}
+\begin{thebibliography}{51}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -84,29 +84,297 @@ Gustavus~J Simmons.
 \newblock In \emph{Advances in Cryptology: Proceedings of Crypto 83}, pages
   51--67, Boston, MA, 1984. Springer.
 
-\bibitem[Fridrich(2009)]{fridrich2009steganography}
-Jessica Fridrich.
-\newblock \emph{Steganography in digital media: principles, algorithms, and
-  applications}.
-\newblock Cambridge University Press, Cambridge, UK, 2009.
+\bibitem[Zhang et~al.(2021)Zhang, Yang, Yang, and Huang]{zhang2021provably}
+Siyu Zhang, Zhongliang Yang, Jinshuai Yang, and Yongfeng Huang.
+\newblock Provably secure generative linguistic steganography.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  ACL-IJCNLP 2021}, pages 3046--3055, 2021.
 
-\bibitem[Shanahan(2024)]{shanahan2024talking}
-Murray Shanahan.
-\newblock Talking about large language models.
-\newblock \emph{Communications of the ACM}, 67\penalty0 (2):\penalty0 68--79,
-  2024.
-
-\bibitem[Ding et~al.(2023)Ding, Fu, Yang, Yu, Li, and Huang]{ding2023context}
+\bibitem[Ding et~al.(2023{\natexlab{a}})Ding, Fu, Yang, Yu, Li, and
+  Huang]{ding2023context}
 Changhao Ding, Zhangjie Fu, Zhongliang Yang, Qi~Yu, Daqiu Li, and Yongfeng
   Huang.
 \newblock Context-aware linguistic steganography model based on neural machine
   translation.
 \newblock \emph{IEEE/ACM Transactions on Audio, Speech, and Language
-  Processing}, 32:\penalty0 868--878, 2023.
+  Processing}, 32:\penalty0 868--878, 2023{\natexlab{a}}.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez,
+  Kaiser, and Polosukhin]{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock \emph{Advances in neural information processing systems}, 30, 2017.
+
+\bibitem[Radford et~al.(2019{\natexlab{a}})Radford, Wu, Child, Luan, Amodei,
+  and Sutskever]{radford2019language}
+Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya
+  Sutskever.
+\newblock Language models are unsupervised multitask learners.
+\newblock Technical report, OpenAI, 2019{\natexlab{a}}.
+
+\bibitem[Touvron et~al.(2023)Touvron, Martin, Stone, Albert, Almahairi, Babaei,
+  Bashlykov, Batra, Bhargava, Bhosale, et~al.]{touvron2023llama2}
+Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine
+  Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale,
+  et~al.
+\newblock Llama 2: Open foundation and fine-tuned chat models.
+\newblock \emph{arXiv preprint arXiv:2307.09288}, 2023.
+
+\bibitem[Yang et~al.(2023)Yang, Xiao, Wang, Zhang, Bian, Yin, Lv, Pan, Wang,
+  Yan, et~al.]{yang2023baichuan2}
+Aiyuan Yang, Bin Xiao, Binyuan Wang, Binxin Zhang, Ce~Bian, Chao Yin, Chenxu
+  Lv, Da~Pan, Dian Wang, Dong Yan, et~al.
+\newblock Baichuan 2: Open large-scale language models.
+\newblock \emph{arXiv preprint arXiv:2309.10305}, 2023.
+
+\bibitem[Ding et~al.(2023{\natexlab{b}})Ding, Chen, Wang, Zhao, Zhang, and
+  Yu]{ding2023discop}
+Jinyang Ding, Kejiang Chen, Yaofei Wang, Na~Zhao, Weiming Zhang, and Nenghai
+  Yu.
+\newblock Discop: Provably secure steganography in practice based on
+  distribution copies.
+\newblock In \emph{2023 IEEE Symposium on Security and Privacy (SP)}, pages
+  2238--2255, San Francisco, CA, USA, 2023{\natexlab{b}}. IEEE.
+
+\bibitem[Qi et~al.(2024)Qi, Chen, Zeng, Zhang, and Yu]{qi2024provably}
+Yuang Qi, Kejiang Chen, Kai Zeng, Weiming Zhang, and Nenghai Yu.
+\newblock Provably secure disambiguating neural linguistic steganography.
+\newblock \emph{IEEE Transactions on Dependable and Secure Computing}, 2024.
+\newblock Early Access.
+
+\bibitem[Majeed et~al.(2021)Majeed, Sulaiman, Shukur, and Hasan]{math9212829}
+Mohammed~Abdul Majeed, Rossilawati Sulaiman, Zarina Shukur, and Mohammad~Kamrul
+  Hasan.
+\newblock A review on text steganography techniques.
+\newblock \emph{Mathematics}, 9\penalty0 (21), 2021.
+\newblock ISSN 2227-7390.
+\newblock \doi{10.3390/math9212829}.
+\newblock URL \url{https://www.mdpi.com/2227-7390/9/21/2829}.
+
+\bibitem[Setiadi et~al.(2025)Setiadi, Ghosal, and
+  Sahu]{Setiadi_Ghosal_Sahu_2025}
+De~Rosal Ignatius~Moses Setiadi, Sudipta~Kr Ghosal, and Aditya~Kumar Sahu.
+\newblock Ai-powered steganography: Advances in image, linguistic, and 3d mesh
+  data hiding – a survey.
+\newblock \emph{Journal of Future Artificial Intelligence and Technologies},
+  2\penalty0 (1):\penalty0 1–23, Apr. 2025.
+\newblock \doi{10.62411/faith.3048-3719-76}.
+\newblock URL
+  \url{https://faith.futuretechsci.org/index.php/FAITH/article/view/76}.
+
+\bibitem[Radford et~al.(2019{\natexlab{b}})Radford, Wu, Child, Luan, Amodei,
+  and Sutskever]{radford2019gpt2}
+Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya
+  Sutskever.
+\newblock Language models are unsupervised multitask learners.
+\newblock \emph{OpenAI Blog}, 2019{\natexlab{b}}.
+\newblock URL
+  \url{https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf}.
+
+\bibitem[Brown et~al.(2020)Brown, Mann, Ryder, Subbiah, Kaplan, Dhariwal,
+  Neelakantan, Shyam, Sastry, Askell, et~al.]{brown2020language}
+T.~Brown, B.~Mann, N.~Ryder, M.~Subbiah, J.~D. Kaplan, P.~Dhariwal,
+  A.~Neelakantan, P.~Shyam, G.~Sastry, A.~Askell, et~al.
+\newblock Language models are few-shot learners.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  33:\penalty0 1877--1901, 2020.
+
+\bibitem[Xi et~al.(2025)Xi, Chen, Guo, He, Ding, Hong, Zhang, Wang, Jin, Zhou,
+  et~al.]{xi2025rise}
+Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, Boyang Hong, Ming
+  Zhang, Junzhe Wang, Senjie Jin, Enyu Zhou, et~al.
+\newblock The rise and potential of large language model based agents: A
+  survey.
+\newblock \emph{Science China Information Sciences}, 68\penalty0 (2):\penalty0
+  121101, 2025.
+
+\bibitem[Xiao et~al.(2024)Xiao, Chen, Ou, Yu, Shu, and Xiao]{xiao2024baichuan2}
+Jianfei Xiao, Yancan Chen, Yimin Ou, Hanyi Yu, Kai Shu, and Yiyong Xiao.
+\newblock Baichuan2-sum: Instruction finetune baichuan2-7b model for dialogue
+  summarization.
+\newblock In \emph{2024 International Joint Conference on Neural Networks
+  (IJCNN)}, pages 1--8. IEEE, 2024.
+
+\bibitem[Steinebach(2024)]{steinebach2024natural}
+Martin Steinebach.
+\newblock Natural language steganography by chatgpt.
+\newblock In \emph{Proceedings of the 19th International Conference on
+  Availability, Reliability and Security}, pages 1--9. ACM, 2024.
+
+\bibitem[Kuznetsov et~al.(2025)Kuznetsov, Chernov, Shaikhanova, Iklassova, and
+  Kozhakhmetova]{kuznetsov2025deepstego}
+Oleksandr Kuznetsov, Kyrylo Chernov, Aigul Shaikhanova, Kainizhamal Iklassova,
+  and Dinara Kozhakhmetova.
+\newblock {DeepStego}: Privacy-preserving natural language steganography using
+  large language models and advanced neural architectures.
+\newblock \emph{Computers}, 14\penalty0 (5):\penalty0 165, 2025.
+
+\bibitem[Wo{\'z}niak et~al.(2025)Wo{\'z}niak, Ogiela, and
+  Ogiela]{wozniak2025multicriteria}
+Kamil Wo{\'z}niak, Marek~R. Ogiela, and Lidia Ogiela.
+\newblock Multi-criteria linguistic optimization for covert communication in
+  secure {LLM}-based steganography.
+\newblock \emph{Applied Soft Computing}, 185:\penalty0 113960, 2025.
+
+\bibitem[Shi et~al.(2025)Shi, Guo, and Gao]{shi2025emotionally}
+Hao Shi, Wenpu Guo, and Shaoyuan Gao.
+\newblock Emotionally controllable text steganography based on large language
+  model and named entity.
+\newblock \emph{Technologies}, 13\penalty0 (7):\penalty0 264, 2025.
+
+\bibitem[Lin et~al.(2025)Lin, Shen, Li, Fan, and Wu]{lin2025positionagnostic}
+Shuo Lin, Zhenyang Shen, Xiang Li, Jiacheng Fan, and Sixing Wu.
+\newblock Position-agnostic probabilistic generation for robust steganographic
+  text.
+\newblock In \emph{Proceedings of the 34th ACM International Conference on
+  Information and Knowledge Management}, pages 4950--4954. ACM, 2025.
+
+\bibitem[Chen et~al.(2025)Chen, Li, Wu, and Ying]{chen2025activetwo}
+Yingquan Chen, Qianmu Li, Xiaocong Wu, and Zijian Ying.
+\newblock Research on making two models based on the generative linguistic
+  steganography for securing linguistic steganographic texts from active
+  attacks.
+\newblock \emph{Symmetry}, 17\penalty0 (9):\penalty0 1416, 2025.
+
+\bibitem[Pang et~al.(2024)Pang, Bai, Yang, Wang, Jiang, and
+  Huang]{pang2024fremax}
+Kaiyi Pang, Minhao Bai, Jinshuai Yang, Huili Wang, Minghu Jiang, and Yongfeng
+  Huang.
+\newblock Fremax: A simple method towards truly secure generative linguistic
+  steganography.
+\newblock In \emph{ICASSP 2024-2024 IEEE International Conference on Acoustics,
+  Speech and Signal Processing (ICASSP)}, pages 4755--4759. IEEE, 2024.
+
+\bibitem[Li et~al.(2024{\natexlab{a}})Li, Zhang, Liu, and Lei]{li2024semantic}
+Yihao Li, Ru~Zhang, Jianyi Liu, and Qi~Lei.
+\newblock A semantic controllable long text steganography framework based on
+  llm prompt engineering and knowledge graph.
+\newblock \emph{IEEE Signal Processing Letters}, 2024{\natexlab{a}}.
+
+\bibitem[Zheng et~al.(2022)Zheng, Fang, and Wu]{zheng2022general}
+Xiaoyan Zheng, Yurun Fang, and Hanzhou Wu.
+\newblock General framework for reversible data hiding in texts based on masked
+  language modeling.
+\newblock In \emph{2022 IEEE 24th International Workshop on Multimedia Signal
+  Processing (MMSP)}, pages 1--6. IEEE, 2022.
+
+\bibitem[Ding et~al.(2023{\natexlab{c}})Ding, Fu, Yu, Wang, and
+  Chen]{ding2023joint}
+Changhao Ding, Zhangjie Fu, Qi~Yu, Fan Wang, and Xianyi Chen.
+\newblock Joint linguistic steganography with bert masked language model and
+  graph attention network.
+\newblock \emph{IEEE Transactions on Cognitive and Developmental Systems},
+  16\penalty0 (2):\penalty0 772--781, 2023{\natexlab{c}}.
+
+\bibitem[Ji et~al.(2024)Ji, Hu, Zheng, Xiang, and Wang]{ji2024principled}
+Zhe Ji, Qiansiqi Hu, Yicheng Zheng, Liyao Xiang, and Xinbing Wang.
+\newblock A principled approach to natural language watermarking.
+\newblock In \emph{Proceedings of the 32nd ACM International Conference on
+  Multimedia}, pages 2908--2916. ACM, 2024.
+
+\bibitem[Xiang et~al.(2023)Xiang, Xia, Liu, and Gui]{xiang2023cpg}
+Lingyun Xiang, Jiali Xia, Yangfan Liu, and Yan Gui.
+\newblock Cpg-ls: Causal perception guided linguistic steganography.
+\newblock \emph{IEEE Signal Processing Letters}, 30:\penalty0 1762--1766, 2023.
+
+\bibitem[Zhang et~al.(2020)Zhang, Yang, Yang, and Huang]{zhang2020linguistic}
+Siyu Zhang, Zhongliang Yang, Jinshuai Yang, and Yongfeng Huang.
+\newblock Linguistic steganography: From symbolic space to semantic space.
+\newblock \emph{IEEE Signal Processing Letters}, 28:\penalty0 11--15, 2020.
+
+\bibitem[Yi et~al.(2022)Yi, Wu, Feng, and Zhang]{yi2022alisa}
+Biao Yi, Hanzhou Wu, Guorui Feng, and Xinpeng Zhang.
+\newblock Alisa: Acrostic linguistic steganography based on bert and gibbs
+  sampling.
+\newblock \emph{IEEE Signal Processing Letters}, 29:\penalty0 687--691, 2022.
+
+\bibitem[Munyer et~al.(2024)Munyer, Tanvir, Das, and
+  Zhong]{munyer2024deeptextmark}
+Travis Munyer, Abdullah~All Tanvir, Arjon Das, and Xin Zhong.
+\newblock Deeptextmark: a deep learning-driven text watermarking approach for
+  identifying large language model generated text.
+\newblock \emph{Ieee Access}, 12:\penalty0 40508--40520, 2024.
+
+\bibitem[Li et~al.(2024{\natexlab{b}})Li, Wei, Fu, Lin, and
+  Zhou]{li2024imperceptible}
+Fanxiao Li, Ping Wei, Tingchao Fu, Yu~Lin, and Wei Zhou.
+\newblock Imperceptible text steganography based on group chat.
+\newblock In \emph{2024 IEEE International Conference on Multimedia and Expo
+  (ICME)}, pages 1--6. IEEE, 2024{\natexlab{b}}.
+
+\bibitem[Xu et~al.(2024)Xu, Xu, and Sheng]{xu2024beyond}
+Zhenyu Xu, Ruoyu Xu, and Victor~S Sheng.
+\newblock Beyond binary classification: Customizable text watermark on large
+  language models.
+\newblock In \emph{2024 International Joint Conference on Neural Networks
+  (IJCNN)}, pages 1--8. IEEE, 2024.
+
+\bibitem[Hao et~al.(2025)Hao, Qiang, Zhu, Li, Yuan, Hu, and
+  Ouyang]{hao2025robust}
+Jifei Hao, Jipeng Qiang, Yi~Zhu, Yun Li, Yunhao Yuan, Xiaocheng Hu, and Xiaoye
+  Ouyang.
+\newblock Robust and semantic-faithful post-hoc watermarking of text generated
+  by black-box language models.
+\newblock \emph{Frontiers of Computer Science}, 19\penalty0 (9):\penalty0
+  199357, 2025.
+
+\bibitem[Wang et~al.(2025)Wang, Chang, Xiao, and Zhang]{wang2025contrastive}
+Jianxin Wang, Xiangze Chang, Chaoen Xiao, and Lei Zhang.
+\newblock A contrastive semantic watermarking framework for large language
+  models.
+\newblock \emph{Symmetry}, 17\penalty0 (7):\penalty0 1124, 2025.
+
+\bibitem[Jelinek et~al.(1977)Jelinek, Mercer, Bahl, and
+  Baker]{jelinek1977perplexity}
+Fred Jelinek, Robert~L Mercer, Lalit~R Bahl, and James~K Baker.
+\newblock Perplexity---a measure of the difficulty of speech recognition tasks.
+\newblock \emph{The Journal of the Acoustical Society of America}, 62\penalty0
+  (S1):\penalty0 S63--S63, 1977.
 
 \bibitem[Wang et~al.(2022)Wang, Deng, Sun, and Meng]{wang2022perplexity}
 Yequan Wang, Jiawen Deng, Aixin Sun, and Xuying Meng.
 \newblock Perplexity from plm is unreliable for evaluating text quality.
 \newblock \emph{arXiv preprint arXiv:2210.05892}, 2022.
+
+\bibitem[Fang et~al.(2025)Fang, Wang, Liu, Zhang, Jegelka, Gao, Ding, and
+  Wang]{fang2025wrong}
+Lizhe Fang, Yifei Wang, Zhaoyang Liu, Chenheng Zhang, Stefanie Jegelka, Jinyang
+  Gao, Bolin Ding, and Yisen Wang.
+\newblock What is wrong with perplexity for long-context language modeling?
+\newblock In \emph{International Conference on Learning Representations},
+  volume 2025, pages 94541--94563, 2025.
+
+\bibitem[Morgan(2024)]{morgan2024perplexity}
+Abby Morgan.
+\newblock Perplexity for {LLM} evaluation.
+\newblock Comet ML Blog, November 2024.
+\newblock URL
+  \url{https://www.comet.com/site/blog/perplexity-for-llm-evaluation/}.
+\newblock Accessed: 2025-12-31.
+
+\bibitem[Kullback and Leibler(1951)]{1320776d-9e76-337e-a755-73010b6e4b64}
+S.~Kullback and R.~A. Leibler.
+\newblock On information and sufficiency.
+\newblock \emph{The Annals of Mathematical Statistics}, 22\penalty0
+  (1):\penalty0 79--86, 1951.
+\newblock ISSN 00034851.
+\newblock URL \url{http://www.jstor.org/stable/2236703}.
+
+\bibitem[Cachin(1998)]{10.1007/3-540-49380-8_21}
+Christian Cachin.
+\newblock An information-theoretic model for steganography.
+\newblock In David Aucsmith, editor, \emph{Information Hiding}, pages 306--318,
+  Berlin, Heidelberg, 1998. Springer Berlin Heidelberg.
+\newblock ISBN 978-3-540-49380-8.
+
+\bibitem[Bender et~al.(2021)Bender, Gebru, McMillan-Major, and
+  Shmitchell]{bender2021dangers}
+Emily~M Bender, Timnit Gebru, Angelina McMillan-Major, and Shmargaret
+  Shmitchell.
+\newblock On the dangers of stochastic parrots: Can language models be too big?
+\newblock In \emph{Proceedings of the 2021 ACM conference on fairness,
+  accountability, and transparency}, pages 610--623, Virtual Event, Canada,
+  2021. ACM.
 
 \end{thebibliography}

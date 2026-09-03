@@ -1,52 +1,53 @@
 \section{Background}
 \label{sec:background}
 
-\subsection{Linguistics-Based Steganography}
-Steganography is distinguished from cryptography by its primary objective: the achievement of imperceptibility rather than mere confidentiality. The fundamental goal is to obscure the very existence of a communication channel. This is traditionally conceptualized through the "Prisoners' Problem" \cite{simmons1984prisoners}, wherein Alice must transmit a message to Bob under the scrutiny of an adversarial warden. Should the warden identify any deviation from expected behavior, the communication channel is terminated. Figure~\ref{fig:prisoners} illustrates this monitored-channel abstraction.
-%
-% ------------------------------------------------------------------
-% AI IMAGE PROMPT (fig:prisoners) -> figures/prisoners_problem.(png|pdf)
-% ------------------------------------------------------------------
-% GLOBAL STYLE: Same academic flat-vector palette as other figures (slate / teal / amber),
-%   white background, print-safe, no prison imagery (no bars, chains, orange jumpsuits).
-% PURPOSE: Abstract Simmons "prisoners' problem" for steganography: covert channel under
-%   monitoring, not a literal prison scene.
-% LAYOUT: Equilateral or isosceles triangle of three actors; Alice lower-left, Bob lower-right,
-%   Warden top center. Use simple circles or rounded squares with initials "A", "B", "W"
-%   or full names "Alice (sender)", "Bob (receiver)", "Warden (adversary)" beneath.
-% CHANNEL: Horizontal arrow from Alice to Bob, 2--3px dashed stroke, label above or below:
-%   "Public channel (monitored)". Along the arrow, draw a second thinner solid or dotted
-%   inner line, or a nested smaller arrow inside a speech-bubble silhouette, labeled
-%   "Covert payload (hidden in innocuous text)". Visual metaphor: stego hides *inside* the
-%   overt traffic, not a separate wire.
-% WARDEN: Above the dashed arrow, place magnifying glass or stylized eye icon tethered to
-%   Warden node; short label "observes traffic for anomalies". Optional small red "X"
-%   over a separate "second channel" if shown, to imply single channel only.
-% TYPOGRAPHY: Optional figure title top: "Prisoners' problem: covert linguistic channel".
-%   Keep total text under ~25 words on canvas.
-% NEGATIVE PROMPT: realistic faces, CCTV footage, horror, political symbols, cluttered UI,
-%   comic speech balloons with long dialogue, cryptography padlock as sole metaphor.
-% ------------------------------------------------------------------
+This paper is about hiding that communication is happening, not about encrypting the bytes.
+\textbf{Steganography} embeds a message in an ordinary carrier, such as an image or a piece of text, so an observer has no reason to look for a hidden channel.
+\textbf{Imperceptibility} is the primary objective, not confidentiality as such.
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.78\linewidth]{figures/prisoners_problem}
-	\Description{Illustration of the prisoners' problem: Alice and Bob communicate over a monitored channel while hiding a covert message from the warden.}
-	\caption{The prisoners' problem: Alice must reach Bob over a channel monitored by an adversary (warden); steganography hides the existence of the covert payload.}
-	\label{fig:prisoners}
-\end{figure}
+Text is a particularly challenging carrier due to its low redundancy and strict semantic constraints. The classical ``Prisoners' Problem'' \cite{simmons1984prisoners} illustrates the goal: two parties, Alice and Bob, must exchange hidden information without alerting a watchful adversary.
 
-\subsection{Generative Steganography in the Era of LLMs}
-Traditional textual steganography involves the modification of a static cover text, a process that frequently introduces detectable statistical or linguistic artifacts. In contrast, generative steganography \cite{wu2024generative} utilizes probabilistic models to synthesize the cover text de novo.
-\begin{itemize}
-    \item \textbf{Syntactic/Token-Level Embedding:} Prevailing methodologies often embed information by manipulating the sampling distribution of the subsequent token (e.g., through vocabulary partitioning or binning). However, these techniques typically necessitate "white-box" access to the model's internal logits.
-    \item \textbf{Black-Box Generative Architectures:} Emerging frameworks interact with language models solely through API-driven prompts. Our research operates within this paradigm, leveraging the instruction-following capabilities of LLMs rather than direct manipulation of internal weight distributions.
-\end{itemize}
+Textual steganography methods are typically divided into \textbf{format-based} approaches, which exploit layout or structural features, and \textbf{linguistic-based} approaches, which modify linguistic form. Within the latter, early techniques such as \textbf{synonym substitution} embed bits by altering lexical choices, but suffer from low capacity and high detectability.
 
-Threat model. We assume a passive observer (human or automated) can read the public thread and the published reply, but does not possess the shared operational parameters used by the sender and receiver (deterministic preprocessing and search constraints, deterministic model settings for reconstruction, and the agreed temporal synchronization window). The platform itself is treated as an untrusted carrier that observes only public content.
+Most published generative methods hide bits by biasing next-token sampling.
+Given a language model and a secret bitstream, the encoder restricts which token may be emitted at each step so that the choice encodes message bits.
+That process is often called steganographic sampling \cite{zhang2021provably}.
+It is the literature's token-level model, not the method in Section~\ref{sec:methodology}.
+Security arguments for those systems turn on keeping the modified sampling distribution close to the model's original next-token distribution.
 
-Linguistic steganography specifically refers to the concealment of information within natural language through the generation or modification of text while maintaining semantic and syntactic fluency \cite{fridrich2009steganography}. While LLM-based systems have significantly improved the quality of generated covers, they remain susceptible to the fundamental tension between statistical imperceptibility and contextual naturalness \cite{yang2020vae,shanahan2024talking}.
+Traditional linguistic approaches offer limited embedding capacity and often leave statistical artifacts. Advances in deep learning and \textbf{Large Language Models (LLMs)} now enable generative methods that achieve higher text quality and more secure embedding. Evaluating such systems requires several dimensions of imperceptibility: \textbf{perceptual} (human naturalness), \textbf{statistical} (distributional similarity to natural text), and \textbf{cognitive} (semantic and contextual fidelity) \cite{ding2023context}.
 
-\subsection{The Semantic Context Challenge}
-A critical limitation of existing generative systems is their tendency to produce content in isolation or based on abstract prompts. In the context of real-world communicative environments, such as social media, "naturalness" is inextricably linked to conversational relevance. Consequently, a sophisticated adversary can identify steganographic content not by identifying syntactic errors, but by analyzing its pragmatic misalignment with the surrounding discourse \cite{ding2023context}. The framework proposed in this research specifically addresses this semantic-level vulnerability.
- 
+LLM use in steganography also introduces new sources of detectability. \textbf{Hallucination}---where a model generates content that is factually unsupported, semantically inconsistent, or poorly grounded in the preceding context---is one such source. In ordinary text generation, hallucination is mainly a reliability concern. In steganographic generation, it becomes a security concern as well: even a fluent sentence can expose a hidden channel if it contains an unsupported claim, an abrupt topic shift, or a contradiction with the surrounding context. Hallucination therefore threatens \textbf{cognitive imperceptibility}, since generated text must remain contextually plausible and communicatively coherent, not merely surface-fluent.
+
+Distinct from hallucination, the \textbf{PSIC effect} (Perceptual-Statistical Imperceptibility Conflict) \cite{yang2020vae} captures a different and arguably more fundamental tension in generative linguistic steganography. Text that is optimized for human fluency is not necessarily statistically indistinguishable from natural human text. For example, selecting only high-probability tokens can produce sentences with low perplexity and strong local readability, but it may also make the generated distribution overly smooth, regular, or concentrated compared with real human writing. Such text can appear natural to readers while remaining detectable to statistical steganalyzers \cite{yang2020vae}.
+
+The PSIC effect therefore shows that \textbf{perceptual imperceptibility} and \textbf{statistical imperceptibility} are related but not identical goals. Human-written text often contains variation, irregularity, and locally unexpected word choices. By contrast, overly fluent model-generated text may lack this natural variance. Increasing the embedding rate can sometimes force the sampler to select from a broader range of tokens, which may better approximate the diversity of human text; however, this same process can also reduce readability or semantic coherence if the token choices become poorly aligned with the context. Thus, higher capacity does not automatically imply better security. Secure generative steganography requires balancing embedding rate, fluency, distributional similarity, and contextual consistency.
+
+\subsection{Large Language Models as Text Generators}
+\label{sec:background-llm-generators}
+
+Large Language Models (LLMs) predict the next token from a prefix \cite{vaswani2017attention,kaptchuk2021meteor,radford2019language}.
+That is why token-level steganography can ride sampling, and why this paper does not: we never modify the next-token distribution.
+
+\subsection{Large Language Models in Generative Linguistic Steganography}
+\label{sec:background-llm-stego}
+
+Because text produced by modern LLMs can closely resemble ordinary human-authored text, these models provide effective engines for generative text steganography. Rather than editing an existing cover, a growing line of work treats the model itself as a steganographic sampler: the hidden message steers generation, so the stego text is drawn from a realistic communication distribution from the start. The public availability of high-quality models, together with the efficiency of sampling-based embedding, has made this route more practical than earlier designs.
+
+LLMs such as GPT-2 \cite{radford2019language}, LLaMA \cite{touvron2023llama2}, and Baichuan2 \cite{yang2023baichuan2} are common backbones.
+Most schemes still tie message bits to token choices: at each step the bits pick which candidate is emitted.
+White-box methods need the exact model and vocabulary, and they change the sampling distribution when they embed \cite{wu2024generative}.
+Black-box methods call an API or UI and never see logits.
+That is the distinction this paper needs.
+Section~\ref{sec:methodology} is black-box in that sense: the writer is an ordinary generation call.
+Layer~2 recovery is still an LLM identification prompt, not a logit decoder.
+
+New approaches, such as \textbf{LLM-Stega} \cite{wu2024generative}, explore black-box generative text steganography using the user interfaces (UIs) of LLMs, which removes any need to observe internal sampling distributions. Secret bits are encrypted and mapped onto a prearranged keyword set that steers generation, and candidate outputs from which the message cannot be recovered are discarded via reject sampling, preserving both extraction accuracy and semantic quality \cite{wu2024generative}.
+
+\textbf{Co-Stega} retrieves recent posts and uses prompts to raise reply entropy, aiming at higher capacity in social-media settings without dropping fluency \cite{liao2024co}.
+
+\textbf{Zero-shot linguistic steganography} instead relies on in-context learning: covertext samples are supplied in the prompt, and the stego text is produced within a question--answer (QA) exchange, so the output reads as a natural reply rather than as free-standing generated text \cite{lin2024zero}.
+
+The increasing popularity of deep generative models has made it feasible for provably secure steganography to be applied in real-world scenarios, as they fulfill requirements for perfect samplers and explicit data distributions \cite{ding2023discop, kaptchuk2021meteor, qi2024provably}.
+
+LLM-based steganographic methods are typically evaluated on two primary axes: imperceptibility (perceptual, statistical, and cognitive measures) and embedding capacity (e.g., bits per token or bits per word). Imperceptibility evaluations may include automatic metrics (PPL, Distinct-n, KL/JSD) as well as human judgements; embedding capacity is usually reported as bits/token or overall embedding rate. Section~\ref{sec:related_work} surveys how the literature applies, evaluates, and constrains these methods in more detail.

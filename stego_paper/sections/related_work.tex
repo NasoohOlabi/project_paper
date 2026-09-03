@@ -1,0 +1,335 @@
+\section{Related Work}
+\label{sec:related_work}
+
+Majeed et al. (2021) \cite{math9212829} surveyed pre-LLM text steganography techniques, predating the current transformer era, emphasizing synonym replacement, spacing manipulation, and coding schemes such as Huffman coding. The methods of that generation often relied on context-free grammars or Markov chains and tended to produce syntactically correct but semantically incoherent cover text. Setiadi et al. (2025) \cite{Setiadi_Ghosal_Sahu_2025} examine more recent AI-powered data hiding across image, linguistic, and 3D mesh carriers (2021--2025), observing that LLMs have ``revitalized'' linguistic steganography through methods built on GPT-2 \cite{radford2019gpt2}, GPT-3 \cite{brown2020language}, LLaMA2 \cite{xi2025rise}, and Baichuan2 \cite{xiao2024baichuan2}. On the detection side, Wang et al. \cite{Wang_2023} review deep-learning linguistic steganalysis and document how detection techniques have evolved alongside generative hiding methods.
+
+Those surveys cover the field.
+None of them treats fit-to-thread as the main criterion for LLM-based methods.
+We do, because that is the channel.
+The remainder of this section synthesizes 31 primary studies from 2020 to 2025 on what was published, where it was applied, how it was evaluated, how it used external knowledge, and where it still breaks.
+Table~\ref{tab:survey_comparison} places this synthesis next to the three surveys above.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Comparison of the literature synthesis in this section with prior surveys of text/linguistic steganography.}
+  \label{tab:survey_comparison}
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabularx}{\textwidth}{@{}p{2.5cm} p{1.6cm} X X X X@{}}
+    \hline
+    \textbf{Survey} & \textbf{Period covered} & \textbf{Methodology} & \textbf{Carrier scope} & \textbf{LLM-era coverage} & \textbf{Contextual-compatibility focus} \\
+    \hline
+    Majeed et al.\ \cite{math9212829} (2021) & Pre-transformer & Narrative & Text-only (synonym, spacing, coding) & None & No \\
+    Setiadi et al.\ \cite{Setiadi_Ghosal_Sahu_2025} (2025) & 2021--2025 & Narrative & Multi-carrier (image, linguistic, 3D mesh) & Yes & No \\
+    Wang et al.\ \cite{Wang_2023} (2023) & Deep-learning era & Narrative & Detection-side (linguistic steganalysis) & Partial & No \\
+    This synthesis & 2020--2025 & Structured synthesis & Text-only (LLM-based) & Yes & Yes \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{State of the Published Literature}
+\label{sec:related-rq1}
+
+The 31 studies span 2020 through 2025, with 10 publications falling in 2020--2023 and 21 in 2024--2025 alone---a sharp acceleration that coincides with the wider availability of large-scale models. Widely used model families---GPT, GPT-2, and LLaMA \cite{brown2020language,radford2019language,touvron2023llama2}---appear across both periods, though proprietary systems grow more common in the later studies as black-box access becomes a viable design choice. Across the reviewed corpus, open-weight and research-accessible models appear more frequently than closed commercial systems, reflecting the practical importance of reproducibility and controllable experimentation.
+
+The field has also evolved from earlier white-box token-sampling schemes toward a broader design space that includes hybrid and black-box methods. The reviewed studies now span generative schemes that write stego text from scratch \cite{yang2020vae,zhang2021provably,ding2023discop,kaptchuk2021meteor}, rewriting systems that paraphrase existing covers \cite{li2023rewriting}, black-box pipelines that treat the model as an opaque API \cite{wu2024generative,steinebach2024natural,kuznetsov2025deepstego,wozniak2025multicriteria}, zero-shot protocols driven primarily by prompting \cite{lin2024zero}, context-aware frameworks that retrieve or constrain external information to increase semantic plausibility or payload \cite{liao2024co,wang2023hi,shi2025emotionally}, and methods that emphasize stronger security, robustness, or token-level quality control \cite{kaptchuk2021meteor,ding2023discop,lin2025positionagnostic,chen2025activetwo}.
+
+Table~\ref{tab:model_families} shows how the reviewed studies distribute across model families. This table is best read as a synthesis of methodological tendencies rather than a strict one-study-one-category classification: many papers combine multiple model families, so the counts overlap and the percentages do not sum to 100\%. Open-weight models account for the largest share because they support reproducible experiments and direct control over sampling or decoding, with GPT-2 and LLaMA-family systems appearing especially often. BERT-based methods also recur frequently, but usually as masked-language or scoring components rather than as the sole generation backbone. Proprietary systems such as GPT-3.5/4 are mainly used in black-box or prompt-driven settings, while custom or task-specific architectures appear less often but remain important for studies that prioritize provable security, reversible encoding, or tightly controlled payload design.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Representative model families across the reviewed studies. Categories are non-exclusive, so totals exceed 100\%.}
+  \label{tab:model_families}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{4cm} >{\raggedright\arraybackslash}p{9cm}}
+    \hline
+    \textbf{Model Type (Studies)}                        & \textbf{Models and Representative Works}                          \\
+    \hline
+    Open-weight Models (25/31, 80.6\%)                   &
+    GPT-2 \cite{ding2023discop,pang2024fremax,kaptchuk2021meteor,wang2023hi},
+    LLaMA/LLaMA2 \cite{liao2024co,lin2024zero,qi2024provably,li2024semantic},
+    BERT \cite{zheng2022general,zhang2024controllable,ding2023joint,ding2023context,ji2024principled,xiang2023cpg,zhang2020linguistic,qiang2023natural,yi2022alisa},
+    OPT \cite{munyer2024deeptextmark},
+    BART \cite{qiang2023natural,li2023rewriting},
+    Qwen \cite{li2024imperceptible,shi2025emotionally}                                                                     \\
+    Proprietary Models (7/31, 22.6\%)                    &
+    GPT-3.5/4, ChatGPT
+    \cite{xu2024beyond,steinebach2024natural,wu2024generative,hao2025robust,kuznetsov2025deepstego,wozniak2025multicriteria} \\
+    Custom or Task-Specific Architectures (5/31, 16.1\%) &
+    From-scratch or task-specific models
+    \cite{yang2020vae,ding2023joint,ji2024principled,munyer2024deeptextmark,chen2025activetwo}                              \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Application Domains}
+\label{sec:related-rq2}
+
+The reviewed studies show that \textbf{covert communication} remains the dominant application of LLM-based linguistic steganography. In this setting, secret information is embedded into seemingly benign text so that the message can pass through ordinary communication channels with minimal suspicion. LLM-based methods improve this use case by producing more fluent and contextually plausible outputs than earlier rule-based or local-substitution systems \cite{yang2020vae,kaptchuk2021meteor,wu2024generative}.
+
+Within this application space, the reviewed papers explore several operational variants. Some methods generate stego text from scratch using a shared model or sampling strategy \cite{ding2023discop,kaptchuk2021meteor}. Others rely on paraphrasing or rewriting so that a pre-existing cover text can be transformed while preserving its apparent meaning \cite{li2023rewriting}. Recent black-box and prompt-based approaches such as \textbf{LLM-Stega}, \textbf{DeepStego}, and multi-criteria linguistic optimization show that covert communication can also be implemented through commercial or hosted interfaces without direct access to token probabilities, using prompt design, keyword sets, stylistic features, and reject-sampling style verification instead \cite{wu2024generative,kuznetsov2025deepstego,wozniak2025multicriteria}. Context-aware systems such as \textbf{Co-Stega}, \textbf{Hi-Stega}, and emotionally controllable steganography further adapt the generated text to specific domains, topics, entities, emotional tones, or social settings in order to improve plausibility and increase effective payload \cite{liao2024co,wang2023hi,shi2025emotionally}. This last variant---adapting generation to the surrounding domain and discourse rather than relying on generic fluency---is the closest precedent in the literature to the context-aware, thread-level embedding developed in Section~\ref{sec:methodology}.
+
+Although adjacent topics such as watermarking, authorship attribution, or prompt-hiding attacks are relevant to the broader field of information hiding, they remain analytically distinct from covert payload transmission. The 2025 watermarking studies are therefore treated as boundary cases: useful for understanding robustness, semantic preservation, and detection methods, but not interchangeable with steganographic communication systems \cite{wang2025contrastive}.
+
+A comprehensive breakdown of how the reviewed studies are distributed across these primary application areas and variants is summarized in Table~\ref{tab:app_distribution}.
+
+\begin{table}[t]
+	\centering
+	\small
+	\caption{Application categories across the reviewed studies. Categories are non-exclusive.}
+	\label{tab:app_distribution}
+	\begin{tabular}{|p{0.2\linewidth}|p{0.25\linewidth}|p{0.35\linewidth}|c|}
+		\hline
+		\textbf{Primary Application}                   & \textbf{Variant / Category}           & \textbf{Representative Studies}                                                                                                                                                 & \textbf{Total Count} \\
+		\hline
+		\multirow{3}{*}{\textbf{Covert Communication}} & Generation-based (from scratch)       & \cite{yang2020vae,kaptchuk2021meteor,ding2023discop,ding2023joint,zhang2020linguistic,yi2022alisa,xiang2023cpg,pang2024fremax,qi2024provably,lin2025positionagnostic,chen2025activetwo} & 11                   \\
+		\cline{2-4}
+		                                               & Paraphrasing, Rewriting, or Editing   & \cite{li2023rewriting,zheng2022general}                                                                                                                                         & 2                    \\
+		\cline{2-4}
+		                                               & Black-box and Prompt-based            & \cite{wu2024generative,steinebach2024natural,lin2024zero,li2024semantic,kuznetsov2025deepstego,wozniak2025multicriteria}                                                        & 6                    \\
+		\hline
+		\textbf{Context-Aware Systems}                 & Domain, Emotion, or Social Adaptation & \cite{liao2024co,wang2023hi,ding2023context,li2024imperceptible,zhang2024controllable,shi2025emotionally}                                                                       & 6                    \\
+		\hline
+		\textbf{Watermarking}                          & Content Attribution (Boundary Cases)  & \cite{ji2024principled,munyer2024deeptextmark,qiang2023natural,xu2024beyond,hao2025robust,wang2025contrastive}                                                                  & 6                    \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{Evaluation Practices in the Literature}
+\label{sec:related-rq3}
+
+How published LLM steganography is scored varies by paper, which makes cross-paper comparison hard.
+Section~\ref{sec:evaluation} states the formulas this paper actually computes: recoverable selection-channel width, intention-to-treat versus successful-output-only rates, GPT-2 perplexity on the historical run, and the five LLM-judge criteria.
+The rest of this subsection is about what the 31 studies reported, not a second copy of those formulas.
+
+\subsubsection{Perplexity}
+
+Perplexity is an imperceptibility metric for fluency, where lower values generally indicate more natural text \cite{jelinek1977perplexity}. However, its usefulness for language model evaluation is limited. It mainly reflects internal consistency rather than factuality or reasoning, so fluent but implausible statements can still receive low perplexity scores \cite{wang2022perplexity}. It is also sensitive to text length, with short sequences often receiving inflated scores even when they are highly fluent \cite{fang2025wrong}. In addition, perplexity is not directly comparable across models unless tokenization and vocabulary are aligned, since these design choices affect the score itself \cite{morgan2024perplexity}. Fang et al. \cite{fang2025wrong} further argue that token-averaged likelihood can under-represent performance on important low-probability tokens, while Wang et al. \cite{wang2022perplexity} note that repetition can sometimes lower perplexity in misleading ways. Taken together, these issues suggest that perplexity should be used cautiously and alongside other measures when assessing steganographic text quality.
+
+\subsubsection{Statistical Divergence Metrics}
+
+Kullback-Leibler Divergence (KLD) \cite{1320776d-9e76-337e-a755-73010b6e4b64} and Jensen-Shannon Divergence (JSD) are information-theoretic metrics used to evaluate steganographic security. KLD quantifies information loss by measuring the relative entropy between cover and stego distributions, serving as the theoretical standard for security modeling despite being asymmetric and failing as a strict distance measure. JSD improves upon this as a symmetric, bounded variant that measures how far each distribution lies from their average, providing a more stable basis for formulating statistical imperceptibility bounds---particularly when language models approximate human text distributions. Together, these two metrics attempt to capture how closely steganographic outputs mimic legitimate communication channels.
+
+However, real-world application reveals reliability limits, most notably the PSIC effect \cite{yang2020vae}. KLD and JSD scores can diverge from human judgment as statistical optimization progresses: methods with favorable divergence scores may still produce low-quality text that appears suspicious to human observers. This discrepancy is also dataset dependent---the same method can yield different divergence values on different corpora at equivalent embedding rates (e.g., KLDs of 19.507 on IMDB versus 8.295 on Twitter for VAE-Stega \cite{yang2020vae}), making cross-paper comparison unreliable. In addition, studies use different formulas, feature spaces, and measurement scales, including latent BERT features versus direct word distributions. Meteor \cite{kaptchuk2021meteor}, for example, is associated with reported KLD values ranging from 0.045 in one setting to 7.491--11.845 in others. Consequently, these metrics capture distributional distance but not perceptual naturalness, so they should be paired with semantic and human-centered measures.
+
+\subsubsection{Capacity Metrics}
+
+Capacity is judged by four metrics:
+
+\begin{itemize}
+  \item \textbf{Bits per Token (BPT):}
+        \begin{equation}
+          \text{BPT} = \frac{\text{Total Secret Bits}}{\text{Total Tokens}}
+        \end{equation}
+  \item \textbf{Bits per Word (BPW):}
+        \begin{equation}
+          \text{BPW} = \frac{\text{Total Secret Bits}}{\text{Total Words}}
+        \end{equation}
+  \item \textbf{Embedding Rate (ER) \cite{10.1007/3-540-49380-8_21}:} Average density of hidden information per textual unit
+        \begin{equation}
+          \text{ER} = \frac{1}{N} \sum_{i=1}^{N} \text{bits}_i
+        \end{equation}
+        where $N$ is the number of textual units (words, tokens, or sentences) and $\text{bits}_i$ is the number of bits embedded in the $i$-th unit. In some fixed-payload schemes, the total number of embedded bits is predetermined for each stego text and does not depend on its length; for example, LLM-Stega can assign a constant payload to every generated stego sentence, so the embedding rate can also be expressed as $\text{ER}_{\text{fixed}} = B_0$, where $B_0$ is the fixed number of bits embedded in each stego text.
+  \item \textbf{Utilization Rate (UR):}
+        \begin{equation}
+          H = -\sum_{x \in \mathcal{X}} P(x) \log_2 P(x)
+        \end{equation}
+        \begin{equation}
+          \text{UR} = \left( \frac{\text{Actual Bits Embedded}}{H} \right) \times 100\%
+        \end{equation}
+\end{itemize}
+
+These quantities describe how densely a secret is embedded, but they are affected by systematic biases that limit cross-system comparison, summarized in Table~\ref{tab:capacity_bias_categories}.
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \caption{Five primary bias categories affecting capacity metrics in steganographic evaluation.}
+  \label{tab:capacity_bias_categories}
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}p{5cm}|}
+    \hline
+    \textbf{Bias Category}       & \textbf{Core Problem}                                                           & \textbf{Critical Implication}                                                              \\
+    \hline
+    Tokenization Inconsistencies & Metrics depend entirely on specific tokenizers (e.g., GPT-2 BPE vs. word-level) & Direct comparisons across papers become meaningless when tokenization strategies differ    \\
+    \hline
+    The PSIC Effect              & Conflicts between imperceptibility and statistical security are ignored        & High capacity may degrade human fluency while paradoxically improving detection resistance \\
+    \hline
+    Model Training Bias          & Utilization Rate calculations assume uniform token availability                 & Actual hiding space is smaller than theoretical entropy due to model frequency preferences \\
+    \hline
+    Reporting Ambiguities        & No standard definition of ``capacity'' across systems                          & Practical payload vs. effective payload distinctions create misleading efficiency claims    \\
+    \hline
+    Context Blindness            & Density metrics treat text as neutral bit containers                            & Semantic incoherence constitutes a security failure that BPW/BPT fails to penalize         \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Tokenization differences make ``1 BPT'' from one paper difficult to compare with ``1 BPT'' from another when the studies use different tokenizers. The PSIC effect shows that higher density can hurt human fluency yet help statistical evasion. Model frequency preferences shrink the real alphabet to high-probability tokens, so naive entropy limits overstate usable space. Ambiguous reporting---practical vs.\ effective payload, or bit length vs.\ stego length---can make capacity claims appear stronger than they are. Finally, BPW/BPT ignore semantics, so high values can be reported even when the resulting text is suspicious or incoherent. Recent works reveal additional distortions: loop-count overhead, dictionary-size caps, baseline-dependent ``improvements,'' watermarking goals that invert the desired signal, conversational filler that dilutes BPW, and nonlinear ER curves that make any single threshold difficult to interpret. The added 2025 studies reinforce this point: DeepStego emphasizes high capacity and recovery accuracy, and multi-criteria optimization reports reliable stylistic decoding \cite{kuznetsov2025deepstego,wozniak2025multicriteria}, but these results also make cross-paper comparison harder because the reported gains depend on different baselines, prompts, datasets, and decoding assumptions.
+
+To contextualize theoretical capacity metrics, Table~\ref{tab:stego_examples} summarizes representative embedding capacities across the reviewed methods. Capacity calculations vary significantly based on the encoding mechanism. \textbf{Fixed-length mapping} techniques, such as \textbf{LLM-Stega} and \textbf{GCStego}, derive capacity from rigid keyword or token mappings---64 bits per sentence and 16 bits per word, respectively. \textbf{ParaLS} operates similarly but on a smaller scale, encoding a simple 3-bit binary watermark. In contrast, \textbf{payload-dependent} methods scale with the cover text or secret message length: \textbf{Meteor's} capacity of 1280 bits corresponds to an embedded payload of 160 bytes, \textbf{Zero-shot} capacity is directly tied to the Base64 representation of the secret bitstream, and \textbf{Discop} uses a statistical approach that, with a truncation parameter of $p=0.95$, achieves an entropy rate of 4.84 bits per token, yielding 968 bits over a 200-token sequence.
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \caption{Representative capacity calculations reported by selected methods. Full generated passages are omitted because they do not support direct cross-study comparison.}
+  \label{tab:stego_examples}
+  \begin{tabular}{p{0.18\textwidth}p{0.16\textwidth}p{0.22\textwidth}p{0.35\textwidth}}
+    \hline
+    \textbf{Method} & \textbf{Reported Capacity} & \textbf{Encoding Basis} & \textbf{Comparability Note} \\
+    \hline
+    Meteor & 1280 bits & 160-byte payload $\times$ 8 bits & Payload total; depends on the selected message length. \\
+    LLM-Stega & 64 bits per sentence & Fixed semantic-slot mapping & Sentence-level capacity; not directly comparable with BPW or BPT. \\
+    GCStego & 16 bits per word & Fixed word-level mapping & Mapping-specific rate under the study's candidate construction. \\
+    ParaLS & 3 bits & Binary lexical watermark & Example payload rather than a normalized embedding rate. \\
+    Zero-shot & Token-level BPW/capacity & Generated-token coding & Capacity depends on the representation, model, and prompt protocol; not directly comparable with selection bits. \\
+    Discop & 968 bits over 200 tokens & 4.84 bits per token at $p=0.95$ & Token-level rate tied to the model, tokenizer, and truncation setting. \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsubsection{Security Metrics}
+
+The sources evaluate security and reliability through the following integrated metrics:
+\begin{itemize}
+  \item \textbf{Detection Accuracy (Acc) / Error Rate (PE):} Measures a classifier's ability to distinguish between cover and stego text. An accuracy of 50\% (or PE of 50\%) is the gold standard, indicating the stego text is statistically identical to normal text.
+  \item \textbf{F1 Score:} The harmonic mean of precision and recall, used to verify detection reliability, especially when datasets are balanced.
+  \item \textbf{Robustness (Attack Resistance):} Evaluated via the Mean Impact of Attack (mIOA) or bit accuracy after removal attempts such as denoising auto-encoding, word substitution, or sentence deletion.
+  \item \textbf{False Positive Rate (FPR):} Measures how often human or normal model-generated texts are incorrectly flagged as containing secret messages.
+\end{itemize}
+
+Recent robustness-oriented work broadens this evaluation set. Position-agnostic generation tests perturbation tolerance across multiple attack types, active-attack repair methods evaluate message integrity after tampering, and contrastive semantic watermarking reports F1 under rewriting and substitution attacks \cite{lin2025positionagnostic,chen2025activetwo,wang2025contrastive}. This shift suggests that future evaluations should report not only clean-channel capacity and fluency, but also degradation curves under realistic editing.
+
+\subsubsection{Evaluation Challenges and Gaps}
+
+The broad range of evaluation metrics across the reviewed studies is summarized in Table~\ref{tab:evaluation_metrics_overview}, which categorizes metrics by type and quantifies their usage frequency. The numbers in that table reveal several persistent gaps. Shared benchmarks are rare: only around 20\% of studies use common datasets, which makes cross-paper comparison difficult even when the same metric name appears in both papers. Human evaluation was reported in just one of the 31 reviewed studies---a surprisingly low share given how central perceptual plausibility is to the field's core claims. Robustness testing is similarly sparse, absent in roughly 60\% of studies. Many papers also evaluate along only one or two metric dimensions, leaving imperceptibility, security, and capacity to be inferred from partial evidence rather than directly measured together. Taken together, these gaps mean the strongest conclusions available from the reviewed corpus are qualitative rather than quantitative.
+Section~\ref{sec:evaluation} reports an independent LLM-judge comparison together with source-run reliability and a historical configuration table; GPT-2 and unigram divergence are scored on that historical run, not on the 2026-08-15 freeze.
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \caption{Frequency of evaluation metric categories in the reviewed studies. Categories are non-exclusive.}
+  \label{tab:evaluation_metrics_overview}
+  \begin{tabular}{p{0.20\textwidth}p{0.34\textwidth}p{0.12\textwidth}p{0.25\textwidth}}
+    \hline
+    \textbf{Dimension} & \textbf{Metric Category} & \textbf{Studies} & \textbf{Main Comparability Constraint} \\
+    \hline
+    Imperceptibility & Perplexity & 13 & Model, tokenizer, corpus, and sequence length \\
+    Imperceptibility & Statistical divergence (KLD/JSD) & 10 & Estimated distributions and sampling settings \\
+    Imperceptibility & Semantic similarity & 13 & Reference construction and metric choice \\
+    Imperceptibility & Human evaluation & 1 & Protocol, annotator population, and sample size \\
+    Security & Detection accuracy or F1 & 21 & Detector, class balance, and train/test data \\
+    Capacity & BPW or BPT & 27 & Tokenization and payload accounting \\
+    Robustness & Recovery or attack resilience & 5 & Attack type, strength, and evaluation protocol \\
+    Efficiency & Generation or extraction time & 5 & Hardware, model size, and implementation \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Integration of External Knowledge Sources}
+\label{sec:related-rq4}
+
+External knowledge integration is a recurring design pattern in the reviewed literature. Across the surveyed studies, external information serves three main purposes: improving contextual plausibility, maintaining topic consistency, and---in some cases---expanding the effective space available for embedding. Table~\ref{tab:knowledge_integration} summarizes the main knowledge-integration patterns and their roles.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Representative patterns of external knowledge integration.}
+  \label{tab:knowledge_integration}
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{5.2cm}|}
+    \hline
+    \textbf{Knowledge Type} & \textbf{Typical Role}               & \textbf{Primary Benefit}       & \textbf{Examples}                                                                \\
+    \hline
+    Semantic Resources      & Topic, entity, and emotion guidance & Better semantic control        & Co-Stega~\cite{liao2024co}, knowledge-graph guided methods~\cite{li2024semantic,ding2023joint}, emotionally controllable steganography~\cite{shi2025emotionally} \\
+    \hline
+    Domain Corpora          & Domain adaptation                   & Better stylistic fit           & FREmax~\cite{pang2024fremax}, specialized datasets                                                     \\
+    \hline
+    Prompt Engineering      & In-context control                  & Better task alignment          & Zero-shot~\cite{lin2024zero}, DeepStego~\cite{kuznetsov2025deepstego}, multi-criteria optimization~\cite{wozniak2025multicriteria}                                \\
+    \hline
+    Context Retrieval       & Evidence or example retrieval       & Higher contextual plausibility & Co-Stega~\cite{liao2024co}, retrieval-augmented pipelines~\cite{wang2023hi}                                          \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Rather than relying only on the internal prior of the language model, several recent systems inject external guidance during generation. Retrieved posts, headlines, or comments can provide a realistic discourse context for the cover text \cite{wang2023hi}. Knowledge-graph triples can constrain the content that should appear in the output, improving semantic consistency over longer spans \cite{li2024semantic}. Named entities and sentiment labels add a finer-grained control layer when the goal is emotional or conversational consistency \cite{shi2025emotionally}. Frequency-based external statistics can also be used to steer generation toward distributions that better match the target channel \cite{pang2024fremax}.
+
+Another recurring pattern is the use of domain-specific corpora. Fine-tuning or conditioning on domain data helps align the generated text with the vocabulary, stylistic conventions, and topical expectations of the intended communication channel. This pattern appears in systems such as VAE-Stega \cite{yang2020vae}, Meteor \cite{kaptchuk2021meteor}, Hi-Stega \cite{wang2023hi}, FREmax \cite{pang2024fremax}, Rewriting-Stego \cite{li2023rewriting}, and Summarization-Stego \cite{zhang2024controllable}. When additional training is not possible, black-box methods move this domain adaptation into the prompt, style specification, or retrieval stage. Zero-shot approaches provide examples directly in the context window, LLM-Stega frames the generation request with topic-constrained prompts, DeepStego uses prompts and synonym guidance, multi-criteria optimization encodes through stylistic controls, and Co-Stega retrieves recent posts to anchor the generated reply in a plausible local context \cite{lin2024zero,wu2024generative,kuznetsov2025deepstego,wozniak2025multicriteria,liao2024co}---the same retrieve-then-anchor strategy that underlies the deterministic research stage described in Section~\ref{sec:search_determinism}.
+
+Table~\ref{tab:knowledge_integration_comprehensive} provides a more detailed breakdown of how external knowledge sources are integrated across the reviewed studies.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Comprehensive overview of external knowledge integration patterns in LLM-based steganography.}
+  \label{tab:knowledge_integration_comprehensive}
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{7cm}|c|}
+    \hline
+    \textbf{Approach}                                   & \textbf{Variant / Category}                                                       & \textbf{Representative Studies}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           & \textbf{Count} \\
+    \hline
+    \multirow{2}{2cm}{Structured Knowledge Integration} & Knowledge Graphs (KG) \& Graph Attention Networks                                 & Semantic controllable steganography via knowledge graph~\cite{li2024semantic}, joint linguistic steganography with BERT and graph attention networks~\cite{ding2023joint}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              & 2              \\
+    \cline{2-4}
+                                                        & Information Retrieval (IR): Retrieval-Augmented Generation (RAG) \& Corpus Search & Hi-Stega~\cite{wang2023hi}, Co-Stega~\cite{liao2024co}, emotionally controllable text steganography~\cite{shi2025emotionally}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            & 3              \\
+    \hline
+    \multirow{2}{2cm}{Linguistic Resource Integration}  & Paraphrase DBs, Synonym DBs \& Dependency Datasets                                & Paraphraser-based lexical substitution~\cite{qiang2023natural}, DeepStego~\cite{kuznetsov2025deepstego}, post-hoc watermarking of black-box LLM text~\cite{hao2025robust}, group-chat imperceptible text steganography~\cite{li2024imperceptible}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       & 4              \\
+    \cline{2-4}
+                                                        & External Statistical Analysis: Character/Token Frequency Distributions            & FREmax~\cite{pang2024fremax}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              & 1              \\
+    \hline
+    External Model Feedback                             & Auxiliary Scorer, Critic \& Discriminator Models                                  & Rewriting-Stego~\cite{li2023rewriting}, principled natural language watermarking~\cite{ji2024principled}, CPG-LS~\cite{xiang2023cpg}, controllable semantic steganography via summarization~\cite{zhang2024controllable}, ALiSa~\cite{yi2022alisa}, DeepTextMark~\cite{munyer2024deeptextmark}, contrastive semantic watermarking~\cite{wang2025contrastive}                                                                                                                                                                                                                                                                                                                                                                                                                        & 7              \\
+    \hline
+    Shared Knowledge / Side Information                 & Shared Auxiliary Datasets \& Public Contexts                                      & Meteor~\cite{kaptchuk2021meteor}, zero-shot generative linguistic steganography~\cite{lin2024zero}, reversible data hiding via masked language modeling~\cite{zheng2022general}, natural language steganography by ChatGPT~\cite{steinebach2024natural}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                & 4              \\
+    \hline
+  \end{tabular}
+\end{table}
+
+These five patterns differ primarily in how directly they constrain the generation process. Structured knowledge approaches \cite{li2024semantic,ding2023joint} use external knowledge graphs or graph attention networks to enforce long-range semantic consistency---a stronger form of control than prompting alone, but one that requires the knowledge resource to exist and be aligned with the target domain. Information retrieval frameworks \cite{wang2023hi,liao2024co} pull contextually relevant material from external sources at runtime, grounding the cover text in real discourse without requiring model retraining. Linguistic resource methods \cite{qiang2023natural} rely on synonym databases and paraphrase corpora to constrain lexical choice while preserving meaning---a lighter form of intervention that nonetheless depends on the quality and coverage of the external resource. External model feedback is the most common pattern, appearing in seven of the 31 reviewed studies: auxiliary models such as BERT serve as discriminators or soft scorers to assess naturalness or security during generation \cite{xiang2023cpg,munyer2024deeptextmark}. Finally, shared side information methods \cite{kaptchuk2021meteor,lin2024zero} use public models or auxiliary history to synchronize probability distributions between sender and receiver without explicitly passing knowledge through the channel, trading interpretability for coordination efficiency---the same trade-off that motivates the shared, deterministic search pipeline in Section~\ref{sec:search_determinism}.
+
+\subsection{Limitations and Trade-offs}
+\label{sec:related-rq5}
+
+Across the surveyed studies, the main constraints recur around imperceptibility, effective payload, semantic coherence, tokenization reliability, deployment assumptions, and attack robustness.
+
+\subsubsection{The PSIC Effect Revisited}
+
+Generative steganography faces an intrinsic tension: optimizing for perceptual fidelity degrades statistical security. Aggressive perplexity minimization produces unnaturally ``sharp'' distributions that deviate from high-variance human writing, increasing detection vulnerability. Higher embedding rates force selection of lower-probability tokens, degrading text quality but expanding the candidate pool to enhance anti-steganalysis resistance. At elevated capacities, output distributions asymptotically approach natural language's high-entropy chaos, camouflaging signals within legitimate statistical noise \cite{yang2020vae}.
+
+\subsubsection{Attack Vulnerability and Security Concerns}
+
+Current techniques exhibit a substantial attack surface across multiple vectors, including word-level deletions and lexical substitutions that disrupt dependency parsing. Polishing and re-translation attacks progressively erase watermarks; at high intensities, these structural changes can reduce detection performance to an F1 score of 0.5, rendering the watermark undetectable. Furthermore, adversarial machine learning enables the extraction of secret model parameters from black-box systems, potentially compromising integrity entirely. Recent work responds by moving robustness into the embedding design itself: position-agnostic generation avoids dependence on fixed token locations, active-attack repair models attempt to recover damaged stegotext, and contrastive semantic watermarking tests resilience under rewriting and substitution \cite{lin2025positionagnostic,chen2025activetwo,wang2025contrastive}. To mitigate distributional risks, Variational Auto-Encoders are also employed to learn the statistical distribution of normal text, aiming to reduce the KL divergence between cover and stego distributions and resolve the conflict between perceptual and statistical imperceptibility \cite{hao2025robust}.
+
+\subsubsection{Capacity and Contextual Constraints}
+
+Short, low-entropy contexts severely constrain embedding capacity. Social media posts and technical documents offer minimal redundancy for hiding \cite{liao2024co}, while semantic preservation requirements compete directly with information embedding objectives. Brief texts further lack sufficient contextual support for effective steganographic operations \cite{ding2023context}. Newer approaches attempt to recover some capacity through synonym guidance and stylistic feature control, but these gains remain tied to the selected prompt, cover text, or candidate-token space \cite{kuznetsov2025deepstego,wozniak2025multicriteria}.
+
+Early generative methods also produced fluent but semantically arbitrary text, violating cognitive imperceptibility \cite{ding2023context}. When generation is conditioned only on local token history, the output may drift away from the source topic or conversational logic, which is especially suspicious in low-entropy channels such as social media replies. This contextual drift worsens when methods must keep generating until an arbitrarily large payload is fully embedded: texts become unnaturally long, coherence decays over time, and practical payload efficiency drops even when reported bit capacity appears high \cite{li2024semantic,xiang2023cpg,steinebach2024natural,xu2024beyond}.
+
+Our paired comparisons against the zero-shot generative linguistic steganography baseline \cite{lin2024zero} are reported in Section~\ref{sec:evaluation}.
+An independent LLM-judge evaluation on 244 unique-output pairs is the current quality table; a 2026-07-30 configuration comparison reports recoverable capacity and GPT-2 perplexity on 100 post clusters.
+Both are conditional on accepted outputs, use audit-assisted project-side recovery, and do not establish a security advantage for either method.
+
+\subsubsection{Segmentation and Tokenization Barriers}
+
+Subword tokenization introduces critical extraction ambiguities that are fundamental to white-box steganographic methods. Byte-pair encoding splits words unpredictably, creating multiple valid segmentations that corrupt message boundaries and cause decoding failures. These ambiguities impose hard capacity caps regardless of algorithmic sophistication---SparSamp suffers accuracy degradation from token ambiguity, while ShiMer cannot effectively boost entropy due to tokenization constraints \cite{qi2024provably}.
+
+This segmentation ambiguity persists even when sender and receiver employ identical LLMs and tokenizers. Because modern LLMs decompose words into subword units, and vocabularies frequently contain both complete words and their constituent components, any given text string admits multiple valid token representations. This multiplicity is compounded by the detokenization-retokenization gap: senders must convert tokens to plain text to conceal their transmission, while receivers must subsequently retokenize this text to recover hidden messages. Despite shared tokenization rules, receivers may select different token sequences than senders intended---a sender might encode a message using two separate tokens (``any'' and ``thing''), only for the receiver to retokenize the surface string as the single token ``anything''. Because LLMs operate autoregressively, a single divergent token choice alters the probability distribution for all subsequent predictions, causing total decoding failure for the remainder of the message. To address this white-box-specific challenge, researchers propose SyncPool, a mechanism that aggregates ambiguous tokens into pools and employs synchronized random number generators to ensure both parties select identical tokens \cite{qi2024provably}. Because this work embeds payload through reply targeting and Angle selection rather than through raw token identity (Section~\ref{sec:layer1}, Section~\ref{sec:layer2}), it does not inherit that detokenization gap.
+Layer~1 is a discrete parent index.
+Layer~2 is recovered by a semantic shortlist and an identification prompt, not by retokenizing a steganographic sampler's output.
+
+\subsubsection{White-box versus Black-box Trade-offs}
+
+The architectural choice between white-box and black-box access paradigms involves fundamental trade-offs. Across the reviewed corpus, only a minority of studies operate primarily through black-box or prompt-driven access (Table~\ref{tab:app_distribution}), while the majority employ white-box or hybrid methods. White-box methods typically assume access to internal language-model components such as token probabilities, decoding states, vocabularies, or model parameters, and some approaches additionally require expensive fine-tuning or retraining procedures to align the model distribution with steganographic objectives. While these methods can achieve strong statistical imperceptibility through distribution-aware generation (e.g., VAE-Stega and arithmetic-coding-based methods), they suffer from reduced accessibility, high computational cost, and deployment complexity.
+
+In contrast, black-box approaches operate through standard LLM APIs or user interfaces without requiring direct access to model internals or retraining, substantially improving practicality and usability. However, the distinction is primarily about \emph{model access}, not the absence of probabilistic coordination, as several black-box approaches still rely on shared probabilistic mechanisms, semantic distributions, or synchronized auxiliary structures between sender and receiver. Recent semantic black-box methods also prioritize robustness against paraphrasing, token perturbation, and noisy communication channels rather than purely token-level imperceptibility. Among the few peer-reviewed black-box methods currently available, LLM-Stega reports a capacity of 5.93~bpw with perplexity 165.76, illustrating that improved accessibility does not eliminate the PSIC trade-off between payload capacity, text quality, robustness, and security. Several recent systems further blur strict categorical boundaries by combining retrieval-, generation-, editing-, or substitution-based paradigms within hybrid steganographic frameworks.
+
+\subsubsection{Computational and Resource Constraints}
+
+Performance optimization conflicts directly with computational efficiency \cite{kaptchuk2021meteor}. Superior results demand increased resources and memory, particularly for large models with external knowledge bases \cite{ding2023discop}. Real-time latency constraints limit optimization depth, while performance degradation emerges at operational scale. Variable length sampling, rejection sampling, active repair, and token-level quality control significantly increase encoding or decoding complexity, and LLM-based steganography requires 3x to 5x more time than prior methods \cite{qi2024provably}. The Meteor system exemplifies hardware constraints, running nearly 50$\times$ slower on mobile devices compared to GPU environments. LLM-specific deployment obstacles compound these costs: hallucinations and nonsensical continuations can corrupt the covert bitstream or create detectable artifacts, while lossy transmission, editing, or platform-side normalization can irreversibly damage extraction. As model quality improves, steganalysis systems also improve, producing an arms race in which better generation does not automatically translate into better security.
+
+\subsubsection{Critical Unresolved Challenges}
+
+Foundational gaps persist across the field: theoretical security guarantees remain unestablished, resilience to advanced attacks is limited, evaluation frameworks lack standardization, responsible development guidelines are absent, non-English performance lags substantially, and real-world deployment testing remains insufficient. Several studies also surface unresolved concerns around reversibility, bias, and misuse potential, indicating that robust engineering alone will not be enough without clearer security and governance models \cite{zheng2022general,qiang2023natural,lin2024zero,bender2021dangers}.
+
+Quantitative evidence underscores several of these constraints. The PSIC effect creates a trade-off where increasing the embedding rate (e.g., to ${\sim}5$ bpw) strengthens anti-steganalysis but significantly degrades perceptual text quality \cite{yang2020vae}. Attack vulnerability is notable; for example, adaptive attacks can reduce bit accuracy to near-random levels (${\sim}0.6$) \cite{ji2024principled}. Segmentation ambiguity and entropy variability in communication channels are major impediments that lead to decoding failures and restricted practical capacity \cite{kaptchuk2021meteor}. Finally, computational optimizations induce significant overhead, with some reordering algorithms causing up to 69\% performance degradation in processing speed \cite{ding2023discop}.
+
+\subsection{Contextual Compatibility as a Research Direction}
+\label{sec:related-contextual-compatibility}
+
+The nearest precedents are context-aware systems such as Co-Stega and Hi-Stega, which retrieve or constrain external information so the cover fits a domain.
+This paper uses that context as the payload channel, not as extra fluency: bits choose a reply target and an Angle, and the generated comment is an ordinary reply in the thread (Section~\ref{sec:methodology}).
