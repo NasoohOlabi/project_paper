@@ -1,0 +1,71 @@
+\documentclass[tikz,border=7pt]{standalone}
+\input{style}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[pagebg] (-0.3,-0.25) rectangle (16.5,8.35);
+  \node[title, anchor=center] at (8.1,8.00) {Embedding domain: token vs communicative intent};
+
+  % LEFT panel
+  \fill[card] (0.2,0.25) rectangle (7.15,7.45);
+  \draw[line] (0.2,0.25) rectangle (7.15,7.45);
+  \node[font=\sffamily\bfseries\scriptsize] at (3.675,7.05) {Token / distribution (typical)};
+
+  \foreach \i/\tok/\bit in {0/tok/0, 1/a/1, 2/the/0, 3/[x]/1, 4/bit/0, 5/y/1} {
+    \pgfmathsetmacro{\xx}{0.55+\i*1.05}
+    \fill[lightslate] (\xx,5.85) rectangle (\xx+0.90,6.55);
+    \draw[line] (\xx,5.85) rectangle (\xx+0.90,6.55);
+    \node[font=\sffamily\tiny] at (\xx+0.45,6.20) {\tok};
+    \fill[rose] (\xx+0.28,5.45) rectangle (\xx+0.62,5.75);
+    \node[font=\sffamily\tiny\bfseries, text=card] at (\xx+0.45,5.60) {\bit};
+  }
+  \node[label] at (3.675,5.15) {payload bits sit under next-token samples};
+
+  % logit bars
+  \foreach \i/\h in {0/0.35, 1/1.05, 2/0.55, 3/0.85, 4/0.40, 5/0.70} {
+    \pgfmathsetmacro{\xx}{0.70+\i*0.95}
+    \fill[line] (\xx,3.55) rectangle (\xx+0.55,3.55+\h);
+  }
+  \node[label] at (3.675,3.25) {next-token distribution / logits};
+
+  \node[chip=slate] at (3.675,2.55) {sampling};
+  \fill[lightrose] (0.55,0.50) rectangle (6.80,1.85);
+  \draw[rose] (0.55,0.50) rectangle (6.80,1.85);
+  \node[font=\sffamily\tiny, text=rose, align=center, text width=5.8cm] at (3.675,1.175) {often needs white-box logits\\fragile in a threaded social context};
+
+  % arrow
+  \draw[teal, line width=2pt, ->] (7.35,4.05) -- (8.85,4.05);
+  \node[font=\sffamily\tiny\bfseries, text=teal, align=center] at (8.10,4.55) {shift to\\semantic layer};
+
+  % RIGHT panel
+  \fill[card] (9.05,0.25) rectangle (16.15,7.45);
+  \draw[teal, line width=1.1pt] (9.05,0.25) rectangle (16.15,7.45);
+  \node[font=\sffamily\bfseries\scriptsize, text=teal] at (12.60,7.05) {Semantic / intent (this work)};
+
+  \fill[lightslate] (9.45,5.95) rectangle (15.75,6.65);
+  \node[font=\sffamily\tiny\bfseries] at (12.60,6.30) {Original post};
+
+  \fill[card] (10.05,5.15) rectangle (15.15,5.80);
+  \draw[line] (10.05,5.15) rectangle (15.15,5.80);
+  \node[font=\sffamily\tiny] at (12.60,5.475) {Comment};
+
+  \fill[lightamber] (10.05,4.20) rectangle (15.15,5.00);
+  \draw[amber] (10.05,4.20) rectangle (15.15,5.00);
+  \node[font=\sffamily\tiny\bfseries, text=amber] at (12.60,4.60) {Layer 1: reply target};
+
+  \foreach \lab/\sel/\xx/\yy in {Angle 0/0/9.45/3.15, Angle 1/0/12.70/3.15, Angle $k$/1/9.45/2.30, Angle $n$/0/12.70/2.30} {
+    \ifnum\sel=1
+      \fill[lightteal] (\xx,\yy) rectangle (\xx+3.05,\yy+0.70);
+      \draw[teal, line width=1.1pt] (\xx,\yy) rectangle (\xx+3.05,\yy+0.70);
+      \node[font=\sffamily\tiny\bfseries, text=teal] at (\xx+1.525,\yy+0.35) {\lab};
+    \else
+      \fill[card] (\xx,\yy) rectangle (\xx+3.05,\yy+0.70);
+      \draw[line] (\xx,\yy) rectangle (\xx+3.05,\yy+0.70);
+      \node[font=\sffamily\tiny] at (\xx+1.525,\yy+0.35) {\lab};
+    \fi
+  }
+
+  \fill[lightteal] (9.45,0.50) rectangle (15.75,1.25);
+  \draw[teal] (9.45,0.50) rectangle (15.75,1.25);
+  \node[font=\sffamily\tiny\bfseries, text=teal] at (12.60,0.875) {Stego reply (visible comment)};
+\end{tikzpicture}
+\end{document}

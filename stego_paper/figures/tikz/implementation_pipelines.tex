@@ -1,0 +1,30 @@
+\documentclass[tikz,border=7pt]{standalone}
+\input{style}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[pagebg] (-0.25,-0.55) rectangle (16.45,5.35);
+
+  \foreach \i/\title/\fillc/\drawc/\temp/\x in {
+    1/Data load/bluewash/blueink/URL fetch/0.3,
+    2/Research/lightamber/amber/$T{=}0$/3.5,
+    3/Angle generation/lightteal/teal/$T{=}0$/6.7,
+    4/Stego encoding/pinkwash/pinkink/$T{=}0.7$/9.9,
+    5/Decode/greenwash/greenink/$T{=}0.7$/13.1} {
+    \fill[\fillc] (\x,2.05) rectangle (\x+2.85,4.55);
+    \draw[\drawc, line width=1.1pt] (\x,2.05) rectangle (\x+2.85,4.55);
+    \node[font=\sffamily\bfseries\scriptsize, align=center, text width=2.5cm] at (\x+1.425,3.85) {\title};
+    \node[chip=\drawc] at (\x+1.425,3.15) {\temp};
+    \begin{scope}[shift={(\x+1.55,2.45)}]
+      \pic {disk};
+    \end{scope}
+  }
+  \foreach \x in {3.25,6.45,9.65,12.85} {
+    \draw[thick, ->] (\x,3.30) -- (\x+0.25,3.30);
+  }
+
+  \node[note, align=center, text width=15.5cm] at (8.1,1.15) {%
+    Search-term and Angle stages replay at $T{=}0$ when inputs match.\\
+    Comment writing and Angle identification remain stochastic ($T{=}0.7$).};
+  \node[label] at (8.1,0.25) {Each stage writes an on-disk artifact the next stage can replay.};
+\end{tikzpicture}
+\end{document}
