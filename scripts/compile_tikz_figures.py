@@ -1,4 +1,4 @@
-"""Compile TikZ standalones to PDF/PNG and copy into both paper trees."""
+"""Compile shared TikZ standalones into the common figure directory."""
 
 from __future__ import annotations
 
@@ -8,11 +8,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TIKZ_DIR = ROOT / "stego_paper" / "figures" / "tikz"
-OUT_DIRS = [
-    ROOT / "stego_paper" / "figures",
-    ROOT / "stego_paper_ar" / "figures",
-]
+TIKZ_DIR = ROOT / "common" / "tikz"
+OUT_DIRS = [ROOT / "common" / "figures"]
 
 FIGURES = [
     "end_to_end_scenario",

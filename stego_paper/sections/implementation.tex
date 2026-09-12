@@ -50,11 +50,11 @@ Reference & \texttt{1} $\Vert$ index $j$ ($W(|D|)$ b) $\Vert$ offset ($W(|d_j|)$
 
 The single-comment encoder writes physical widths and wraps overflow with modulo.
 The multi-frame planner uses the lossless writer that stores only recoverable widths.
-% Figure drawn in figures/tikz/; compile with scripts/compile_tikz_figures.py.
+% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/implementation_pipelines}
+	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/implementation_pipelines}
 	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting replay and sender--receiver alignment.}
 	\caption{Implementation stages and persisted artifacts. Search-term and Angle stages replay at temperature 0 when the inputs match; comment writing and Angle identification remain stochastic.}
 	\label{fig:impl-pipelines}

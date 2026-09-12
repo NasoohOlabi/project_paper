@@ -85,7 +85,7 @@ Return JSON only: {"inserted_index": <1-10>, "confidence": <0-100>,
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_standout}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_standout}
 	\caption{كشف البارز، مثال مفصَّل. يُعرض على المحكّم المنشور كاملًا فيجد تعليقنا المُدرَج بثقة 93\%؛ أما تعليق \EN{ZLG}، المُدرج في مهمة منفصلة، فيُفلت من الرصد. وعبر المنشورات الـ244 كلها، يُضبط \EN{ZLG} أقل (28.3\% مقابل 51.6\%)، مقابل فرصة صدفة 10\%.}
 	\label{fig:judge-standout}
 \end{figure}
@@ -119,7 +119,7 @@ Return JSON only: {"weakest_index": <1-3>, "ranking": [<index>, <index>, <index>
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_weakest_text}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_weakest_text}
 	\caption{أضعف نص، مثال مفصَّل. في هذه اللوحة يسمّي المحكّم تعليقنا الأضعف؛ وعبر اللوحات الـ244 كلها ينعكس النمط، إذ يُسمّى \EN{ZLG} الأضعف أكثر (47.5\% مقابل 29.1\%) من الضابط البشري (23.4\%).}
 	\label{fig:judge-weak-link}
 \end{figure}
@@ -154,7 +154,7 @@ Return JSON only: {"suspicion": <0-100>, "tells": ["<tell>"], "evidence": "<shor
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_suspicion_auroc}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_suspicion_auroc}
 	\caption{مساحة تحت منحنى الشك، مثال مفصَّل. يُظهر هذا المنشور فجوة واسعة (82 مقابل 10) لا تُعمَّم: بالمتوسط عبر 244 زوجًا، فجوة \EN{AUROC} (0.661 مقابل 0.650) لا تُميَّز عن الصدفة ($p=0.385$).}
 	\label{fig:judge-suspicion}
 \end{figure}
@@ -189,7 +189,7 @@ Return JSON only: {"thread_index": <1-4>, "confidence": <0-100>, "evidence": "<s
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_thread_attribution}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_thread_attribution}
 	\caption{إسناد السلسلة، مثال مفصَّل. يضع المحكّم تعليقنا في مكانه الصحيح بثقة 88\%؛ وعبر 244 تعليقًا، تُسنِد طريقتنا بدقة أعلى من \EN{ZLG} (89.3\% مقابل 75.0\%)، وهو مؤشر على محتوى خاص بالسلسلة، لا على الطبيعية.}
 	\label{fig:judge-attribution}
 \end{figure}
@@ -218,7 +218,7 @@ Return JSON only: {"tone_formality": <1-5>, "length_norm": <1-5>, "mechanics": <
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_register_fit}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_register_fit}
 	\caption{ملاءمة السجل، مثال مفصَّل. يسجّل \EN{ZLG} أعلى في هذا المنشور (4/5 مقابل 2/5)، عكس المجموع: عبر 244 منشورًا متوسط طريقتنا أعلى (3.193 مقابل 2.791؛ اختبار إشارة مزدوج $p=0.00374$).}
 	\label{fig:judge-register}
 \end{figure}

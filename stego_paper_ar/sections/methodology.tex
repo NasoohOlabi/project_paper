@@ -11,7 +11,7 @@
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=0.78\linewidth]{figures/end_to_end_scenario}
+	\includegraphics[width=0.78\linewidth]{../common/figures/end_to_end_scenario}
 	\caption{سيناريو الاتصال الخفي: يستخدم أليس وبوب قناة عامة متسلسلة. يتشاركان إعدادات البحث وتوليد وجهات النظر، ويتفقان على نافذة زمنية. وما زال المستقبل الحي يحتاج إلى توريد تلك اللقطة؛ فهو لا يطبّق حد القطع بنفسه.}
 	\label{fig:end-to-end}
 \end{figure}
@@ -49,7 +49,7 @@
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/research_pipeline_deterministic}
+	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/research_pipeline_deterministic}
 	\caption{مرحلة البحث: توليد مصطلحات عند حرارة صفر من العنوان والنص والرابط؛ وصيغة طلب بحث ثابتة؛ وترشيح وجلب دفعي؛ وتجزئات سلامة تكشف الانحراف بين التشغيلات ولا تمنعه.}
 	\label{fig:research-pipeline}
 \end{figure*}
@@ -68,7 +68,7 @@
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{figures/temporal_sync_window}
+	\includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{../common/figures/temporal_sync_window}
 	\caption{النافذة الزمنية المقصودة: يبقي بوب التعليقات المؤرخة بما لا يتجاوز $t_{publish}-T_{sync}$. ولا يطبّق المستقبل الحي هذا المرشح؛ فهو يعيد البناء من المنشور المورَّد بعد حذف تعليق أليس.}
 	\label{fig:tsync}
 \end{figure*}
@@ -116,7 +116,7 @@
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{figures/two_layer_embedding}
+	\includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{../common/figures/two_layer_embedding}
 	\caption{تضمين ثنائي الطبقة: تختار الطبقة 1 هدف رد في سلسلة مسطحة بعمق أول؛ وتختار الطبقة 2 وجهة نظر من قائمة مشتركة؛ ثم يكتب نموذج لغة ردًا مرئيًا لذلك الزوج.}
 	\label{fig:two-layer}
 \end{figure*}
@@ -137,7 +137,7 @@
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/verify_and_decode_flow}
+	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/verify_and_decode_flow}
 	\caption{يعيد التحقق من جانب المرسل محاولة التوليد حتى يصيب فك ترميز صارم وجهة النظر المختارة. ويسترجع المستقبل الطبقة 2 بقائمة مختصرة جيب تمام حجمها 20، وإعادة ترتيب معجمية، وموجه \texttt{idx: N} عند حرارة 0.7.}
 	\label{fig:verify-decode}
 \end{figure*}
@@ -179,7 +179,7 @@
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/payload_compression_dp}
+	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/payload_compression_dp}
 	\caption{يبني ضغط الحمولة قاموس جلسة من نص السلسلة والبحث، ثم يبقي تحليل قاموس فقط حين يكون أقصر حصرًا من \EN{UTF-8}.}
 	\label{fig:compression}
 \end{figure*}

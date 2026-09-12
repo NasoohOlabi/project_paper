@@ -17,11 +17,11 @@ A language model then writes an ordinary visible reply for that pair.
 We do not use invisible characters.
 Before the comment is kept, the sender runs the same Angle decoder the receiver will use and retries if that decode misses.
 Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with this two-layer selection channel.
-% Figure drawn in figures/tikz/; compile with scripts/compile_tikz_figures.py.
+% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=0.78\linewidth]{figures/token_vs_intent_embedding}
+	\includegraphics[width=0.78\linewidth]{../common/figures/token_vs_intent_embedding}
 	\Description{Side-by-side contrast: token-level steganography versus two-layer semantic embedding (reply placement and thematic intent) in a discussion thread.}
 	\caption{Conceptual contrast between token-level embedding and our two-layer semantic embedding over a threaded discussion.}
 	\label{fig:token-vs-intent}

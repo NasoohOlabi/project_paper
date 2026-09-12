@@ -98,7 +98,7 @@ Return JSON only: {"inserted_index": <1-10>, "confidence": <0-100>,
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_standout}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_standout}
 \Description{A ten-comment Reddit thread with one machine-generated comment highlighted at slot one; a magnifying-glass annotation shows the judge picked that slot with 93 percent confidence; a bar chart below shows our method was picked out as the inserted comment 51.6 percent of the time versus 28.3 percent for ZLG, against a 10 percent chance baseline.}
 \caption{Standout detection, worked example. The judge is shown the full thread and finds our inserted comment at 93\% confidence; ZLG's comment, inserted in a separate task, is missed. Across all 244 posts, ZLG is picked out less often (28.3\% versus 51.6\%), against a 10\% chance baseline.}
 \label{fig:judge-standout}
@@ -131,7 +131,7 @@ Return JSON only: {"weakest_index": <1-3>, "ranking": [<index>, <index>, <index>
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_weakest_text}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_weakest_text}
 \Description{Three comment cards side by side labeled human control, our method, and ZLG baseline, with rank badges one, three, and one respectively showing the judge ranked our comment weakest; a bar chart below shows weakest-text pick rates of 23.4 percent for the human control, 29.1 percent for our method, and 47.5 percent for ZLG, against a 33 percent chance baseline.}
 \caption{Weakest-text pick, worked example. In this lineup the judge names our comment weakest; across 244 lineups the pattern reverses, with ZLG named weakest more often (47.5\% versus 29.1\%) than the human control (23.4\%).}
 \label{fig:judge-weak-link}
@@ -166,7 +166,7 @@ Return JSON only: {"suspicion": <0-100>, "tells": ["<tell>"], "evidence": "<shor
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_suspicion_auroc}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_suspicion_auroc}
 \Description{Three horizontal gauges from 0 (genuine) to 100 (machine-generated) showing the human control at 3, ZLG at 10, and our method at 82, with four suspicion tells listed for our method; a ROC-curve panel to the right shows both methods hugging the chance diagonal, with AUROC 0.661 for our method and 0.650 for ZLG.}
 \caption{Suspicion score, worked example. This post shows a wide gap (82 versus 10) that does not generalize: averaged over 244 pairs the AUROC gap (0.661 versus 0.650) is not distinguishable from chance ($p=0.385$).}
 \label{fig:judge-suspicion}
@@ -201,7 +201,7 @@ Return JSON only: {"thread_index": <1-4>, "confidence": <0-100>, "evidence": "<s
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_thread_attribution}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_thread_attribution}
 \Description{One comment card with an arrow pointing to the correct thread among four candidate thread cards, labeled judge's pick at 88 percent confidence, correct; a bar chart below shows attribution accuracy of 89.3 percent for our method and 75.0 percent for ZLG, against a 25 percent chance baseline.}
 \caption{Thread attribution, worked example. The judge correctly places our comment at 88\% confidence; across 244 comments our method attributes more accurately than ZLG (89.3\% versus 75.0\%), a sign of thread-specific content, not naturalness.}
 \label{fig:judge-attribution}
@@ -229,7 +229,7 @@ Return JSON only: {"tone_formality": <1-5>, "length_norm": <1-5>, "mechanics": <
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_register_fit}
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_register_fit}
 \Description{Five genuine comments shown as style anchors above two candidate cards, ZLG scored four out of five and our method scored two out of five on this post; a dot-and-whisker chart below shows the mean register-fit score across 244 posts is 3.193 for our method and 2.791 for ZLG, with 106 wins, 67 losses, and 71 ties.}
 \caption{Register-fit, worked example. ZLG scores higher on this post (4/5 versus 2/5), the reverse of the aggregate: over 244 posts our method's mean is higher (3.193 versus 2.791; paired sign-test $p=0.00374$).}
 \label{fig:judge-register}
