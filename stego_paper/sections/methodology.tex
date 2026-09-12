@@ -35,7 +35,11 @@ A temperature-0 prompt asks for at least 12 unique queries and aims for 15--20.
 The balanced profile then keeps 8 of them.
 Each kept query is sent with a fixed request shape (\texttt{first=1}, \texttt{count=10}).
 The live backend tries Google Custom Search first, then other engines if that path is empty.
-Duplicate links and PDFs are dropped, surviving URLs are fetched in batches of three, and the pipeline records hashes of the term list and of the fetched corpus so the same inputs can be replayed.
+Duplicate links and PDFs are dropped, surviving URLs are fetched in batches of three, and the pipeline records hashes of the term list and of the fetched corpus.
+Temperature 0 stabilizes the model stages, not the web: search rankings and page contents can change between Alice's retrieval and Bob's.
+The hashes let Bob detect that drift.
+They do not make his independent retrieval return Alice's material, and a mismatch there changes the Angle list that Layer~2 depends on.
+The reported workloads sidestep this by decoding against the sender's stored Angle list (Section~\ref{sec:waiting}).
 
 From that corpus the Angle runner, still at temperature 0, extracts an ordered list of Angles.
 Each Angle is a category, a source quote, and a tangent: the direction the reply should talk about.
@@ -49,12 +53,13 @@ They did not rebuild Angles after Layer~1 at encode time.
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{figures/research_pipeline_deterministic}
-	\Description{Horizontal pipeline from source inputs through deterministic search-term generation, fixed-shape search API, filtering and fetching, to a hashed search-results corpus for reproducibility.}
-	\caption{Research stage: temperature-0 term generation from title, body, and URL; a fixed search request shape; filtering and batched fetching; integrity hashes for replay.}
+	\Description{Horizontal pipeline from source inputs through temperature-0 search-term generation, fixed-shape search API, filtering and fetching, to a hashed search-results corpus used to detect drift between runs.}
+	\caption{Research stage: temperature-0 term generation from title, body, and URL; a fixed search request shape; filtering and batched fetching; integrity hashes that detect drift between runs but do not prevent it.}
 	\label{fig:research-pipeline}
 \end{figure*}
 
 \subsection{Waiting to publish}
+\label{sec:waiting}
 Alice needs time to research, pick a reply target, pick an Angle, and write a comment.
 If new comments arrive in that interval, Bob cannot be sure which parents Alice saw.
 The intended fix is an agreed duration $T_{sync}$: Alice snapshots the thread at $t_{start}$ and publishes at $t_{publish}$; Bob keeps comments with time at most $t_{publish}-T_{sync}$.
@@ -112,7 +117,8 @@ That injective path is used by the multi-frame planner in Section~\ref{sec:multi
 
 Leftover bits beyond $w_1+w_2$ are reported as unembedded.
 They are not dropped, and they are not in the visible comment.
-Recovering the full compressed string from one comment then needs sender-side metadata: audit-assisted recovery, which is what the reported workloads use.
+Reconstructing the full compressed string from one comment then needs sender-side metadata.
+We call this audit-assisted reconstruction, and it is what the reported workloads use; we reserve ``recovery'' for bits Bob decodes from the channel itself.
 % Figure drawn in figures/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure*}[t]
@@ -160,6 +166,8 @@ If the model returns a 1-based rank into the shortlist, that rank is mapped back
 If nothing parses, the top semantic candidate is used.
 Sender acceptance requires a strict parse and rejects those fallbacks.
 The reported workloads call the decoder in non-strict mode, pass the compressed bitstring from the encode audit, and may treat the audit's Angle index as authoritative when it disagrees with the discriminator.
+Their success counts therefore measure audit-assisted reconstruction, not the receiver described in this subsection.
+Sender-side acceptance still required one strict discriminator hit at encode time, but no reported number measures Bob decoding Layer~2 from the public thread alone.
 
 \subsection{Preparing a text payload}
 \label{sec:compression}
@@ -192,7 +200,7 @@ A payload that does not fit in $w_1+w_2$ physical bits leaves a surplus in the a
 \label{sec:multiframe}
 A longer payload can be split across several frames: each frame is one reply under one post.
 That planner is implemented.
-It is not the pipeline behind the reported LUCID and ZLG tables, which used the single-comment encoder plus audit-assisted decode.
+It is not the pipeline behind the reported LUCID and ZLG tables, which used the single-comment encoder plus audit-assisted reconstruction.
 
 On the multi-frame path the payload is protected, then compressed against an empty dictionary, which forces the UTF-8 mode of Section~\ref{sec:compression}.
 An Elias-gamma header then stores the frame count $F$ and the payload bit length.

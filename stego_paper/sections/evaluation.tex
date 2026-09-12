@@ -1,86 +1,241 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-This section reports two dated comparisons against the official zero-shot generative linguistic steganography (ZLG) baseline.
-They do not share a denominator, and they do not measure the same thing.
+We compared our comments with the official zero-shot generative linguistic steganography (ZLG) baseline on two separate runs.
+Table~\ref{tab:llm-judge} is a quality check. A language model scored a 244-post subset of a 2026-08-15 generation freeze, chosen where ZLG's output was unique.
+Table~\ref{tab:paired-results} is a 2026-07-30 configuration comparison on capacity, GPT-2 perplexity, length, lexical quality, and BERTScore.
+The two tables do not share a sample and do not measure the same thing.
 
-The current quality table is an independent LLM-judge evaluation on 244 unique-output pairs drawn from the 2026-08-15 LUCID versus ZLG freeze.
-Generation and acceptance rates for that source run sit beside it.
-The second table is a historical configuration comparison from 2026-07-30: 304 accepted pairs, then averaged over 100 source posts.
-Neither comparison is a capacity-matched, blind-receiver, decision-grade ranking.
+Two setup facts apply to every number below.
+First, none of them comes from the public-thread receiver described in Section~\ref{sec:methodology}.
+Project-side payloads were rebuilt from the sender's audit metadata (audit-assisted reconstruction), and the decoder was allowed to take the audit's Angle index over the discriminator's.
+Second, the LUCID campaign behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, not the balanced-profile budget of 6 retries after the first attempt that Section~\ref{sec:methodology} describes, so its success rate describes a lower-retry configuration.
 
-\subsection{How the numbers are computed}
+\subsection{How the printed metrics are computed}
 
-Recoverable capacity for our method is the uniquely decodable selection-channel width,
+Recoverable capacity is how many bits one comment can carry so that a unique choice maps back to a unique bit string.
+If a thread has 8 reply targets and 32 Angles, that is $3+5=8$ bits.
+In general the width is
 \[
 \lfloor\log_2 C\rfloor + \lfloor\log_2 A\rfloor,
 \]
-where $C$ is the number of reply targets (flattened comments plus the post itself) and $A$ is the number of flattened Angles.
-When a count is not a power of two, leftover index states are not counted.
-On the 2026-08-15 freeze this is the field stored as encoded payload bits for our method.
-ZLG's displayed bits are useful payload bits on successful hides in a capacity-matched setting, not ZLG's native token-channel maximum.
+where $C$ is the number of reply targets (flattened comments plus the post) and $A$ is the number of flattened Angles.
+Leftover index states that are not a power of two are not counted.
+On the 2026-08-15 freeze this is the encoded-payload-bits field for our method.
+ZLG's printed bits are useful payload bits on successful hides in a capacity-matched setting, not ZLG's native token-channel maximum.
 
-Reliability uses two denominators.
-Intention-to-treat counts every attempted sample, including failures.
-Successful-output-only scores, including the judge table, are computed only on accepted generations.
+Success rates count every attempted sample, including failures.
+Quality scores, including the judge table, are computed only on accepted generations.
 Failed attempts stay in the attempt counts.
 
-GPT-2 perplexity is $\exp(\sum \mathrm{NLL}/\sum \text{scored tokens})$ per text, then averaged.
+Several table cells average inside each source post first, then across posts.
+That makes the post the independent unit when several comments share a thread.
+
+GPT-2 perplexity is how surprised a GPT-2 model is by the comment.
+Per text it is $\exp(\sum \mathrm{NLL}/\sum \text{scored tokens})$, then averaged.
 Lower means more GPT-2-predictable, not more human.
-The 2026-08-15 freeze skipped GPT-2, KL, JSD, BLEU, ROUGE, and BERTScore, so those columns appear only in the historical table.
+The 2026-08-15 paired freeze did not score GPT-2, unigram KL, JSD, BLEU, ROUGE, or BERTScore.
+Those columns appear only in Table~\ref{tab:paired-results}.
 
-Word count on the 2026-08-15 freeze uses the publication tokenizer.
-The historical table used a narrower token pattern, so the two word-count rows are not interchangeable.
+The lexical-quality index is a 0--100 score from the comparison builder, version \texttt{lexical\_quality\_v2}.
+It is $100\times(0.55\,\mathrm{MATTR}+0.30\,\text{bigram score}+0.15\,\text{length sanity})$.
+MATTR is a moving-average type-token ratio with window 10.
+The bigram term penalizes a repeated two-word phrase.
+Length sanity is 1 for comments between 5 and 120 tokens and falls off outside that band.
+It is not a raw MATTR column.
 
-The independent LLM judge is not G-Eval.
-G-Eval is an older 1--5 quality path with a matched human reference.
-The judge here is a Codex Luna, high-reasoning run of five blinded criteria on already-generated comments.
-Slates are seeded.
+Word count in both printed tables is the number of \texttt{[A-Za-z0-9']+} tokens.
+The later publication runner uses a different word-boundary regex.
+Those lengths are not in these tables.
+
+BERTScore F1 in Table~\ref{tab:paired-results} is the unrescaled figure from the 2026-07-30 report.
+It is overlap with a human reference comment, not a security score.
+
+The LLM judge is not G-Eval.
+G-Eval is a separate 1--5 quality path with a matched human reference.
+Here we asked Codex Luna, at high reasoning, five blinded questions about already-generated comments.
+Lineups are seeded.
 The model is not deterministic.
-Scores are not a reader study, and they are not proof of authorship or security.
+These scores are not a reader study, and they are not proof of authorship or security.
 
-\subsection{Independent LLM judge}
+\subsection{LLM-judge quality check}
 
-The source freeze is 1{,}608 complete pairs from 339 posts.
-The judge subset keeps, in sorted pair order, the first pair per post whose ZLG comment is globally unique in that pool: 244 pairs from 244 posts, 244 unique texts on each arm.
-Ninety-five posts with no unique ZLG output were excluded.
-The five criteria reuse those pairs.
+We took one our-method comment and one ZLG comment per post.
+The source freeze had 1{,}608 complete pairs from 339 posts.
+The judge set keeps, in sorted pair order, the first pair per post whose ZLG comment is unique in that pool.
+That yields 244 pairs from 244 posts, 244 unique texts on each arm.
+Ninety-five posts with no unique ZLG output were dropped, so repeated ZLG covers would not dominate the scores.
+The judge set is therefore a unique-ZLG subset, not a random sample of the 339 posts.
+The five checks reuse those pairs.
 They are not 2{,}928 independent generated samples.
-All 2{,}928 tasks completed with no task errors.
+All 2{,}928 judge tasks completed with no task errors.
 
-\paragraph{Standout detection.}
+Figures~\ref{fig:judge-standout}--\ref{fig:judge-register} walk through one worked example each, all drawn from the same post so a reader can follow one thread across all five checks: \texttt{1lqu69t} on r/news, ``First immigration detainees arrive at Florida center in the Everglades.''
+The three candidate texts are our comment (``It feels like we are just spinning wheels by assuming opposition inevitably creates enemies without looking at the actual outcomes of these policies.''), ZLG's comment (``He told them to leave and if not they'd be killed.''), and, where the criterion uses one, a held-out human comment (``They're not calling it that. Also, what was Auschwitz, hmm?'').
+One post is an illustration, not a result; the bottom panel of each figure carries the actual 244-pair aggregate, and Table~\ref{tab:llm-judge} collects all five.
+
+\subsubsection{Standout Detection}
 One generated comment is inserted into nine human comments from the same post.
 The judge names the inserted slot.
 Chance is 10\%.
-Lower is better.
+Lower means the comment was harder to pick out as the extra one.
+Figure~\ref{fig:judge-standout} shows this test on the worked example: the judge caught our comment at slot 1 with 93\% confidence, calling it ``unusually generic, abstract, and detached from the thread's concrete facility details''; when ZLG's comment was the one inserted instead, the judge named a different, unrelated comment and missed ZLG entirely.
+That is the harder direction for our method, not the flattering one.
+The judge prompt supplies the full post and all ten numbered comments and asks for JSON only:
+{\footnotesize
+\begin{verbatim}
+Below is a discussion thread from r/{subreddit}, followed by 10 comments from that thread.
+Exactly one comment was machine-generated and inserted. Identify it. Judge conversational
+fit, specificity, stance, register, and habits; do not use length or polish as a cue.
+Post title: {post_title}
+Post body: {post_body}
+Comments:
+{numbered_comments}
+Return JSON only: {"inserted_index": <1-10>, "confidence": <0-100>,
+"runner_up_index": <1-10>, "evidence": "<short sentence>"}
+\end{verbatim}
+}
 
-\paragraph{Weakest text.}
-One slate holds a human comment, our comment, and the ZLG comment.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_standout}
+\Description{A ten-comment Reddit thread with one machine-generated comment highlighted at slot one; a magnifying-glass annotation shows the judge picked that slot with 93 percent confidence; a bar chart below shows our method was picked out as the inserted comment 51.6 percent of the time versus 28.3 percent for ZLG, against a 10 percent chance baseline.}
+\caption{Standout detection, worked example. The judge is shown the full thread and finds our inserted comment at 93\% confidence; ZLG's comment, inserted in a separate task, is missed. Across all 244 posts, ZLG is picked out less often (28.3\% versus 51.6\%), against a 10\% chance baseline.}
+\label{fig:judge-standout}
+\end{figure}
+
+\subsubsection{Weakest Text}
+One lineup holds a human comment, our comment, and the ZLG comment.
 The judge names the weakest of the three.
 Chance is 33\%.
 Lower is better.
-The three pick rates share the same 244 slates and sum to 100\%.
+The three pick rates share the same 244 lineups and sum to 100\%.
+Figure~\ref{fig:judge-weak-link} describes this test on the worked example: the judge ranked ZLG's terse reply as most human-plausible, the human control's comment second, and named our comment weakest, calling it ``vague, polished abstraction [that] does not clearly engage the thread.''
+Individual rounds like this one do not average to the aggregate: over the full set, our comments are named weakest less often than ZLG's (29.1\% versus 47.5\%), though still more often than the human control (23.4\%), which is the honest floor no method should expect to beat by much.
+The prompt gives the thread, the three replies in a fixed order, and asks for a full ranking plus the weakest index:
+{\footnotesize
+\begin{verbatim}
+Below is a discussion thread from r/{subreddit}, then three replies. Rank them from most
+human-plausible (1) to least (3), then name the weakest. Ignore length and ordering.
+Post title: {post_title}
+Post body: {post_body}
+Existing comments:
+{numbered_context_comments}
+Replies: 1. {candidate_1}
+2. {candidate_2}
+3. {candidate_3}
+Return JSON only: {"weakest_index": <1-3>, "ranking": [<index>, <index>, <index>],
+"evidence": "<short sentence>"}
+\end{verbatim}
+}
 
-\paragraph{Suspicion AUROC.}
-Each arm, including a held-out human comment, receives a 0--100 suspicion score.
-The table cell is Mann--Whitney AUROC of that method's scores against the human arm, with ties counted as 0.5.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_weakest_text}
+\Description{Three comment cards side by side labeled human control, our method, and ZLG baseline, with rank badges one, three, and one respectively showing the judge ranked our comment weakest; a bar chart below shows weakest-text pick rates of 23.4 percent for the human control, 29.1 percent for our method, and 47.5 percent for ZLG, against a 33 percent chance baseline.}
+\caption{Weakest-text pick, worked example. In this lineup the judge names our comment weakest; across 244 lineups the pattern reverses, with ZLG named weakest more often (47.5\% versus 29.1\%) than the human control (23.4\%).}
+\label{fig:judge-weak-link}
+\end{figure}
+
+\subsubsection{Suspicion AUROC}
+Each arm, including a held-out human comment, gets a 0--100 suspicion score.
+AUROC here is how often that method's comments look more suspicious than the human comments.
+Ties count as 0.5.
 Chance is 0.5.
-Lower is closer to the human distribution.
-The reported $p=0.385$ is a sign test on paired raw scores, not a test of the AUROC gap.
+Lower is closer to the human scores.
+The reported $p=0.385$ tests the paired raw scores, not the AUROC gap.
+Figure~\ref{fig:judge-suspicion} shows this test on the worked example, where the scores are unusually clean: our comment scored 82/100, flagged for four tells including \texttt{generic\_could\_fit\_any\_thread} and \texttt{register\_mismatch}; ZLG scored 10/100, ``no clear machine-generated signals''; the human control scored 3/100.
+That gap does not hold up in aggregate: averaged over all 244 pairs, AUROC is 0.661 for our method versus 0.650 for ZLG, and the paired test cannot tell the two apart ($p=0.385$).
+Each text is scored alone, with no lineup and no knowledge of the other arms:
+{\footnotesize
+\begin{verbatim}
+You moderate r/{subreddit}. Score the reviewed comment from 0 (genuine human) to 100
+(machine-generated or edited). Do not treat bluntness, mistakes, or poor punctuation
+as evidence.
+Post title: {post_title}
+Post body: {post_body}
+Recent comments:
+{numbered_context_comments}
+Comment: {candidate}
+Select applicable tells from generic_could_fit_any_thread, ignores_thread_specifics,
+register_mismatch, unnatural_phrasing, repetition, over_hedged, over_polished,
+contradicts_thread_facts, none.
+Return JSON only: {"suspicion": <0-100>, "tells": ["<tell>"], "evidence": "<short sentence>"}
+\end{verbatim}
+}
 
-\paragraph{Thread attribution.}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_suspicion_auroc}
+\Description{Three horizontal gauges from 0 (genuine) to 100 (machine-generated) showing the human control at 3, ZLG at 10, and our method at 82, with four suspicion tells listed for our method; a ROC-curve panel to the right shows both methods hugging the chance diagonal, with AUROC 0.661 for our method and 0.650 for ZLG.}
+\caption{Suspicion score, worked example. This post shows a wide gap (82 versus 10) that does not generalize: averaged over 244 pairs the AUROC gap (0.661 versus 0.650) is not distinguishable from chance ($p=0.385$).}
+\label{fig:judge-suspicion}
+\end{figure}
+
+\subsubsection{Thread Attribution}
 The judge picks which of four thread blurbs a comment belongs to.
 Chance is 25\%.
 Higher means stronger thread-specific linkage.
-This row is descriptive: there is no paired sign test in the scoring artifact.
+We report the rate.
+We did not run a significance test on this row.
+Figure~\ref{fig:judge-attribution} shows this test on the worked example: the judge correctly matched our comment back to its thread at 88\% confidence, citing its engagement with ``opposition to immigration enforcement policies.''
+It also matched ZLG's comment to a thread, but the wrong one, at 68\% confidence, because ``He told them to leave and if not they'd be killed'' reads generically enough to fit more than one immigration story.
+That pattern holds in aggregate: our method attributes more accurately than ZLG (89.3\% versus 75.0\%), which is not automatically a point in our favor here, since it means our comments carry more thread-specific content, not that they read more naturally.
+The comment is shown with no lineup context, only four candidate threads:
+{\footnotesize
+\begin{verbatim}
+Below is a comment and four discussion threads. The comment belongs to exactly one thread.
+Choose the most likely thread even if uncertain.
+Comment: {candidate}
+1. r/{sub_1} -- {title_1}
+{snippet_1}
+2. r/{sub_2} -- {title_2}
+{snippet_2}
+3. r/{sub_3} -- {title_3}
+{snippet_3}
+4. r/{sub_4} -- {title_4}
+{snippet_4}
+Return JSON only: {"thread_index": <1-4>, "confidence": <0-100>, "evidence": "<short sentence>"}
+\end{verbatim}
+}
 
-\paragraph{Register-fit.}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_thread_attribution}
+\Description{One comment card with an arrow pointing to the correct thread among four candidate thread cards, labeled judge's pick at 88 percent confidence, correct; a bar chart below shows attribution accuracy of 89.3 percent for our method and 75.0 percent for ZLG, against a 25 percent chance baseline.}
+\caption{Thread attribution, worked example. The judge correctly places our comment at 88\% confidence; across 244 comments our method attributes more accurately than ZLG (89.3\% versus 75.0\%), a sign of thread-specific content, not naturalness.}
+\label{fig:judge-attribution}
+\end{figure}
+
+\subsubsection{Register-Fit}
 Using five genuine subreddit comments as examples, the judge scores style on a 1--5 \texttt{overall} field.
 The table cell is the arithmetic mean of that field.
 Higher is better.
-This is the only criterion with a claimed paired post-cluster sign test.
+This is the only criterion with a paired per-post sign test in the scoring artifact.
+Figure~\ref{fig:judge-register} shows this test on the worked example: ZLG scored 4/5, ``concise, direct, consistent with the thread's plainspoken political commentary,'' while our comment scored 2/5, ``more formal and generic than the thread's concrete, informal, profanity-laced discussion.''
+This example runs against the aggregate: over 244 posts our method scores higher on average (3.193 versus 2.791), with 106 posts favoring us, 67 favoring ZLG, and 71 ties (paired sign-test $p=0.00374$), a real if modest effect, not a rout.
+Five real comments from the same subreddit anchor the judge's sense of local style before it scores the candidate:
+{\footnotesize
+\begin{verbatim}
+Five genuine r/{subreddit} comments show the community register:
+{numbered_context_comments}
+Judge this comment's style only: {candidate}
+Score tone_formality, length_norm, mechanics, insider_knowledge, and overall 1 (out of
+place) to 5 (indistinguishable).
+Return JSON only: {"tone_formality": <1-5>, "length_norm": <1-5>, "mechanics": <1-5>,
+"insider_knowledge": <1-5>, "overall": <1-5>, "evidence": "<short sentence>"}
+\end{verbatim}
+}
 
-\begin{table}[t]
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{figures/llm_judge_register_fit}
+\Description{Five genuine comments shown as style anchors above two candidate cards, ZLG scored four out of five and our method scored two out of five on this post; a dot-and-whisker chart below shows the mean register-fit score across 244 posts is 3.193 for our method and 2.791 for ZLG, with 106 wins, 67 losses, and 71 ties.}
+\caption{Register-fit, worked example. ZLG scores higher on this post (4/5 versus 2/5), the reverse of the aggregate: over 244 posts our method's mean is higher (3.193 versus 2.791; paired sign-test $p=0.00374$).}
+\label{fig:judge-register}
+\end{figure}
+
+\begin{table}[H]
 \centering
 \caption{Independent LLM-judge result on 244 unique-output post pairs (Codex Luna, high reasoning). Lower is better for standout, weakest-text, and suspicion AUROC. Higher is better for attribution and register-fit. Chance is 10\%, 33\%, 0.5, and 25\% for the first four rows.}
 \label{tab:llm-judge}
@@ -89,11 +244,11 @@ This is the only criterion with a claimed paired post-cluster sign test.
 \toprule
 Criterion & Our method & ZLG & Note \\
 \midrule
-Standout detection & 126/244 (51.6\%) & 69/244 (28.3\%) & ZLG less often picked in the 10-way slate \\
+Standout detection & 126/244 (51.6\%) & 69/244 (28.3\%) & ZLG picked less often in the 10-comment lineup \\
 Weakest text picked & 71/244 (29.1\%) & 116/244 (47.5\%) & Human control 57/244 (23.4\%) \\
-Suspicion AUROC vs human & 0.661 & 0.650 & No clear raw-score difference ($p=0.385$) \\
-Thread attribution & 89.3\% & 75.0\% & Descriptive only \\
-Register-fit (1--5) & 3.193 & 2.791 & $+0.402$ post-cluster; 106/67/71; $p=0.00374$ \\
+Suspicion AUROC vs human & 0.661 & 0.650 & Paired raw scores close ($p=0.385$) \\
+Thread attribution & 89.3\% & 75.0\% & Rate only; no significance test \\
+Register-fit (1--5) & 3.193 & 2.791 & $+0.402$ per post; 106/67/71; $p=0.00374$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -104,23 +259,28 @@ Register-fit favors our method on the paired sign test.
 Suspicion AUROC is close for both arms.
 None of this is a security result, and none of it uses the 244 unique-text count from the 2026-07-30 run.
 
-\subsection{Reliability of the 2026-08-15 source run}
+\subsection{How often generation succeeded}
 
-Do not mix these denominators with Table~\ref{tab:llm-judge}.
+These counts are not the 244-pair judge set.
 
 The LUCID campaign that fed the comparison requested 4{,}044 samples and recorded 2{,}543 successes and 1{,}501 failures (846 generation failures, 613 Angle mismatches, 42 invalid JSON).
-Every recorded success used audit-assisted compressed-bitstring recovery.
-That is an engineering check, not blind recovery from a public thread.
+Every recorded success reconstructed the compressed bitstring from sender-side audit metadata.
+That is an engineering check, not Bob reading a public thread alone.
+The campaign set \texttt{max\_retries} to 1.
+The balanced profile default is 6 retries after the first attempt, which is what Section~\ref{sec:methodology} describes.
 
 The ZLG freeze that produced the 1{,}608-pair source file attempted 1{,}711 hides, accepted 1{,}610, and decode-verified 1{,}603 (96 quality-gate failures, 5 leakage-check failures, 0 harness skips).
-Our paired rows in that freeze are also 1{,}608, all marked audit-assisted.
+Our paired rows in that freeze are also 1{,}608, all reconstructed from sender audit metadata.
 A later completed ZLG file in the same run directory processed all 2{,}543 LUCID successes and accepted 2{,}340.
 The judge did not use that larger file.
 
-On the 1{,}608-pair freeze, post-clustered means over 339 posts give recoverable encoded bits of 13.42 per comment for our method and 13.90 for ZLG, with ZLG higher on 230 posts (Holm-adjusted sign-test $p=1.49\times 10^{-14}$).
+On the 1{,}608-pair freeze, means over 339 posts give recoverable encoded bits of 13.42 per comment for our method and 13.90 for ZLG, with ZLG higher on 230 posts (Holm-adjusted sign-test $p=1.49\times 10^{-14}$).
 Mean word counts are 23.86 versus 15.91.
 The lexical-quality index is 99.37 versus 96.93.
-GPT-2 perplexity and unigram KL/JSD were not scored on this freeze.
+GPT-2 perplexity and unigram KL/JSD were not scored on this paired freeze.
+
+The same freeze also stores a self-consistency score (mean MiniLM cosine to other same-post outputs of that method), a shared naturalness gate (ours 1603/1608 passed, ZLG 1509/1608), and a repetition ratio.
+Self-consistency has no preferred direction for this comparison, so it is not a ranking row.
 
 \subsection{Historical configuration comparison}
 
@@ -128,19 +288,17 @@ Table~\ref{tab:paired-results} is the 2026-07-30 \texttt{context\_weighted\_v2} 
 Our method attempted 627 samples and succeeded on 554 (88.4\%).
 Failures were 70 Angle mismatches and 3 generation failures.
 ZLG was fed those 554 successes in a capacity-matched setting with EGS parameters $(\text{threshold}=0.01,\text{temperature}=0.7,\text{alpha}=1.0,\text{max\_bpw}=2)$.
-The original writeup counts 304 accepted of 554 (54.9\%), with 250 failures: 134 quality-gate, 94 cover-sentence extraction, 22 prompt leakage.
-A 2026-07-31 recode of the same run treats the 94 extraction skips as harness faults, leaving 460 server invocations, 304 accepted (66.1\%), and 156 genuine ZLG failures (133 quality-gate, 22 leakage, 1 HTTP 500).
-Keep both accountings.
-The metric table is successful-output-only, then averaged over 100 source posts.
+The original writeup counts 304 accepted of 554 (54.9\%).\footnote{A 2026-07-31 recode of the same run treats 94 cover-sentence extraction skips as harness faults, leaving 460 server invocations, 304 accepted (66.1\%), and 156 genuine ZLG failures (133 quality-gate, 22 leakage, 1 HTTP 500). The metric table still uses the 304 accepted pairs.}
+The metric table uses those accepted pairs, then averages over 100 source posts.
 
 The Angle list was capped at 32, so the angle component contributed at most 5 recoverable bits per frame.
-Project-side rows used audit-assisted compressed-bitstring recovery.
+Project-side rows reconstructed the compressed bitstring from sender-side audit metadata.
 The research pool was 167 posts, 35 of them sampled ten times, and 244 of the 304 our-method texts were unique.
 That 244 is not the judge subset.
 
 \begin{table}[t]
 \centering
-\caption{Historical post-clustered paired results over 100 source posts (2026-07-30). Lower is better for GPT-2 perplexity. Lexical quality is the run's 0--100 index, not a raw MATTR column. BERTScore F1 is the unrescaled figure from that report.}
+\caption{Historical paired results over 100 source posts (2026-07-30). Lower is better for GPT-2 perplexity. Lexical quality is the run's 0--100 index, not a raw MATTR column. BERTScore F1 is the unrescaled figure from that report.}
 \label{tab:paired-results}
 \small
 \begin{tabularx}{\columnwidth}{@{}l c c X@{}}
@@ -164,8 +322,8 @@ It is not a general upper bound on either system.
 \subsection{What these comparisons do not show}
 
 The judge result is about the unique-ZLG-output subset, one pair per post.
-The historical table is one angle-capacity configuration and one baseline service configuration, with reused posts and audit-assisted project-side recovery.
-KL/JSD, synthetic detection, and grouped passive-detector ROC-AUC are computed by later runners and are not in the 2026-08-15 freeze.
+The historical table is one angle-capacity configuration and one baseline service configuration, with reused posts and audit-assisted reconstruction on our side.
+KL/JSD, synthetic detection, and grouped passive-detector ROC-AUC are computed by later runners and are not in the 2026-08-15 paired freeze.
 A dedicated steganalysis and editing-attack evaluation remains future work.
 This paper does not claim a security advantage for either method.
 \FloatBarrier

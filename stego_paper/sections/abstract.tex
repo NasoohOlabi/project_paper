@@ -3,6 +3,6 @@
 This paper proposes a black-box linguistic steganography workflow for threaded discussions that hides bits by choosing a reply target and a semantic Angle, then writing an ordinary visible comment.
 The receiver recovers those choices from a supplied thread snapshot and shared operational parameters.
 The method does not use invisible characters, and it does not claim token-level or information-theoretic security.
-On an independent LLM-judge evaluation of 244 unique-output pairs, ZLG was identified in a 10-comment lineup less often (28.3\% versus 51.6\%), while our method scored higher on register-fit (3.193 versus 2.791, paired sign-test $p=0.00374$).
+On an independent LLM-judge evaluation of the 244-post unique-ZLG subset (not a random sample of the 339 source posts), ZLG was identified in a 10-comment lineup less often (28.3\% versus 51.6\%), while our method scored higher on register-fit (3.193 versus 2.791, paired sign-test $p=0.00374$).
 A separate historical configuration comparison succeeded on 554 of 627 project-side attempts and accepted 304 decode-verified ZLG outputs; recoverable capacity there was 15.14 versus 16.00 bits/comment.
-Project-side recovery in both artifacts is audit-assisted, so these figures are configuration evidence rather than a blind-receiver ranking.
+Project-side payloads in both artifacts were reconstructed from sender-side audit metadata, not decoded by the public-thread receiver, so these figures are configuration evidence rather than a receiver evaluation.
