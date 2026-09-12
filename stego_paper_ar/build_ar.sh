@@ -9,4 +9,4 @@ export BIBINPUTS="$SCRIPT_DIR/../common/references${BIBINPUTS:+:$BIBINPUTS}"
 export BSTINPUTS="$SCRIPT_DIR/../common${BSTINPUTS:+:$BSTINPUTS}"
 
 latexmk -cd -xelatex -interaction=nonstopmode -file-line-error \
-  "-outdir=$BUILD_DIR" "$SCRIPT_DIR/main.tex"
+  "-outdir=$BUILD_DIR" "$SCRIPT_DIR/main_ar.tex"

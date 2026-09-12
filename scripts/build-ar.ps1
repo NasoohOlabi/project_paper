@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 $PaperRoot = Split-Path -Parent $PSScriptRoot
-$SourceFile = Join-Path $PaperRoot 'stego_paper_ar\main.tex'
+$SourceFile = Join-Path $PaperRoot 'stego_paper_ar\main_ar.tex'
 $OutputDir = Join-Path $PaperRoot 'stego_paper_ar\build'
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null

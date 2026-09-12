@@ -3,7 +3,7 @@
 The repository contains two independent document roots:
 
 - `stego_paper/main.tex` — English paper
-- `stego_paper_ar/main.tex` — Arabic paper
+- `stego_paper_ar/main_ar.tex` — Arabic paper
 
 Both use XeLaTeX through `latexmk`. In Cursor, open either `main.tex` and run
 the **LaTeX Workshop: Build** command. The shared workspace recipe writes
