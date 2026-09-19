@@ -9,6 +9,14 @@
 5. don't modify the Agents.md file without me explicitly asking you to
 6. don't creat Verification Plans just focus on the writing style it's 100% garentee the chaanges will be applied if you simply adhear to LaTeX syntax
 
+## PDF delivery
+
+- When asked to move or upload the latest built PDFs to Proton Drive, use the synced folder `C:\Users\ASUS\Proton Drive\nasooholabi\My files`.
+- Create a folder named `YYYY-MM-DD_project_paper` using the delivery date. Put both latest PDFs inside it:
+  - `context-aware-linguistic-steganography_en.pdf`
+  - `context-aware-linguistic-steganography_ar.pdf`
+- Keep this folder convention for future deliveries. Do not overwrite an existing dated delivery folder; use a new dated folder when delivering a newer build.
+
 ## Preferred Translations
 
 - context-aware: مدرك للسياق
