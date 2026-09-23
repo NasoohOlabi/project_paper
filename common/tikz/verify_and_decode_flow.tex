@@ -22,7 +22,7 @@
 
   \draw[thick, ->] (3.85,6.80) -- (5.05,6.80);
 
-  \node[decision] (hit) at (6.85,6.80) {Strict decode\\hits selected\\Angle?};
+  \node[decision] (hit) at (6.85,6.80) {Strict decode\\hits selected\\topic?};
   \node[label, text=teal] at (8.55,7.55) {Yes};
 
   \draw[thick, ->] (8.55,6.80) -- (10.15,6.80);
@@ -37,7 +37,7 @@
   % retry
   \draw[amber, thick, ->]
     (6.85,5.85) -- (6.85,5.25) -- (2.45,5.25) -- (2.45,6.25);
-  \node[font=\sffamily\tiny, text=amber, align=center] at (4.65,4.90) {No $\cdot$ retry same parent + Angle\\then optional revision $\cdot$ budget 6};
+  \node[font=\sffamily\tiny, text=amber, align=center] at (4.65,4.90) {No $\cdot$ retry same parent + topic\\then optional revision $\cdot$ budget 6};
 
   % receiver
   \fill[card] (1.0,1.55) rectangle (3.5,3.15);

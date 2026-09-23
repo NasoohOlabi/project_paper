@@ -7,7 +7,7 @@
   \foreach \i/\title/\fillc/\drawc/\temp/\x in {
     1/Data load/bluewash/blueink/URL fetch/0.3,
     2/Research/lightamber/amber/$T{=}0$/3.5,
-    3/Angle generation/lightteal/teal/$T{=}0$/6.7,
+    3/Topic extraction/lightteal/teal/$T{=}0$/6.7,
     4/Stego encoding/pinkwash/pinkink/$T{=}0.7$/9.9,
     5/Decode/greenwash/greenink/$T{=}0.7$/13.1} {
     \fill[\fillc] (\x,2.05) rectangle (\x+2.85,4.55);
@@ -23,8 +23,8 @@
   }
 
   \node[note, align=center, text width=15.5cm] at (8.1,1.15) {%
-    Search-term and Angle stages replay at $T{=}0$ when inputs match.\\
-    Comment writing and Angle identification remain stochastic ($T{=}0.7$).};
+    Search-term and topic extraction stages replay at $T{=}0$ when inputs match.\\
+    Comment writing and topic identification remain stochastic ($T{=}0.7$).};
   \node[label] at (8.1,0.25) {Each stage writes an on-disk artifact the next stage can replay.};
 \end{tikzpicture}
 \end{document}

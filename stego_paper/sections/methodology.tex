@@ -14,15 +14,15 @@ Figure~\ref{fig:end-to-end} shows the end-to-end covert scenario and the shared 
 	\centering
 	\includegraphics[width=0.78\linewidth]{../common/figures/end_to_end_scenario}
 	\Description{Diagram of Alice and Bob communicating covertly over a public threaded forum: sender encodes and publishes a reply; receiver snapshots the thread using an agreed time window and shared operational parameters.}
-	\caption{Covert communication scenario: Alice and Bob use a public threaded channel. They share search and Angle-generation settings, and they agree on a temporal window. The live receiver still needs that snapshot to be supplied; it does not apply the cutoff itself.}
+	\caption{Covert communication scenario: Alice and Bob use a public threaded channel. They share search and comment topic generation settings, and they agree on a temporal window. The live receiver still needs that snapshot to be supplied; it does not apply the cutoff itself.}
 	\label{fig:end-to-end}
 \end{figure}
 
 \subsection{What Alice and Bob share}
 Both parties need accounts on the same threaded platform.
-They also share the search settings, the model used to generate search terms and Angles at \texttt{temperature=0}, and an agreed wait $T_{sync}$ between Alice's snapshot and the moment she publishes.
-Temperature 0 applies to reconstructing the document list and the Angle list.
-It does not apply to writing the comment or to the Angle discriminator, both of which run at the shared stego temperature (0.7 in the balanced profile used for the reported runs).
+They also share the search settings, the model used to generate search terms and comment topics at \texttt{temperature=0}, and an agreed wait $T_{sync}$ between Alice's snapshot and the moment she publishes.
+Temperature 0 applies to reconstructing the document list and the candidate comment topic list.
+It does not apply to writing the comment or identifying its topic, both of which run at the shared stego temperature (0.7 in the balanced profile used for the reported runs).
 
 \subsection{Building a shared document list}
 \label{sec:search_determinism}
@@ -38,16 +38,16 @@ The live backend tries Google Custom Search first, then other engines if that pa
 Duplicate links and PDFs are dropped, surviving URLs are fetched in batches of three, and the pipeline records hashes of the term list and of the fetched corpus.
 Temperature 0 stabilizes the model stages, not the web: search rankings and page contents can change between Alice's retrieval and Bob's.
 The hashes let Bob detect that drift.
-They do not make his independent retrieval return Alice's material, and a mismatch there changes the Angle list that Layer~2 depends on.
-The reported workloads sidestep this by decoding against the sender's stored Angle list (Section~\ref{sec:waiting}).
+They do not make his independent retrieval return Alice's material, and a mismatch there changes the comment topic list that Layer~2 depends on.
+The reported workloads sidestep this by decoding against the sender's stored topic list (Section~\ref{sec:waiting}).
 
-From that corpus the Angle runner, still at temperature 0, extracts an ordered list of Angles.
-Each Angle is a category, a source quote, and a tangent: the direction the reply should talk about.
+From that corpus, the topic extraction step, still at temperature 0, builds an ordered list of candidate comment topics.
+Each candidate contains a category, a source quote, and the subject the reply should discuss.
 The reported runs cap the list at 32.
-Angle generation is a prior stage.
+Comment-topic extraction is a prior stage.
 The single-comment encoder does not rebuild the list after choosing a reply target.
 The reported artifacts used a context-weighted sampler once per post at preparation time, usually with no selected parent.
-They did not rebuild Angles after Layer~1 at encode time.
+They did not rebuild the topic list after Layer~1 at encode time.
 % Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure*}[t]
@@ -60,7 +60,7 @@ They did not rebuild Angles after Layer~1 at encode time.
 
 \subsection{Waiting to publish}
 \label{sec:waiting}
-Alice needs time to research, pick a reply target, pick an Angle, and write a comment.
+Alice needs time to research, pick a reply target, choose a comment topic, and write a comment.
 If new comments arrive in that interval, Bob cannot be sure which parents Alice saw.
 The intended fix is an agreed duration $T_{sync}$: Alice snapshots the thread at $t_{start}$ and publishes at $t_{publish}$; Bob keeps comments with time at most $t_{publish}-T_{sync}$.
 Figure~\ref{fig:tsync} shows that intended window.
@@ -68,7 +68,7 @@ Figure~\ref{fig:tsync} shows that intended window.
 The live receiver does not apply this cutoff.
 It locates Alice's comment, deletes that subtree from a supplied post object, and rebuilds from what it was given.
 Supplying a snapshot that already matches Alice's view is an operational duty of the caller.
-The reported encode/decode workloads skip even that rebuild: they decode against the sender's already-angled post.
+The reported encode/decode workloads skip even that rebuild: they decode against the sender's post with its topic list already built.
 % Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure*}[t]
@@ -81,7 +81,7 @@ The reported encode/decode workloads skip even that rebuild: they decode against
 
 \subsection{Two choices carry the payload}
 The payload is not hidden in invisible characters, and it is not hidden by biasing next-token sampling.
-Bits choose two ordinary visible things: which comment Alice replies to, and which Angle she talks about.
+Bits choose two ordinary visible things: which comment Alice replies to, and what topic her comment discusses.
 A language model then writes a short public reply for that pair.
 Figure~\ref{fig:two-layer} shows the split.
 
@@ -91,11 +91,11 @@ The nested comment tree is flattened with a deterministic depth-first walk, so b
 There are $C=n+1$ reply targets: index 0 is a top-level reply to the post, and indices $1$ through $n$ are the flattened comments.
 If the index is not 0, the encoder also builds the parent chain of that comment so the writing prompt can see the local thread.
 
-\subsubsection{Which Angle to talk about}
+\subsubsection{Which topic the comment discusses}
 \label{sec:layer2}
-The Angle list from the research stage is flattened and given sequential \texttt{idx} values.
+The candidate comment topic list from the research stage is flattened and given sequential \texttt{idx} values.
 The next bits pick one index.
-At writing time that Angle's category, source quote, and tangent are interpolated into the prompt together with the post, the parent chain, and a research excerpt matched to the source quote.
+At writing time, the selected topic's category, source quote, and description are added to the prompt with the post, parent chain, and research excerpt matched to the source quote.
 
 \subsubsection{How many bits those choices can carry}
 \label{sec:channel-widths}
@@ -105,10 +105,10 @@ Layer~1 reads the first $w_1$ bits; Layer~2 reads the next $w_2$.
 Two widths must not be mixed.
 The \textit{physical} widths are the field sizes the single-comment encoder actually writes: $w_1=W(n)$ and $w_2=W(A-1)$, where $W(m)=\lceil\log_2(m+1)\rceil$ for $m>0$.
 If the integer from those bits is larger than the last valid choice, the encoder reduces it modulo the choice count.
-Generation still succeeds, but several bit patterns then land on the same parent or the same Angle, so those patterns cannot be inverted.
+Generation still succeeds, but several bit patterns then land on the same parent or the same topic, so those patterns cannot be inverted.
 
 The \textit{recoverable} widths drop that aliasing: $\lfloor\log_2 C\rfloor$ and $\lfloor\log_2 A\rfloor$.
-A thread with 8 reply targets and 32 Angles therefore carries $3+5=8$ uniquely decodable bits in one comment.
+A thread with 8 reply targets and 32 candidate topics therefore carries $3+5=8$ uniquely decodable bits in one comment.
 Capacity claims in Section~\ref{sec:evaluation} use these recoverable widths.
 
 The live single-comment encoder writes the physical widths and wraps with modulo.
@@ -124,20 +124,20 @@ We call this audit-assisted reconstruction, and it is what the reported workload
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{../common/figures/two_layer_embedding}
-	\Description{Two-panel diagram: left, Layer 1 selects a reply parent in a flattened comment tree; right, Layer 2 selects an index from a shared Angle set; payload bits split across both layers before LLM synthesis.}
-	\caption{Two-layer embedding: Layer 1 selects a reply target in a depth-first flattened thread; Layer 2 selects an Angle from a shared list; an LLM then writes a visible reply for that pair.}
+	\Description{Two-panel diagram: left, Layer 1 selects a reply parent in a flattened comment tree; right, Layer 2 selects a topic from a shared list; payload bits split across both layers before LLM synthesis.}
+	\caption{Two-layer embedding: Layer 1 selects a reply target in a depth-first flattened thread; Layer 2 selects a comment topic from a shared list; an LLM then writes a visible reply for that pair.}
 	\label{fig:two-layer}
 \end{figure*}
 
 \subsection{Writing the comment and checking that Bob can read it}
 A nonzero-temperature model writes a JSON array of exactly three short reply candidates.
 The balanced profile uses temperature 0.7.
-The prompt sees the post, the parent chain, the selected Angle, and a research excerpt.
-The Angle is a routing hint, not a label the comment should announce.
+The prompt sees the post, the parent chain, the selected topic, and a research excerpt.
+The topic guides the reply; the comment should not announce it as a label.
 
-Before anything is treated as published, the sender runs the same Angle decoder Bob will use, in strict mode.
-A candidate is accepted only if that decoder returns the selected Angle index and a contextuality gate passes.
-If none of the three candidates is accepted, the encoder retries with the same parent and the same Angle; the balanced budget is 6 retries after the first attempt.
+Before anything is treated as published, the sender runs the same topic-identification step Bob will use, in strict mode.
+A candidate is accepted only if that step returns the selected topic index and a contextuality gate passes.
+If none of the three candidates is accepted, the encoder retries with the same parent and topic; the balanced budget is 6 retries after the first attempt.
 On the last attempt it may also revise a near-miss with a contextual revision prompt rather than sampling a fresh triple.
 The live sender writes a local artifact.
 It does not post to Reddit.
@@ -147,8 +147,8 @@ Figure~\ref{fig:verify-decode} shows the verify loop next to Bob's recovery path
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/verify_and_decode_flow}
-	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then writes an artifact; receiver observes the comment, shortlists Angles by cosine similarity with lexical rerank, and uses an idx prompt to pick the Angle index.}
-	\caption{Sender-side verification retries synthesis until a strict decode hits the selected Angle. The receiver recovers Layer~2 with a cosine shortlist of 20, a lexical rerank, and a temperature-0.7 \texttt{idx: N} prompt.}
+	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then writes an artifact; receiver observes the comment, shortlists candidate topics by cosine similarity with lexical rerank, and uses an idx prompt to pick the topic index.}
+	\caption{Sender-side verification retries synthesis until a strict decode identifies the selected topic. The receiver recovers Layer~2 with a cosine shortlist of 20, a lexical rerank, and a temperature-0.7 \texttt{idx: N} prompt.}
 	\label{fig:verify-decode}
 \end{figure*}
 
@@ -156,16 +156,16 @@ Figure~\ref{fig:verify-decode} shows the verify loop next to Bob's recovery path
 Layer~1 is public: Bob sees which comment Alice replied to, and that parent maps back to the DFS index.
 
 Layer~2 is not printed as a number.
-The full reconstruction path locates Alice's comment by author, deletes it from the supplied post, optionally rebuilds research and Angles, then:
+The full reconstruction path locates Alice's comment by author, deletes it from the supplied post, optionally rebuilds research and the candidate topics, then:
 \begin{enumerate}
-    \item embeds the comment with a sentence transformer (\texttt{all-MiniLM-L6-v2}) and shortlists the nearest Angles, default 20 after a pool of up to 120;
+    \item embeds the comment with a sentence transformer (\texttt{all-MiniLM-L6-v2}) and shortlists the nearest candidate topics, default 20 after a pool of up to 120;
     \item reranks that shortlist with a mix of cosine similarity and lexical overlap;
-    \item asks the same stego model, at temperature 0.7, to return a single line \texttt{idx: N} naming the canonical Angle index.
+    \item asks the same stego model, at temperature 0.7, to return a single line \texttt{idx: N} naming the canonical topic index.
 \end{enumerate}
 If the model returns a 1-based rank into the shortlist, that rank is mapped back.
 If nothing parses, the top semantic candidate is used.
 Sender acceptance requires a strict parse and rejects those fallbacks.
-The reported workloads call the decoder in non-strict mode, pass the compressed bitstring from the encode audit, and may treat the audit's Angle index as authoritative when it disagrees with the discriminator.
+The reported workloads call the decoder in non-strict mode, pass the compressed bitstring from the encode audit, and may treat the audit's topic index as authoritative when it disagrees with the discriminator.
 Their success counts therefore measure audit-assisted reconstruction, not the receiver described in this subsection.
 Sender-side acceptance still required one strict discriminator hit at encode time, but no reported number measures Bob decoding Layer~2 from the public thread alone.
 
@@ -181,7 +181,7 @@ The compressor emits a one-bit mode flag, then either raw UTF-8 bits or a dictio
 It keeps the dictionary parse only when that parse is strictly shorter, so the worst-case expansion is one bit.
 Literal runs are capped at 250 characters; pointers are used only for matches of three characters or more.
 Field widths and the backward parse that chooses the token sequence are defined once in the shared codec; Section~\ref{sec:implementation} states the token layout.
-This compressor dictionary is not the same object as the Angle-input sampler.
+This compressor dictionary is not the same object as the comment topic sampler.
 Figure~\ref{fig:compression} sketches the two encoding modes.
 
 The first bit Layer~1 reads is therefore that mode flag.
@@ -206,6 +206,6 @@ On the multi-frame path the payload is protected, then compressed against an emp
 An Elias-gamma header then stores the frame count $F$ and the payload bit length.
 Each slot is sized by recoverable capacity from Section~\ref{sec:channel-widths}, the last slot is zero-padded, and the receiver rejects a stream whose declared $F$ or padding is wrong.
 This path uses the lossless writer, so the bits-to-selection map is injective.
-If the sampler is context-weighted, this is also the path that rebuilds Angles after resolving the parent of each frame.
+If the sampler is context-weighted, this is also the path that rebuilds candidate topics after resolving the parent of each frame.
 The receiver does not discover frames in the public thread; the caller must supply an ordered list of comment references.
 \FloatBarrier

@@ -61,9 +61,9 @@
   \fill[blueink] (0.25,2.25) rectangle (10.35,2.55);
   \node[font=\sffamily\tiny\bfseries, text=card, anchor=west] at (0.45,2.40) {Shared (not public)};
   \node[font=\sffamily\tiny, anchor=west, text width=9.6cm] at (0.45,1.55) {%
-    Search settings + Angle generation at $T{=}0$.\\
+    Search settings + comment topic generation at $T{=}0$.\\
     Agreed wait $T_{\mathrm{sync}}$ is operational.\\
-    $T{=}0$ rebuilds document and Angle lists. Comment writing and Angle ID run at $T{=}0.7$.};
+    $T{=}0$ rebuilds document and comment topic lists. Comment writing and topic identification run at $T{=}0.7$.};
 
   % Observer
   \begin{scope}[shift={(13.35,1.55)}]
@@ -71,7 +71,7 @@
     \draw[muted] (-2.55,-1.20) rectangle (2.85,1.15);
     \pic at (-1.55,0.15) {person={muted}{}};
     \node[font=\sffamily\tiny\bfseries, text=muted] at (0.55,0.55) {Passive observer};
-    \node[note, text width=3.1cm, align=left] at (0.65,-0.15) {sees the public thread\\does not share search / Angle settings};
+    \node[note, text width=3.1cm, align=left] at (0.65,-0.15) {sees the public thread\\does not share search / comment topic settings};
   \end{scope}
 \end{tikzpicture}
 \end{document}

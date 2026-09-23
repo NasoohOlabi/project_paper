@@ -12,10 +12,10 @@ A model can write a grammatical, low-perplexity sentence that does not belong in
 A comment that is fluent but off-topic is conspicuous to a human reader and to a semantic checker.
 
 We hide the payload in two conversational choices rather than in token probabilities.
-Bits select (i) which comment to reply to in a depth-first flattened thread, and (ii) which \textit{Angle} to talk about from a list both parties rebuild from the public thread and a shared research procedure.
+Bits select (i) which comment to reply to in a depth-first flattened thread, and (ii) which topic the comment will discuss from a list both parties rebuild from the public thread and a shared research procedure.
 A language model then writes an ordinary visible reply for that pair.
 We do not use invisible characters.
-Before the comment is kept, the sender runs the same Angle decoder the receiver will use and retries if that decode misses.
+Before the comment is kept, the sender runs the same topic-identification step as the receiver and retries if it identifies the wrong topic.
 Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with this two-layer selection channel.
 % Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
@@ -29,7 +29,7 @@ Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with this two-l
 
 The primary contributions of this paper are:
 \begin{itemize}
-    \item A two-layer, selection-channel embedding architecture for threaded discussions that encodes bits into reply targeting and Angle selection, with a visible reply rather than a hidden carrier.
+    \item A two-layer, selection-channel embedding architecture for threaded discussions that encodes bits into reply targeting and comment topic selection, with a visible reply rather than a hidden carrier.
     \item A receiver-side reconstruction pipeline (thread plus hash-checked research) that does not need white-box logits. The reported results do not exercise it alone: they use audit-assisted reconstruction from sender-side metadata.
     \item A closed-loop verification mechanism that simulates decoding before the comment is kept and retries synthesis, with an optional revision pass, under stochastic generation.
     \item An independent LLM-judge comparison on the 244-post unique-ZLG subset against the official ZLG baseline, reported with source-run success rates and a historical 304-pair configuration table, without a superiority claim.

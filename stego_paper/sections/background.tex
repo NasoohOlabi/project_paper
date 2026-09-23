@@ -12,7 +12,7 @@ Textual steganography methods are typically divided into \textbf{format-based} a
 Most published generative methods hide bits by biasing next-token sampling.
 Given a language model and a secret bitstream, the encoder restricts which token may be emitted at each step so that the choice encodes message bits.
 That process is often called steganographic sampling \cite{zhang2021provably}.
-It is the literature's token-level model, not the method in Section~\ref{sec:methodology}.
+It is the literature's token-level model, not the proposed method in this paper.
 Security arguments for those systems turn on keeping the modified sampling distribution close to the model's original next-token distribution.
 
 Traditional linguistic approaches offer limited embedding capacity and often leave statistical artifacts. Advances in deep learning and \textbf{Large Language Models (LLMs)} now enable generative methods that achieve higher text quality and more secure embedding. Evaluating such systems requires several dimensions of imperceptibility: \textbf{perceptual} (human naturalness), \textbf{statistical} (distributional similarity to natural text), and \textbf{cognitive} (semantic and contextual fidelity) \cite{ding2023context}.
@@ -39,15 +39,14 @@ Most schemes still tie message bits to token choices: at each step the bits pick
 White-box methods need the exact model and vocabulary, and they change the sampling distribution when they embed \cite{wu2024generative}.
 Black-box methods call an API or UI and never see logits.
 That is the distinction this paper needs.
-Section~\ref{sec:methodology} is black-box in that sense: the writer is an ordinary generation call.
-Layer~2 recovery is still an LLM identification prompt, not a logit decoder.
+In our method, the sender generates the reply through an ordinary LLM call. To recover Layer~2, the receiver asks an LLM to identify the comment topic without access to the model's token-probability distribution.
 
-New approaches, such as \textbf{LLM-Stega} \cite{wu2024generative}, explore black-box generative text steganography using the user interfaces (UIs) of LLMs, which removes any need to observe internal sampling distributions. Secret bits are encrypted and mapped onto a prearranged keyword set that steers generation, and candidate outputs from which the message cannot be recovered are discarded via reject sampling, preserving both extraction accuracy and semantic quality \cite{wu2024generative}.
+New approaches, such as \textbf{LLM-Stega} \cite{wu2024generative}, explore black-box generative text steganography using the user interfaces (UIs) of LLMs, which removes any need to observe internal sampling distributions. Secret bits are encrypted and mapped onto a prearranged keyword set that steers generation. Recovery checks provide feedback: candidates that do not allow message recovery are discarded, preserving both extraction accuracy and semantic quality \cite{wu2024generative}.
 
 \textbf{Co-Stega} retrieves recent posts and uses prompts to raise reply entropy, aiming at higher capacity in social-media settings without dropping fluency \cite{liao2024co}.
 
-\textbf{Zero-shot linguistic steganography} instead relies on in-context learning: covertext samples are supplied in the prompt, and the stego text is produced within a question--answer (QA) exchange, so the output reads as a natural reply rather than as free-standing generated text \cite{lin2024zero}.
+Some earlier white-box methods fine-tune a pretrained model on data from a target dataset and context \cite{yang2020vae,kaptchuk2021meteor,wang2023hi,pang2024fremax}. By contrast, \textbf{zero-shot generative linguistic steganography} does not fine-tune the model on that task-specific data; it relies on in-context learning instead. Covertext samples are supplied in the prompt, and the stego text is produced within a question--answer (QA) exchange, so the output reads as a natural reply rather than as free-standing generated text \cite{lin2024zero}.
 
 The increasing popularity of deep generative models has made it feasible for provably secure steganography to be applied in real-world scenarios, as they fulfill requirements for perfect samplers and explicit data distributions \cite{ding2023discop, kaptchuk2021meteor, qi2024provably}.
 
-LLM-based steganographic methods are typically evaluated on two primary axes: imperceptibility (perceptual, statistical, and cognitive measures) and embedding capacity (e.g., bits per token or bits per word). Imperceptibility evaluations may include automatic metrics (PPL, Distinct-n, KL/JSD) as well as human judgements; embedding capacity is usually reported as bits/token or overall embedding rate. Section~\ref{sec:related_work} surveys how the literature applies, evaluates, and constrains these methods in more detail.
+LLM-based steganographic methods are typically evaluated on two primary axes: imperceptibility (perceptual, statistical, and cognitive measures) and embedding capacity (e.g., bits per token or bits per word). Imperceptibility evaluations may include automatic metrics (PPL, Distinct-n, KL/JSD) as well as human evaluations; embedding capacity is usually reported as bits/token or overall embedding rate. Section~\ref{sec:related_work} surveys how the literature applies, evaluates, and constrains these methods in more detail.
