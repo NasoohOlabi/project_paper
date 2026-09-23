@@ -1,0 +1,57 @@
+{
+	"workbench.colorCustomizations": {
+		"activityBar.activeBackground": "#ffffff",
+		"activityBar.background": "#ffffff",
+		"activityBar.foreground": "#15202b",
+		"activityBar.inactiveForeground": "#15202b99",
+		"activityBarBadge.background": "#df9f9f",
+		"activityBarBadge.foreground": "#15202b",
+		"commandCenter.border": "#15202b99",
+		"sash.hoverBorder": "#ffffff",
+		"statusBar.background": "#ffffff",
+		"statusBar.foreground": "#15202b",
+		"statusBarItem.hoverBackground": "#e6e6e6",
+		"statusBarItem.remoteBackground": "#df9f9f",
+		"statusBarItem.remoteForeground": "#15202b",
+		"titleBar.activeBackground": "#ffffff",
+		"titleBar.activeForeground": "#15202b",
+		"titleBar.inactiveBackground": "#ffffff99",
+		"titleBar.inactiveForeground": "#15202b99",
+		"activityBarTop.activeBackground": "#ffffff",
+		"activityBarTop.background": "#ffffff",
+		"activityBarTop.foreground": "#15202b",
+		"activityBarTop.inactiveForeground": "#15202b99",
+		"commandCenter.foreground": "#15202b",
+		"statusBar.debuggingBackground": "#ffffff",
+		"statusBar.debuggingForeground": "#15202b"
+	},
+	"peacock.color": "#fff",
+	"latex-workshop.latex.outDir": "%DIR%/build",
+	"latex-workshop.latex.autoBuild.run": "onSave",
+	"latex-workshop.latex.recipe.default": "first",
+	"latex-workshop.latex.recipes": [
+		{
+			"name": "Build current paper",
+			"tools": ["latexmk-xelatex"]
+		}
+	],
+	"latex-workshop.latex.tools": [
+		{
+			"name": "latexmk-xelatex",
+			"command": "latexmk",
+			"env": {
+				"BIBINPUTS": "%WORKSPACE_FOLDER%/common/references//",
+				"BSTINPUTS": "%WORKSPACE_FOLDER%/common//"
+			},
+			"args": [
+				"-cd",
+				"-xelatex",
+				"-interaction=nonstopmode",
+				"-file-line-error",
+				"-synctex=1",
+				"-outdir=%OUTDIR%",
+				"%DOC%"
+			]
+		}
+	]
+}

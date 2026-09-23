@@ -1,3 +1,4 @@
+% !TEX program = xelatex
 \documentclass[12pt,a4paper]{article}
 
 %% ─── Language & Fonts ────────────────────────────────────────────────────────
@@ -108,7 +109,7 @@
 }
 
 %% ─── Math, Tables, Figures ───────────────────────────────────────────────────
-\usepackage{cite}
+\usepackage[nocompress,nospace]{cite}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{caption}
@@ -120,8 +121,14 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{placeins}
+\usepackage{float}
 \usepackage{url}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
+\graphicspath{{../common/figures/}{figures/}}
 
+\let\origcite\cite
+\DeclareRobustCommand{\arabiccite}[1]{\textenglish{\origcite{#1}}}
+\let\cite\arabiccite
 \captionsetup[figure]{skip=5pt, font=small}
 \captionsetup[table] {skip=5pt, font=small, position=top}
 \setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
@@ -243,7 +250,7 @@
 \begin{otherlanguage}{english}
 \renewcommand{\refname}{المراجع}
 \bibliographystyle{IEEEtran}
-\bibliography{references/bibliography}
+\bibliography{bibliography}
 \end{otherlanguage}
 
 \end{document}

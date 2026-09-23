@@ -19,8 +19,8 @@ knowledge-base
 *.pdfsync
  indent.log
  
-# VS Code
-.vscode/
+# Keep workspace editor settings so both paper roots share the build recipes.
+build/
 **.fdb_latexmk
 .gitignore
 **.log

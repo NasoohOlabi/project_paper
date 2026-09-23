@@ -1,4 +1,5 @@
-\documentclass[manuscript,screen,nonacm]{sections/acmart}
+% !TEX program = xelatex
+\documentclass[manuscript,screen,nonacm]{../common/acmart}
 \setcitestyle{numbers,sort&compress}
 \settopmatter{printacmref=false}
 \renewcommand\footnotetextcopyrightpermission[1]{}
@@ -13,8 +14,10 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{placeins}
+\usepackage{float}
 \usepackage{array}
 \usepackage{multirow}
+\graphicspath{{../common/figures/}{figures/}}
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\floatsep}{6pt plus 2pt minus 2pt}
 \setlength{\intextsep}{6pt plus 2pt minus 2pt}
@@ -81,6 +84,6 @@ This manuscript is a preprint dated September 2, 2026.
 \input{sections/conclusion.tex}
 
 \bibliographystyle{unsrtnat}
-\bibliography{references/bibliography}
+\bibliography{bibliography}
 
 \end{document}
