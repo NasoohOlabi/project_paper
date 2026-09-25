@@ -9,7 +9,7 @@ The two tables do not share a sample and do not measure the same thing.
 Two setup facts apply to every number below.
 First, none of them comes from the public-thread receiver described in Section~\ref{sec:methodology}.
 Project-side payloads were rebuilt from the sender's audit metadata (audit-assisted reconstruction), and the decoder was allowed to take the audit's comment topic index over the discriminator's.
-Second, the LUCID campaign behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, not the balanced-profile budget of 6 retries after the first attempt that Section~\ref{sec:methodology} describes, so its success rate describes a lower-retry configuration.
+Second, the run behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, not the balanced-profile budget of 6 retries after the first attempt that Section~\ref{sec:methodology} describes, so its success rate describes a lower-retry configuration.
 
 \subsection{How the printed metrics are computed}
 
@@ -263,7 +263,7 @@ None of this is a security result, and none of it uses the 244 unique-text count
 
 These counts are not the 244-pair judge set.
 
-The LUCID campaign that fed the comparison requested 4{,}044 samples and recorded 2{,}543 successes and 1{,}501 failures (846 generation failures, 613 comment topic mismatches, 42 invalid JSON).
+The run that fed the comparison requested 4{,}044 samples and recorded 2{,}543 successes and 1{,}501 failures (846 generation failures, 613 comment topic mismatches, 42 invalid JSON).
 Every recorded success reconstructed the compressed bitstring from sender-side audit metadata.
 That is an engineering check, not Bob reading a public thread alone.
 The campaign set \texttt{max\_retries} to 1.
@@ -271,7 +271,7 @@ The balanced profile default is 6 retries after the first attempt, which is what
 
 The ZLG freeze that produced the 1{,}608-pair source file attempted 1{,}711 hides, accepted 1{,}610, and decode-verified 1{,}603 (96 quality-gate failures, 5 leakage-check failures, 0 harness skips).
 Our paired rows in that freeze are also 1{,}608, all reconstructed from sender audit metadata.
-A later completed ZLG file in the same run directory processed all 2{,}543 LUCID successes and accepted 2{,}340.
+A later completed ZLG file in the same run directory processed all 2{,}543 successes from that run and accepted 2{,}340.
 The judge did not use that larger file.
 
 On the 1{,}608-pair freeze, means over 339 posts give recoverable encoded bits of 13.42 per comment for our method and 13.90 for ZLG, with ZLG higher on 230 posts (Holm-adjusted sign-test $p=1.49\times 10^{-14}$).

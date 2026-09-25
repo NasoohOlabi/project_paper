@@ -6,7 +6,7 @@ Capacity is whatever those two lists uniquely decode.
 The design does not insert bits into next-token sampling, and it does not need white-box logits.
 
 An independent LLM-judge run on the 244-post unique-ZLG subset found ZLG harder to pick in a same-thread lineup (28.3\% versus 51.6\% standout detection) and our method higher on register-fit (3.193 versus 2.791, paired sign-test $p=0.00374$).
-The source campaign, run with one retry rather than the default six, succeeded on 2{,}543 of 4{,}044 LUCID attempts, all by audit-assisted reconstruction from sender-side metadata.
+The source campaign, run with one retry rather than the default six, succeeded on 2{,}543 of 4{,}044 attempts, all by audit-assisted reconstruction from sender-side metadata.
 A historical 2026-07-30 configuration, averaged over 100 posts, had recoverable capacity 15.14 versus 16.00 bits/comment and GPT-2 perplexity 68.15 versus 53.70 (ours versus ZLG), with 554 of 627 project-side attempts succeeding.
 Those two artifacts answer different questions.
 Neither is a blind, capacity-matched ranking, and neither establishes resistance to an adaptive steganalyst.
