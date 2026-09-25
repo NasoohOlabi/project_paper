@@ -1,6 +1,23 @@
 # Arabic translation audit
 
-25 September 2026. Editorial audit of `stego_paper_ar/main_ar.tex` and all eight files in `stego_paper_ar/sections/`, read against the corresponding English paper. **No paper text was changed in this audit.** The links below point to the current source lines. `P0` means broken Arabic or a changed technical claim, `P1` means a clear calque or misleading term, `P2` means awkward but intelligible Arabic, and `OK` means no translation issue found in that paragraph. A finding is a proposed editing target, not an approved replacement.
+25 September 2026. Editorial audit of `stego_paper_ar/main_ar.tex` and all eight files in `stego_paper_ar/sections/`, read against the corresponding English paper. **No paper text was changed during the initial audit.** The links below point to source lines; they may shift as revisions proceed. `P0` means broken Arabic or a changed technical claim, `P1` means a clear calque or misleading term, `P2` means awkward but intelligible Arabic, and `OK` means no translation issue found in that paragraph. A finding is a proposed editing target, not an approved replacement.
+
+Revision log: 2026-09-25 — conclusion rewritten; «بلا لقطات» replaced at all four `zero-shot` sites; methodology, implementation, introduction, background, abstract, evaluation, and many related-work passages rewritten. The Arabic PDF was rebuilt after each editing batch. The evaluation's word-count definition and omitted lexical-quality and BERTScore explanations were restored. Both language versions now state that $p=0.385$ tests paired raw suspicion scores, not the AUROC difference. The findings below record the **initial audit**; their quotations are retained for traceability and do not necessarily describe the revised text.
+
+## Remediation status — 25 September 2026
+
+| Section | Status | Remaining review |
+| --- | --- | --- |
+| Front matter and abstract | Revised | The abstract's result now names the specific three-comment judgment. |
+| Introduction | Revised | Check that the domain-dataset account of topic-list construction matches the detailed method. |
+| Background | Revised | Check cited descriptions of individual systems against their sources. |
+| Methodology | Revised | Verify the domain-dataset wording against the actual search and topic-extraction procedure. |
+| Implementation | Revised | Token-layout table inspected on PDF page 31; text and formulas remain legible. |
+| Evaluation | Revised | The self-consistency, naturalness-gate, and repetition measures now appear in Arabic; the historical caption was rewritten. |
+| Related work | Revised | Check source-dependent numerical claims against the cited studies. |
+| Conclusion | Revised | No remaining translation finding from the initial audit. |
+
+All eight `P0` Arabic findings below have been edited. The translation pass is complete; the remaining items concern verification of source-dependent claims and the exact topic-list inputs. The English PSIC discussion remains a separate source-language concern.
 
 The English draft also contains strained language. Its wording is evidence of the intended claim, not a template to translate word for word. Some Arabic passages diverge from the English draft; those are marked `ALIGN` because an author decision is needed before rewriting either version. Established author choices in `ARABIC_WRITING_GUIDELINES.md` take precedence, including **موضوع التعليق**, **موضع الرد**, **ملاءمة السياق**, and leaving *Perplexity* untranslated.
 
@@ -214,8 +231,8 @@ The English draft also contains strained language. Its wording is evidence of th
 
 | Location | Rating | Paragraph-level finding |
 | --- | --- | --- |
-| [¶1, method](stego_paper_ar/sections/conclusion.tex#L4) | P0 | «تخفي هذه العمل» has wrong gender; «تانك القائمتان» appears to be a typo for “those two lists”; «سعة هي ما تفكّه ...» is not intelligible. «هدف رد», «نقاش متسلسل», and «لا يدرج التصميم البتات في أخذ عينات الرمز التالي» need a fresh Arabic account of the two selection choices and uniquely recoverable capacity. |
-| [¶2, findings and next work](stego_paper_ar/sections/conclusion.tex#L8) | P1 | «تشغيل محكّم», «ذات مخرج ZLG فريد», «تمييز ZLG أصعب في قائمة», «كشف البارز», «حملة المصدر», «إعداد ... التاريخي», «ويجيب الأثران», «ترتيبًا أعمى متطابق السعة», «يجمد ... بيان مصادر متناظرًا», and «يفك الترميز بلا ملفات تدقيق» compress too many English report labels into one paragraph. Divide findings, limitations, and next measurements. Keep all dates, denominators, and conditional claims. |
+| [¶1, method](stego_paper_ar/sections/conclusion.tex#L4) | تم 2026-09-25 | أعيدت كتابة وصف الاختيارين والسعة، وصُححت أخطاء «هذه العمل» و«تانك القائمتان». |
+| [¶2, findings and next work](stego_paper_ar/sections/conclusion.tex#L8) | تم 2026-09-25 | فُصلت نتائج التشغيلين وقيودهما والعمل المقبل، مع حفظ الأرقام والتواريخ. |
 
 ## Cross-cutting checks before revision
 

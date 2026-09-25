@@ -145,7 +145,7 @@ Chance is 0.5.
 Lower is closer to the human scores.
 The reported $p=0.385$ tests the paired raw scores, not the AUROC gap.
 Figure~\ref{fig:judge-suspicion} shows this test on the worked example, where the scores are unusually clean: our comment scored 82/100, flagged for four tells including \texttt{generic\_could\_fit\_any\_thread} and \texttt{register\_mismatch}; ZLG scored 10/100, ``no clear machine-generated signals''; the human control scored 3/100.
-That gap does not hold up in aggregate: averaged over all 244 pairs, AUROC is 0.661 for our method versus 0.650 for ZLG, and the paired test cannot tell the two apart ($p=0.385$).
+The example's wide score gap does not hold up across all 244 pairs: AUROC is 0.661 for our method versus 0.650 for ZLG, and a paired test of the raw suspicion scores does not show a clear difference ($p=0.385$).
 Each text is scored alone, with no lineup and no knowledge of the other arms:
 {\footnotesize
 \begin{verbatim}
@@ -168,7 +168,7 @@ Return JSON only: {"suspicion": <0-100>, "tells": ["<tell>"], "evidence": "<shor
 \centering
 \includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_suspicion_auroc}
 \Description{Three horizontal gauges from 0 (genuine) to 100 (machine-generated) showing the human control at 3, ZLG at 10, and our method at 82, with four suspicion tells listed for our method; a ROC-curve panel to the right shows both methods hugging the chance diagonal, with AUROC 0.661 for our method and 0.650 for ZLG.}
-\caption{Suspicion score, worked example. This post shows a wide gap (82 versus 10) that does not generalize: averaged over 244 pairs the AUROC gap (0.661 versus 0.650) is not distinguishable from chance ($p=0.385$).}
+\caption{Suspicion score, worked example. This post shows scores of 82 versus 10. Across 244 pairs, AUROC is 0.661 for our method and 0.650 for ZLG; the paired test of raw suspicion scores shows no clear difference ($p=0.385$).}
 \label{fig:judge-suspicion}
 \end{figure}
 
