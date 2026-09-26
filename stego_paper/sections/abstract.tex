@@ -1,7 +1,9 @@
 % Keep the abstract high-level: the detailed encode/decode workflow belongs in the main text,
 % and this section should help future agents grasp the contribution quickly.
 This paper proposes a black-box linguistic steganography workflow for threaded discussions that hides bits by choosing a reply target and a comment topic, then writing an ordinary comment.
-The receiver recovers those choices from a supplied thread snapshot and shared operational parameters, without relying on any hidden markup.
+The receiver is designed to recover those choices from a supplied thread snapshot and shared operational parameters, without relying on any hidden markup.
 The method does not use invisible characters.
-To check that the generated comments read naturally, we scored them on several criteria with a separate language model---not the one used to generate them---against comments from an earlier baseline method.
-That judge flagged our comments as machine-written less often than the baseline's and rated them higher on register-fit.
+To assess generated comments, a separate language model evaluated 244 paired outputs on several criteria.
+In the three-reply task, it chose our comment as the least human-like in 29.1\% of cases, compared with 47.5\% for ZLG, and rated our comments higher on register fit (3.193 versus 2.791).
+In the ten-comment insertion task, it identified our comment more often than ZLG's (51.6\% versus 28.3\%).
+These task-specific judgments do not establish steganographic security or independent payload recovery.

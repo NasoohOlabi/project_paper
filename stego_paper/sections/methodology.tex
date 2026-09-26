@@ -107,9 +107,10 @@ The \textit{physical} widths are the field sizes the single-comment encoder actu
 If the integer from those bits is larger than the last valid choice, the encoder reduces it modulo the choice count.
 Generation still succeeds, but several bit patterns then land on the same parent or the same topic, so those patterns cannot be inverted.
 
-The \textit{recoverable} widths drop that aliasing: $\lfloor\log_2 C\rfloor$ and $\lfloor\log_2 A\rfloor$.
-A thread with 8 reply targets and 32 candidate topics therefore carries $3+5=8$ uniquely decodable bits in one comment.
-Capacity claims in Section~\ref{sec:evaluation} use these recoverable widths.
+The safe fixed-width budget for two independently coded power-of-two subsets is $\lfloor\log_2 C\rfloor$ and $\lfloor\log_2 A\rfloor$.
+For example, $C=3$ and $A=5$ give $1+2=3$ distinguishable bits; the remaining physical index states alias under modulo.
+This budget is neither Shannon capacity nor achieved useful throughput. The lossless writer described below makes these selections injective, but the reported single-comment runs used the modulo writer and sender-audit reconstruction.
+Section~\ref{sec:evaluation} distinguishes this available fixed-width selection budget from payload presented and payload independently verified by the receiver.
 
 The live single-comment encoder writes the physical widths and wraps with modulo.
 A separate lossless writer restricts each field to the recoverable width, then stores that value at the physical width.

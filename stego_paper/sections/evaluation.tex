@@ -8,21 +8,18 @@ The two tables do not share a sample and do not measure the same thing.
 
 Two setup facts apply to every number below.
 First, none of them comes from the public-thread receiver described in Section~\ref{sec:methodology}.
-Project-side payloads were rebuilt from the sender's audit metadata (audit-assisted reconstruction), and the decoder was allowed to take the audit's comment topic index over the discriminator's.
+Project-side payloads were rebuilt from the sender's audit metadata (audit-assisted reconstruction), and the decoder was allowed to take the audit's comment topic index over the discriminator's. The ZLG reveal lane was token-assisted: it received the sender's token IDs and an externally supplied payload length, so it does not represent visible-text-only recovery.
 Second, the run behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, not the balanced-profile budget of 6 retries after the first attempt that Section~\ref{sec:methodology} describes, so its success rate describes a lower-retry configuration.
 
 \subsection{How the printed metrics are computed}
 
-Recoverable capacity is how many bits one comment can carry so that a unique choice maps back to a unique bit string.
-If a thread has 8 reply targets and 32 candidate comment topics, that is $3+5=8$ bits.
-In general the width is
+The available fixed-width selection budget for two independently coded power-of-two subsets is $3+5=8$ bits when there are 8 reply targets and 32 candidate topics. In general this safe budget is
 \[
 \lfloor\log_2 C\rfloor + \lfloor\log_2 A\rfloor,
 \]
 where $C$ is the number of reply targets (flattened comments plus the post) and $A$ is the number of candidate comment topics.
-Leftover index states that are not a power of two are not counted.
-On the 2026-08-15 freeze this is the encoded-payload-bits field for our method.
-ZLG's printed bits are useful payload bits on successful hides in a capacity-matched setting, not ZLG's native token-channel maximum.
+For non-power-of-two choice counts, leftover physical index states are excluded; for example, $C=3,A=5$ yield $1+2=3$ distinguishable bits, while modulo aliases the remaining states. This is a fixed-width selection budget, not Shannon capacity or achieved useful throughput.
+On the 2026-08-15 freeze, the stored 13.42 bits/comment for our method is this available budget, not a measurement of independently embedded or recovered useful payload. The audit-assisted reconstruction does not establish receiver recovery. The ZLG values describe its reported successful payload in a capacity-matched setting, not its native token-channel maximum, and its reveal used sender token IDs plus externally supplied payload length.
 
 Success rates count every attempted sample, including failures.
 Quality scores, including the judge table, are computed only on accepted generations.
@@ -112,7 +109,7 @@ Lower is better.
 The three pick rates share the same 244 lineups and sum to 100\%.
 Figure~\ref{fig:judge-weak-link} describes this test on the worked example: the judge ranked ZLG's terse reply as most human-plausible, the human control's comment second, and named our comment weakest, calling it ``vague, polished abstraction [that] does not clearly engage the thread.''
 Individual rounds like this one do not average to the aggregate: over the full set, our comments are named weakest less often than ZLG's (29.1\% versus 47.5\%), though still more often than the human control (23.4\%), which is the honest floor no method should expect to beat by much.
-The prompt gives the thread, the three replies in a fixed order, and asks for a full ranking plus the weakest index:
+For each task, a seeded random generator keyed by the post and pair IDs shuffles the three replies. The permutation is reproducible for that task but varies across tasks. All six reply orders appeared across the 244 saved tasks, with 36 to 45 tasks per order. The prompt gives the thread and replies, then asks for a full ranking plus the weakest index:
 {\footnotesize
 \begin{verbatim}
 Below is a discussion thread from r/{subreddit}, then three replies. Rank them from most
@@ -274,7 +271,7 @@ Our paired rows in that freeze are also 1{,}608, all reconstructed from sender a
 A later completed ZLG file in the same run directory processed all 2{,}543 successes from that run and accepted 2{,}340.
 The judge did not use that larger file.
 
-On the 1{,}608-pair freeze, means over 339 posts give recoverable encoded bits of 13.42 per comment for our method and 13.90 for ZLG, with ZLG higher on 230 posts (Holm-adjusted sign-test $p=1.49\times 10^{-14}$).
+On the 1{,}608-pair freeze, means over 339 posts give an available fixed-width selection budget of 13.42 per comment for our method and reported ZLG payload of 13.90, with the ZLG value higher on 230 posts (Holm-adjusted sign-test $p=1.49\times 10^{-14}$). The comparison does not measure independently recovered project-side payload.
 Mean word counts are 23.86 versus 15.91.
 The lexical-quality index is 99.37 versus 96.93.
 GPT-2 perplexity and unigram KL/JSD were not scored on this paired freeze.
@@ -291,7 +288,7 @@ ZLG was fed those 554 successes in a capacity-matched setting with EGS parameter
 The original writeup counts 304 accepted of 554 (54.9\%).\footnote{A 2026-07-31 recode of the same run treats 94 cover-sentence extraction skips as harness faults, leaving 460 server invocations, 304 accepted (66.1\%), and 156 genuine ZLG failures (133 quality-gate, 22 leakage, 1 HTTP 500). The metric table still uses the 304 accepted pairs.}
 The metric table uses those accepted pairs, then averages over 100 source posts.
 
-The candidate topic list was capped at 32, so the comment topic component contributed at most 5 recoverable bits per frame.
+The candidate topic list was capped at 32, so the comment topic component contributed at most 5 bits to the available fixed-width selection budget per frame.
 Project-side rows reconstructed the compressed bitstring from sender-side audit metadata.
 The research pool was 167 posts, 35 of them sampled ten times, and 244 of the 304 our-method texts were unique.
 That 244 is not the judge subset.
@@ -305,7 +302,7 @@ That 244 is not the judge subset.
 \toprule
 Metric & Our method & ZLG & Paired result \\
 \midrule
-Recoverable capacity (bits/comment) & 15.14 & 16.00 & ZLG higher; Holm-adjusted sign-test $p<0.001$ \\
+Selection budget / ZLG reported payload & 15.14 & 16.00 & ZLG value higher; Holm-adjusted sign-test $p<0.001$ \\
 GPT-2 perplexity & 68.15 & 53.70 & ZLG lower; $p=0.0001$ \\
 Lexical quality index (0--100) & 99.36 & 98.45 & Ours higher; $p=0.0015$ \\
 Word count & 22.4 & 17.3 & Ours longer; $p<0.001$ \\
@@ -314,9 +311,9 @@ BERTScore F1 & 0.842 & 0.848 & Comparable in that report \\
 \end{tabularx}
 \end{table}
 
-On that configuration ZLG leads on recoverable channel width and GPT-2 perplexity.
+On that configuration, the reported ZLG value exceeds our available fixed-width selection budget, and ZLG has lower GPT-2 perplexity. The bit comparison is not a comparison of independently recovered useful payload.
 Our replies are longer and score slightly higher on the lexical-quality index.
-The capacity gap is narrow because the candidate topic list was capped at 32.
+The numerical gap is narrow because the candidate topic list was capped at 32.
 It is not a general upper bound on either system.
 
 \subsection{What these comparisons do not show}
