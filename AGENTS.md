@@ -8,6 +8,7 @@
 4. don't write AI slop try to be professional write concise functional paragraphs
 5. don't modify the Agents.md file without me explicitly asking you to
 6. don't creat Verification Plans just focus on the writing style it's 100% garentee the chaanges will be applied if you simply adhear to LaTeX syntax
+7. Do not edit either abstract unless the user explicitly authorizes the specific abstract change. Keep any authorized edit limited to the requested text.
 
 ## PDF delivery
 

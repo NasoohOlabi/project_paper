@@ -15,13 +15,13 @@ Table~\ref{tab:survey_comparison} places this synthesis next to the three survey
   \caption{Comparison of the literature synthesis in this section with prior surveys of text/linguistic steganography.}
   \label{tab:survey_comparison}
   \renewcommand{\arraystretch}{1.25}
-  \begin{tabularx}{\textwidth}{@{}p{2.5cm} p{1.6cm} X X X X@{}}
+  \begin{tabularx}{\textwidth}{|p{2.5cm}|p{1.6cm}|X|X|X|X|}
     \hline
     \textbf{Survey} & \textbf{Period covered} & \textbf{Methodology} & \textbf{Carrier scope} & \textbf{LLM-era coverage} & \textbf{Contextual-compatibility focus} \\
     \hline
-    Majeed et al.\ \cite{math9212829} (2021) & Pre-transformer & Narrative & Text-only (synonym, spacing, coding) & None & No \\
-    Setiadi et al.\ \cite{Setiadi_Ghosal_Sahu_2025} (2025) & 2021--2025 & Narrative & Multi-carrier (image, linguistic, 3D mesh) & Yes & No \\
-    Wang et al.\ \cite{Wang_2023} (2023) & Deep-learning era & Narrative & Detection-side (linguistic steganalysis) & Partial & No \\
+    Majeed et al.\ \cite{math9212829} (2021) & Pre-transformer & Narrative & Text-only (synonym, spacing, coding) & None & No \\\hline
+    Setiadi et al.\ \cite{Setiadi_Ghosal_Sahu_2025} (2025) & 2021--2025 & Narrative & Multi-carrier (image, linguistic, 3D mesh) & Yes & No \\\hline
+    Wang et al.\ \cite{Wang_2023} (2023) & Deep-learning era & Narrative & Detection-side (linguistic steganalysis) & Partial & No \\\hline
     This synthesis & 2020--2025 & Structured synthesis & Text-only (LLM-based) & Yes & Yes \\
     \hline
   \end{tabularx}
@@ -41,7 +41,7 @@ Table~\ref{tab:model_families} shows how the reviewed studies distribute across 
   \small
   \caption{Representative model families across the reviewed studies. Categories are non-exclusive, so totals exceed 100\%.}
   \label{tab:model_families}
-  \begin{tabular}{>{\raggedright\arraybackslash}p{4cm} >{\raggedright\arraybackslash}p{9cm}}
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{9cm}|}
     \hline
     \textbf{Model Type (Studies)}                        & \textbf{Models and Representative Works}                          \\
     \hline
@@ -172,15 +172,15 @@ To contextualize theoretical capacity metrics, Table~\ref{tab:stego_examples} su
   \footnotesize
   \caption{Representative capacity calculations reported by selected methods. Full generated passages are omitted because they do not support direct cross-study comparison.}
   \label{tab:stego_examples}
-  \begin{tabular}{p{0.18\textwidth}p{0.16\textwidth}p{0.22\textwidth}p{0.35\textwidth}}
+  \begin{tabular}{|p{0.18\textwidth}|p{0.16\textwidth}|p{0.22\textwidth}|p{0.35\textwidth}|}
     \hline
     \textbf{Method} & \textbf{Reported Capacity} & \textbf{Encoding Basis} & \textbf{Comparability Note} \\
     \hline
-    Meteor \cite{kaptchuk2021meteor} & 1280 bits & 160-byte payload $\times$ 8 bits & Payload total; depends on the selected message length. \\
-    LLM-Stega \cite{wu2024generative} & 64 bits per sentence & Fixed semantic-slot mapping & Sentence-level capacity; not directly comparable with BPW or BPT. \\
-    GCStego \cite{li2024imperceptible} & 16 bits per secret word & Fixed 16-bit token index per secret-message word & Payload-encoding width, not a cover embedding rate; each substituted cover token carries $\log_2 K$ bits. \\
-    ParaLS \cite{qiang2023natural} & 3 bits & Binary lexical watermark & Worked-example payload (``110'') rather than a normalized embedding rate. \\
-    Zero-shot \cite{lin2024zero} & Token-level BPW/capacity & Generated-token coding & Capacity depends on the representation, model, and prompt protocol; not directly comparable with selection bits. \\
+    Meteor \cite{kaptchuk2021meteor} & 1280 bits & 160-byte payload $\times$ 8 bits & Payload total; depends on the selected message length. \\\hline
+    LLM-Stega \cite{wu2024generative} & 64 bits per sentence & Fixed semantic-slot mapping & Sentence-level capacity; not directly comparable with BPW or BPT. \\\hline
+    GCStego \cite{li2024imperceptible} & 16 bits per secret word & Fixed 16-bit token index per secret-message word & Payload-encoding width, not a cover embedding rate; each substituted cover token carries $\log_2 K$ bits. \\\hline
+    ParaLS \cite{qiang2023natural} & 3 bits & Binary lexical watermark & Worked-example payload (``110'') rather than a normalized embedding rate. \\\hline
+    Zero-shot \cite{lin2024zero} & Token-level BPW/capacity & Generated-token coding & Capacity depends on the representation, model, and prompt protocol; not directly comparable with selection bits. \\\hline
     Discop \cite{ding2023discop} & 968 bits over 200 tokens & 4.84 bits per token at $p=0.95$ & Token-level rate tied to the model, tokenizer, and truncation setting. \\
     \hline
   \end{tabular}
@@ -208,17 +208,17 @@ Section~\ref{sec:evaluation} reports an independent LLM-judge comparison togethe
   \footnotesize
   \caption{Frequency of evaluation metric categories in the reviewed studies. Categories are non-exclusive.}
   \label{tab:evaluation_metrics_overview}
-  \begin{tabular}{p{0.20\textwidth}p{0.34\textwidth}p{0.12\textwidth}p{0.25\textwidth}}
+  \begin{tabular}{|p{0.20\textwidth}|p{0.34\textwidth}|p{0.12\textwidth}|p{0.25\textwidth}|}
     \hline
     \textbf{Dimension} & \textbf{Metric Category} & \textbf{Studies} & \textbf{Main Comparability Constraint} \\
     \hline
-    Imperceptibility & Perplexity & 13 & Model, tokenizer, corpus, and sequence length \\
-    Imperceptibility & Statistical divergence (KLD/JSD) & 10 & Estimated distributions and sampling settings \\
-    Imperceptibility & Semantic similarity & 13 & Reference construction and metric choice \\
-    Imperceptibility & Human evaluation & 1 & Protocol, annotator population, and sample size \\
-    Security & Detection accuracy or F1 & 21 & Detector, class balance, and train/test data \\
-    Capacity & BPW or BPT & 27 & Tokenization and payload accounting \\
-    Robustness & Recovery or attack resilience & 5 & Attack type, strength, and evaluation protocol \\
+    Imperceptibility & Perplexity & 13 & Model, tokenizer, corpus, and sequence length \\\hline
+    Imperceptibility & Statistical divergence (KLD/JSD) & 10 & Estimated distributions and sampling settings \\\hline
+    Imperceptibility & Semantic similarity & 13 & Reference construction and metric choice \\\hline
+    Imperceptibility & Human evaluation & 1 & Protocol, annotator population, and sample size \\\hline
+    Security & Detection accuracy or F1 & 21 & Detector, class balance, and train/test data \\\hline
+    Capacity & BPW or BPT & 27 & Tokenization and payload accounting \\\hline
+    Robustness & Recovery or attack resilience & 5 & Attack type, strength, and evaluation protocol \\\hline
     Efficiency & Generation or extraction time & 5 & Hardware, model size, and implementation \\
     \hline
   \end{tabular}
@@ -301,7 +301,7 @@ Short, low-entropy contexts severely constrain embedding capacity. Social media 
 Early generative methods also produced fluent but semantically arbitrary text, violating cognitive imperceptibility \cite{ding2023context}. When generation is conditioned only on local token history, the output may drift away from the source topic or conversational logic, which is especially suspicious in low-entropy channels such as social media replies. This contextual drift worsens when methods must keep generating until an arbitrarily large payload is fully embedded: texts become unnaturally long, coherence decays over time, and practical payload efficiency drops even when reported bit capacity appears high \cite{li2024semantic,xiang2023cpg,steinebach2024natural,xu2024beyond}.
 
 Our paired comparisons against the zero-shot generative linguistic steganography baseline \cite{lin2024zero} are reported in Section~\ref{sec:evaluation}.
-An independent LLM-judge evaluation on the 244-post unique-ZLG subset is the current quality table; a 2026-07-30 configuration comparison reports recoverable capacity and GPT-2 perplexity on 100 post clusters.
+An independent LLM-judge evaluation on the 244-post unique-ZLG subset~\cite{lin2024zero} is the current quality table; a 2026-07-30 configuration comparison reports recoverable capacity and GPT-2 perplexity on 100 post clusters.
 Both are conditional on accepted outputs, use audit-assisted reconstruction from sender-side metadata on the project side, and do not establish a security advantage for either method.
 
 \subsubsection{Segmentation and Tokenization Barriers}

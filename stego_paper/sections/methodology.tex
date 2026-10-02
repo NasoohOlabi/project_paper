@@ -30,6 +30,21 @@ Alice's agent picks a busy thread.
 It then builds a document list that Bob can rebuild: the post, the comments Alice saw, and pages retrieved by a shared search procedure.
 Figure~\ref{fig:research-pipeline} summarizes that research stage.
 
+The shared-source principle comes from OPPRESSION~\cite{zillien2024oppression}.
+Its sender and receiver retrieve agreed public content and apply the same deterministic algorithm to construct matching local codebooks.
+OPPRESSION says they may exchange ``the address of a publicly accessible website'' or agree on ``a predefined search query'' yielding a fixed set of articles or posts~\cite{zillien2024oppression}.
+We adapt this rule to the post and comment snapshot and the domain documents: Alice and Bob agree in advance on the eligible sites, query procedure, filtering, and document order.
+A Google Custom Search API configuration restricted to those sites is one way to select the documents; sites outside the agreed set are excluded.
+Both parties must still retrieve the same texts before deriving comment topics.
+Our reply and topic choices carry the payload, whereas OPPRESSION sends pointers into its codebook.
+
+OPPRESSION distinguishes persistent from ephemeral document sets~\cite{zillien2024oppression}.
+If the agreed sites expose unchanged or versioned pages, Alice and Bob can pin the selected versions for later reconstruction; Wikipedia revisions are one example.
+If they search the same allowed sites live through Google Custom Search, fixed queries and site restrictions do not freeze result rankings or page contents.
+In this ephemeral mode, they need matching document snapshots within an agreed interval.
+OPPRESSION observed that repeated searches over tweets returned different sets even when the missing posts remained accessible, and proposes comparing document-set hashes~\cite{zillien2024oppression}.
+The present implementation uses live search with fixed request settings and hashes, but does not enforce identical web snapshots.
+
 Search terms come from the post title, body, and URL, not from the comment section.
 A temperature-0 prompt asks for at least 12 unique queries and aims for 15--20.
 The balanced profile then keeps 8 of them.
@@ -48,6 +63,10 @@ Comment-topic extraction is a prior stage.
 The single-comment encoder does not rebuild the list after choosing a reply target.
 The reported artifacts used a context-weighted sampler once per post at preparation time, usually with no selected parent.
 They did not rebuild the topic list after Layer~1 at encode time.
+An exploratory multi-frame mode now rebuilds this list after selecting the reply target and restricts its sources to the post and that target's parent chain.
+For title-only posts, it uses the title as the post document.
+This removes sibling-thread topics from the candidate list, while also reducing the number of available topic choices and the frame capacity.
+The historical runs above do not evaluate this mode.
 % Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure*}[t]
@@ -63,6 +82,7 @@ They did not rebuild the topic list after Layer~1 at encode time.
 Alice needs time to research, pick a reply target, choose a comment topic, and write a comment.
 If new comments arrive in that interval, Bob cannot be sure which parents Alice saw.
 The intended fix is an agreed duration $T_{sync}$: Alice snapshots the thread at $t_{start}$ and publishes at $t_{publish}$; Bob keeps comments with time at most $t_{publish}-T_{sync}$.
+Let $T_{process}$ denote Alice's required time to research, select the reply target and topic, and write the comment. The agreed window must exceed it: $T_{sync} > T_{process}$.
 Figure~\ref{fig:tsync} shows that intended window.
 
 The live receiver does not apply this cutoff.
@@ -201,7 +221,7 @@ A payload that does not fit in $w_1+w_2$ physical bits leaves a surplus in the a
 \label{sec:multiframe}
 A longer payload can be split across several frames: each frame is one reply under one post.
 That planner is implemented.
-It is not the pipeline behind the reported comparison and ZLG tables, which used the single-comment encoder plus audit-assisted reconstruction.
+It is not the pipeline behind the reported comparison and ZLG~\cite{lin2024zero} tables, which used the single-comment encoder plus audit-assisted reconstruction.
 
 On the multi-frame path the payload is protected, then compressed against an empty dictionary, which forces the UTF-8 mode of Section~\ref{sec:compression}.
 An Elias-gamma header then stores the frame count $F$ and the payload bit length.

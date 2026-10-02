@@ -10,7 +10,7 @@ Comment writing and comment topic identification do not: both use the shared ste
 \begin{itemize}
     \item Data load fetches unresolved URL content and replaces the post body with the extracted text.
     \item Research generates search terms from the post title, body, and URL at temperature 0, trims them to the profile cap (8 on balanced), queries a fixed-shape search backend with fallbacks after Google, drops duplicate links and PDFs, and fetches page text in batches of three. It stores the flat search-results corpus and integrity hashes.
-    \item Comment-topic generation flattens the chosen input documents and extracts triplets of category, source quote, and description. Long inputs are split into 30k-character segments and batched up to 80k characters by default. If the backend path fails, the pipeline falls back to a direct LLM prompt with the same JSON schema. The reported runs used a context-weighted sampler at this stage, once per post.
+    \item Comment-topic generation flattens the chosen input documents and extracts triplets of category, source quote, and description. Long inputs are split into 30k-character segments and batched up to 80k characters by default. If the backend path fails, the pipeline falls back to a direct LLM prompt with the same JSON schema. The reported runs used a context-weighted sampler at this stage, once per post. An exploratory multi-frame option rebuilds the list after selecting a reply target and limits the inputs to the post and its selected parent chain; title-only posts use the title as the post document. This reduces the available topic choices and is evaluated in Section~\ref{sec:reply-chain-probe}.
     \item Encoding protects and compresses the payload, spends bits on a reply target and a comment topic, writes three candidate comments, and keeps a candidate only if a strict local decode identifies the selected topic and a contextuality gate passes.
     \item Decode shortlists comment topics with MiniLM cosine similarity, reranks with lexical overlap, and asks for \texttt{idx: N} at the stego temperature. The full reconstruction path can rebuild research and comment topics; the reported workloads decode against the sender's post with its topic list already built and pass the audit bitstring.
 \end{itemize}
@@ -38,13 +38,14 @@ Decoding is sequential: a token’s start depends on where the previous token en
 \caption{Token layout of the compressed payload stream. Every field has a fixed width given the session dictionary $D$, but decoding is sequential: a token's start position depends on where the previous token ended.}
 \label{tab:token-layout}
 \small
-\begin{tabularx}{\columnwidth}{@{}l X l@{}}
-\toprule
+\begin{tabularx}{\columnwidth}{|l|X|l|}
+\hline
 Token & Field layout & Cost (bits) \\
-\midrule
+\hline
 Literal & \texttt{0} $\Vert$ length $\ell$ (8 bits) $\Vert$ UTF-8 bytes & $9+8b$ \\
+\hline
 Reference & \texttt{1} $\Vert$ index $j$ ($W(|D|)$ b) $\Vert$ offset ($W(|d_j|)$ b) $\Vert$ length ($W(L_{\max})$ b) & $1+W(|D|)+W(|d_j|)+W(L_{\max})$ \\
-\bottomrule
+\hline
 \end{tabularx}
 \end{table}
 

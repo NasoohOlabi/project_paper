@@ -19,3 +19,9 @@ For PowerShell builds from this directory:
 Shared figures, TikZ sources, bibliography, and class/style files live under
 `common/`. The translated section files remain separate under the two paper
 directories.
+
+## Method terminology
+
+Refer to our method as "the proposed method" or "our method" in English and
+«الطريقة المقترحة» or «طريقتنا» in Arabic. Do not include internal implementation
+code names in either paper, including titles, figures, tables, captions, or abstracts.

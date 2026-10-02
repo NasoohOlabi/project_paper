@@ -1,4 +1,6 @@
 knowledge-base
+tmp/
+assets/
 
 # LaTeX auxiliary files
 *.aux

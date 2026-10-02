@@ -4,6 +4,7 @@ Use this guide when drafting or revising the Arabic version of the paper. It rec
 
 ## Style
 
+- **NEVER USE «نقاش» OR ITS DERIVATIVES IN THE ARABIC PAPER.** Choose **تعليقات** for comments or comment threads, **دردشة** for chat, and **تواصل** for communication or contact, according to context. For a social-media exchange, use **محادثة**.
 - Write clear, natural academic Arabic. Prefer idiomatic phrasing over word-for-word translation, especially for computer science terminology.
 - State the technical idea directly. Avoid vague metaphors, strained expressions, and wording that sounds like translated English.
 - Keep sentences easy to follow. Name the actor when it matters: use **المُرسِل** and **المُستقبِل** for sender and receiver.
@@ -22,11 +23,17 @@ Use this guide when drafting or revising the Arabic version of the paper. It rec
 | embedding (information) | تضمين |
 | compatibility / fit | توافق; for the evaluation metric selected by the author, **ملاءمة السياق** |
 | sender / receiver | المُرسِل / المُستقبِل |
+| Extracting a hidden message | استخراج الرسالة or فك التضمين, according to the operation |
 | reply location | مَوْضِع الرَّدّ |
 | comment topic | مَوْضُوع التَّعْلِيق |
 | entropy | الإنتروبيا |
+| imperceptibility | خفاء الرسالة المضمَّنة |
 
 Use terminology consistently within the paper. Prefer established Arabic computer science terms, and verify a proposed term against its technical meaning before adopting it.
+
+- Use Arabic guillemets **«...»** for quotations in Arabic prose, including quoted English strings; place English text inside the guillemets in `\EN{...}`, as in **«\EN{any}»**.
+
+- Never use **اللامحسوسية** for *imperceptibility*. Use **خفاء الرسالة المضمَّنة** instead.
 
 ## Wording approved by the author
 
@@ -37,6 +44,8 @@ Use terminology consistently within the paper. Prefer established Arabic compute
 - **معاملات التشغيل المشتركة**
 - **ملاءمة السياق** for the selected evaluation label
 - **الطرائق المبكّرة** with shadda on ك
+- Describe the two actors as **المُرسِل** and **المُستقبِل**. Avoid **استرجاع** and its derivatives throughout the Arabic paper. Describe the operation precisely as **استخراج الرسالة** or **فك التضمين** when appropriate; use the sender and receiver as the grammatical subjects when explaining what each party does. Do not imply successful recovery of a payload unless the receiver independently obtains it from the public conversation.
+- Use **محادثة** or **محادثات** for a social-media exchange. Avoid literal translations such as **نقاش متسلسل** and **نقاشات متسلسلة**.
 
 ## Current sentence under review
 
