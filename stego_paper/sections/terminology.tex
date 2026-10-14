@@ -1,0 +1,96 @@
+\section{Terminology}
+\label{sec:terminology}
+
+The following terms distinguish the public communication channel, the shared preparation, and the evidence used to assess message extraction.
+
+\begin{table}[H]
+\centering\small
+\caption{Core terms used to describe the method.}
+\label{tab:terminology}
+\begin{tabularx}{\linewidth}{|p{0.29\linewidth}|X|}
+\hline
+Term & Meaning in the method \\
+\hline
+Payload & The secret message to be transmitted. \\
+\hline
+Cover text & Ordinary text used to carry hidden information. \\
+\hline
+Black-box steganography & Using the writer through its exposed interface. \\
+\hline
+Prompt & Instructions and context supplied to a model. \\
+\hline
+Deterministic helper model & A model with fixed settings for building queries and topics. \\
+\hline
+Writer model & The model that composes the carrier comment. \\
+\hline
+Copy of the post's comments & Comments used by both parties to build the shared lists. \\
+\hline
+Source-text list & The post, its comments, and domain texts in a shared order. \\
+\hline
+Comment-topic list & Ordered topics with a quote, category, and source reference. \\
+\hline
+Reply location & The post or comment to which the sender replies. \\
+\hline
+Compression dictionary & Shared material used to represent payload fragments with shorter pointers. \\
+\hline
+Frame & One carrier comment in a multi-comment transmission. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\paragraph{Payload.}
+The secret message to be transmitted. Its original bytes, compressed representation, and transport fields are different quantities.
+
+\paragraph{Cover text and stego text.}
+Cover text is ordinary text used as a carrier. Stego text is the published text that carries hidden information. In this method, the carrier is a generated comment together with its reply location.
+
+\paragraph{Imperceptibility.}
+The difficulty of noticing the hidden communication. Perceptual imperceptibility concerns human judgments of naturalness, statistical imperceptibility concerns distributional differences, and cognitive imperceptibility concerns meaning and contextual consistency.
+
+\paragraph{Large language model and token.}
+A large language model, abbreviated LLM, generates text by predicting successive tokens. A token is a unit in the model's vocabulary and need not be a whole word.
+
+\paragraph{Prompt.}
+The instructions and context supplied to a language model. The writing prompt includes the post, the relevant parent chain, and the selected comment topic.
+
+\paragraph{Black-box steganography.}
+Steganography that uses a model through its exposed interface without access to internal token probabilities. Our method places bits in reply and topic choices before the model writes the comment.
+
+\paragraph{Zero-shot generation.}
+Generation without task-specific fine-tuning of the pretrained model. Prompt examples can still guide generation. This property does not by itself determine whether a method requires black-box or white-box access.
+
+\paragraph{Reply target and parent chain.}
+The reply target is the post or existing comment to which the sender replies. Its parent chain is the sequence of ancestor comments that supplies the local conversation context.
+
+\paragraph{Comment topic and topic list.}
+A comment topic specifies the subject of the generated reply. The ordered topic list associates candidate subjects with indices and source material. Each record contains a source quote, topic description, category, and source reference. We call the structure a comment-topic list rather than the implementation name tangent DB.
+
+\paragraph{Selection channel.}
+The channel in which message bits select a reply target and a comment topic. The receiver decodes their indices. These choices carry the bits; the method does not assign them to individual token choices.
+
+\paragraph{Copy of the post's comments and synchronization window.}
+This copy contains the comments both parties use, together with their reply relationships. The agreed window $T_{sync}$ defines the intended comment cutoff at publication time minus $T_{sync}$. Applying that cutoff and reproducing the source material are separate operational requirements.
+
+\paragraph{Source-text list.}
+An ordered list combining the post title and body, a copy of its comments, and domain documents. The helper model maps these texts to a comment-topic list using shared settings and procedures.
+
+\paragraph{Shared preparation.}
+The context, ordered topic list, compression dictionary, and operational settings that both parties need to reproduce or obtain under the stated experimental contract. Matching hashes detect differences but do not reconstruct missing material.
+
+\paragraph{Compression dictionary.}
+Shared text against which the compressor replaces matching payload spans with references. This dictionary is distinct from the topic list used to select the subject of a comment.
+
+\paragraph{Sender verification.}
+The sender's check that a generated candidate yields the selected topic before publication. Passing this check does not establish that a later independent receiver will identify the same topic.
+
+\paragraph{Audit-assisted reconstruction and receiver recovery.}
+Audit-assisted reconstruction uses private sender records, such as selected indices or unembedded bits, to rebuild a message. Receiver recovery extracts the message without those records, using the visible carriers and the shared or supplied inputs stated for that experiment.
+
+\paragraph{Frame.}
+One comment carrier in a multi-comment transmission. A framed message also contains control information for length, frame count, padding, and integrity checks. These fields consume part of the transmitted bit budget.
+
+\paragraph{Fixed-width selection budget.}
+With $C$ reply targets and $A$ topics, two independent power-of-two subsets provide $\lfloor\log_2 C\rfloor+\lfloor\log_2 A\rfloor$ distinguishable bits per comment. This available budget differs from the payload actually embedded and the useful message bits independently recovered.
+
+\paragraph{Perplexity.}
+A measure of how probable a text is under an evaluation language model. Lower perplexity indicates greater predictability under that model; it does not establish imperceptibility or successful message extraction.

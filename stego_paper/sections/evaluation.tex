@@ -9,7 +9,10 @@ The two tables do not share a sample and do not measure the same thing.
 Two setup facts apply to every number below.
 First, none of them comes from the public-thread receiver described in Section~\ref{sec:methodology}.
 Project-side payloads were rebuilt from the sender's audit metadata (audit-assisted reconstruction), and the decoder was allowed to take the audit's comment topic index over the discriminator's. The ZLG~\cite{lin2024zero} reveal lane was token-assisted: it received the sender's token IDs and an externally supplied payload length, so it does not represent visible-text-only recovery.
-Second, the run behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, not the balanced-profile budget of 6 retries after the first attempt that Section~\ref{sec:methodology} describes, so its success rate describes a lower-retry configuration.
+Second, the run behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, rather than the balanced-profile budget of 6 retries after the first attempt, so its success rate describes a lower-retry configuration.
+
+
+Data hashes detect differences between the parties' inputs but do not ensure stable web results or matching copies of the post's comments. These comparisons do not test a receiver rebuilding the search and topic lists from the public conversation alone.
 
 \subsection{How the printed metrics are computed}
 

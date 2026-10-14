@@ -249,3 +249,7 @@ The English draft also contains strained language. Its wording is evidence of th
 2. Rewrite each `P1` paragraph from its intended technical meaning, preserving citations and numeric claims. Avoid line-by-line substitution from English.
 3. Smooth `P2` paragraphs for academic Arabic and terminology consistency.
 4. Rebuild and visually inspect the Arabic PDF after each approved text edit, as requested. Keep this report as the tracking record and mark each entry resolved only after the final Arabic sentence has been reviewed.
+
+## Current terminology override
+
+Use **نسخة من تعليقات المنشور** for a comments snapshot or dump in every new or revised passage, including headings, tables, captions, and figure prompts. Timing is implicit. Historical quotations above remain evidence of the audited text, not approved terminology.

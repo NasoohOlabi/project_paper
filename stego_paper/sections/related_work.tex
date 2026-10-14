@@ -27,6 +27,28 @@ Table~\ref{tab:survey_comparison} places this synthesis next to the three survey
   \end{tabularx}
 \end{table}
 
+\subsection{Closest mechanisms and scope of the contribution}
+LLM-Stega already uses black-box prompting, shared keyword mappings, and extraction-feedback rejection~\cite{wu2024generative}. These are precedents for our verification loop. Our implemented distinction is the combination of public reply-target selection and contextual topic selection under an explicit shared-state contract, rather than black-box access alone. Table~\ref{tab:mechanism-comparison} separates the linguistic channel from its compression component; it makes no claim of priority or superior security.
+\begin{table}[t]
+\centering\small
+\caption{Mechanisms and receiver coordination in the closest precedents.}
+\label{tab:mechanism-comparison}
+\begin{tabularx}{\columnwidth}{|l|X|X|}
+\hline
+Method & Information-carrying choice & Receiver coordination \\
+\hline
+LLM-Stega~\cite{wu2024generative} & Prompted keywords; feedback rejection & Keyword mappings, extraction prompts and shared mapping/time information. \\
+\hline
+ZLG~\cite{lin2024zero} & Zero-shot in-context generation with token-probability coding & Matching model, tokenizer, prompt and codec. Our historical adaptation additionally supplied token IDs and length. \\
+\hline
+OPPRESSION~\cite{zillien2024oppression} & Pointers to existing public text & Agreed sources and dictionary; pointer transmission uses another covert channel. \\
+\hline
+This prototype & Public parent choice plus semantic topic choice & Frozen ordered context/codebook and framing; October recovery additionally receives carrier order. \\
+\hline
+\end{tabularx}
+\end{table}
+The October codec adapts the text-reference compression idea in OPPRESSION~\cite{zillien2024oppression}. Compression reduces the bitstream to transmit; reply selection and generated text provide our carrier. Neither dictionary sharing nor sender verification proves fresh receiver agreement.
+
 \subsection{State of the Published Literature}
 \label{sec:related-rq1}
 

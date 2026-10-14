@@ -1,232 +1,275 @@
 \section{Methodology}
 \label{sec:methodology}
 
-We propose a black-box steganographic method that hides a secret message inside a public conversation.
-The sender and the receiver both have accounts on a social media platform.
-The sender finds a thread, writes what looks like a normal comment or reply, and publishes it.
-The receiver later reads that same thread, finds the sender's contribution, and recovers the hidden payload.
-Our study uses Reddit-style data as the main case.
-The design targets any threaded discussion environment; whether it transfers cleanly to other platforms remains to be evaluated.
-Figure~\ref{fig:end-to-end} shows the end-to-end covert scenario and the shared assumptions needed for synchronization.
-% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
+We propose a black-box linguistic steganographic method for public conversations.
+The sender and receiver have accounts on a social media platform. Alice selects a post, writes a comment that appears to be an ordinary contribution, and publishes it. Bob reads the conversation and extracts the message from the comment's reply location and topic.
+We use Reddit-style posts and comments. In principle, the idea can also apply to other platforms that allow comments on posts and replies to users' comments.
+Figure~\ref{fig:end-to-end} shows the communication path.
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.78\linewidth]{../common/figures/end_to_end_scenario}
-	\Description{Diagram of Alice and Bob communicating covertly over a public threaded forum: sender encodes and publishes a reply; receiver snapshots the thread using an agreed time window and shared operational parameters.}
-	\caption{Covert communication scenario: Alice and Bob use a public threaded channel. They share search and comment topic generation settings, and they agree on a temporal window. The live receiver still needs that snapshot to be supplied; it does not apply the cutoff itself.}
-	\label{fig:end-to-end}
+\begin{figure}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{|X|X|X|}
+\hline
+Sender: Alice & Public conversation & Receiver: Bob \\
+\hline
+Builds the lists, selects a reply location and topic, then writes and verifies the comment. & The carrier comment appears at the selected reply location among the post's comments. & Rebuilds the lists, identifies the location and topic, then extracts the bits. \\
+\hline
+\end{tabularx}
+\Description{Alice selects a reply location and topic, a public comment carries those choices, and Bob reconstructs the lists and extracts the bits.}
+\caption{Alice and Bob communicate through a public post. Shared settings define the context and topic list; reply-location and topic choices carry the message bits.}
+\label{fig:end-to-end}
 \end{figure}
 
-\subsection{What Alice and Bob share}
-Both parties need accounts on the same threaded platform.
-They also share the search settings, the model used to generate search terms and comment topics at \texttt{temperature=0}, and an agreed wait $T_{sync}$ between Alice's snapshot and the moment she publishes.
-Temperature 0 applies to reconstructing the document list and the candidate comment topic list.
-It does not apply to writing the comment or identifying its topic, both of which run at the shared stego temperature (0.7 in the balanced profile used for the reported runs).
+\subsection{System components, settings, and workflow}
+\label{sec:method-setup}
+The system consists of a social platform, a web-search service, a document-text retrieval tool, a helper language model, a writer language model, and encoding and decoding modules.
+Google Custom Search API is one option for restricting searches to agreed sites.
+The helper model generates search queries and extracts comment topics. Both parties need to construct the same lists from the same inputs, so they fix the model, its version, and the prompts, and set its generation parameter to
+\[
+\mathrm{temperature}=0.
+\]
+We call this the deterministic helper model to describe the intended reproducible configuration. This parameter alone cannot guarantee identical outputs if the input texts or model service change.
+The writer produces comments through a black-box interface and may be a different, more capable model. A nonzero writing setting permits new wording on retries, while topic identification uses a separate fixed shared setting.
 
-\subsection{Building a shared document list}
-\label{sec:search_determinism}
-Alice's agent picks a busy thread.
-It then builds a document list that Bob can rebuild: the post, the comments Alice saw, and pages retrieved by a shared search procedure.
-Figure~\ref{fig:research-pipeline} summarizes that research stage.
-
-The shared-source principle comes from OPPRESSION~\cite{zillien2024oppression}.
-Its sender and receiver retrieve agreed public content and apply the same deterministic algorithm to construct matching local codebooks.
-OPPRESSION says they may exchange ``the address of a publicly accessible website'' or agree on ``a predefined search query'' yielding a fixed set of articles or posts~\cite{zillien2024oppression}.
-We adapt this rule to the post and comment snapshot and the domain documents: Alice and Bob agree in advance on the eligible sites, query procedure, filtering, and document order.
-A Google Custom Search API configuration restricted to those sites is one way to select the documents; sites outside the agreed set are excluded.
-Both parties must still retrieve the same texts before deriving comment topics.
-Our reply and topic choices carry the payload, whereas OPPRESSION sends pointers into its codebook.
-
-OPPRESSION distinguishes persistent from ephemeral document sets~\cite{zillien2024oppression}.
-If the agreed sites expose unchanged or versioned pages, Alice and Bob can pin the selected versions for later reconstruction; Wikipedia revisions are one example.
-If they search the same allowed sites live through Google Custom Search, fixed queries and site restrictions do not freeze result rankings or page contents.
-In this ephemeral mode, they need matching document snapshots within an agreed interval.
-OPPRESSION observed that repeated searches over tweets returned different sets even when the missing posts remained accessible, and proposes comparing document-set hashes~\cite{zillien2024oppression}.
-The present implementation uses live search with fixed request settings and hashes, but does not enforce identical web snapshots.
-
-Search terms come from the post title, body, and URL, not from the comment section.
-A temperature-0 prompt asks for at least 12 unique queries and aims for 15--20.
-The balanced profile then keeps 8 of them.
-Each kept query is sent with a fixed request shape (\texttt{first=1}, \texttt{count=10}).
-The live backend tries Google Custom Search first, then other engines if that path is empty.
-Duplicate links and PDFs are dropped, surviving URLs are fetched in batches of three, and the pipeline records hashes of the term list and of the fetched corpus.
-Temperature 0 stabilizes the model stages, not the web: search rankings and page contents can change between Alice's retrieval and Bob's.
-The hashes let Bob detect that drift.
-They do not make his independent retrieval return Alice's material, and a mismatch there changes the comment topic list that Layer~2 depends on.
-The reported workloads sidestep this by decoding against the sender's stored topic list (Section~\ref{sec:waiting}).
-
-From that corpus, the topic extraction step, still at temperature 0, builds an ordered list of candidate comment topics.
-Each candidate contains a category, a source quote, and the subject the reply should discuss.
-The reported runs cap the list at 32.
-Comment-topic extraction is a prior stage.
-The single-comment encoder does not rebuild the list after choosing a reply target.
-The reported artifacts used a context-weighted sampler once per post at preparation time, usually with no selected parent.
-They did not rebuild the topic list after Layer~1 at encode time.
-An exploratory multi-frame mode now rebuilds this list after selecting the reply target and restricts its sources to the post and that target's parent chain.
-For title-only posts, it uses the title as the post document.
-This removes sibling-thread topics from the candidate list, while also reducing the number of available topic choices and the frame capacity.
-The historical runs above do not evaluate this mode.
-% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/research_pipeline_deterministic}
-	\Description{Horizontal pipeline from source inputs through temperature-0 search-term generation, fixed-shape search API, filtering and fetching, to a hashed search-results corpus used to detect drift between runs.}
-	\caption{Research stage: temperature-0 term generation from title, body, and URL; a fixed search request shape; filtering and batched fetching; integrity hashes that detect drift between runs but do not prevent it.}
-	\label{fig:research-pipeline}
-\end{figure*}
-
-\subsection{Waiting to publish}
-\label{sec:waiting}
-Alice needs time to research, pick a reply target, choose a comment topic, and write a comment.
-If new comments arrive in that interval, Bob cannot be sure which parents Alice saw.
-The intended fix is an agreed duration $T_{sync}$: Alice snapshots the thread at $t_{start}$ and publishes at $t_{publish}$; Bob keeps comments with time at most $t_{publish}-T_{sync}$.
-Let $T_{process}$ denote Alice's required time to research, select the reply target and topic, and write the comment. The agreed window must exceed it: $T_{sync} > T_{process}$.
-Figure~\ref{fig:tsync} shows that intended window.
-
-The live receiver does not apply this cutoff.
-It locates Alice's comment, deletes that subtree from a supplied post object, and rebuilds from what it was given.
-Supplying a snapshot that already matches Alice's view is an operational duty of the caller.
-The reported encode/decode workloads skip even that rebuild: they decode against the sender's post with its topic list already built.
-% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{../common/figures/temporal_sync_window}
-	\Description{Timeline diagram showing the intended comment inclusion cutoff at publish time minus an agreed synchronization window, excluding comments that arrive while the sender is still working.}
-	\caption{Intended temporal window: Bob would keep comments dated at most $t_{publish}-T_{sync}$. The live receiver does not apply this filter; it rebuilds from the supplied post after deleting Alice's comment.}
-	\label{fig:tsync}
-\end{figure*}
-
-\subsection{Two choices carry the payload}
-The payload is not hidden in invisible characters, and it is not hidden by biasing next-token sampling.
-Bits choose two ordinary visible things: which comment Alice replies to, and what topic her comment discusses.
-A language model then writes a short public reply for that pair.
-Figure~\ref{fig:two-layer} shows the split.
-
-\subsubsection{Which comment to reply to}
-\label{sec:layer1}
-The nested comment tree is flattened with a deterministic depth-first walk, so both parties number the same comments the same way.
-There are $C=n+1$ reply targets: index 0 is a top-level reply to the post, and indices $1$ through $n$ are the flattened comments.
-If the index is not 0, the encoder also builds the parent chain of that comment so the writing prompt can see the local thread.
-
-\subsubsection{Which topic the comment discusses}
-\label{sec:layer2}
-The candidate comment topic list from the research stage is flattened and given sequential \texttt{idx} values.
-The next bits pick one index.
-At writing time, the selected topic's category, source quote, and description are added to the prompt with the post, parent chain, and research excerpt matched to the source quote.
-
-\subsubsection{How many bits those choices can carry}
-\label{sec:channel-widths}
-Both layers consume a prefix of the same bitstream produced in Section~\ref{sec:compression}.
-Layer~1 reads the first $w_1$ bits; Layer~2 reads the next $w_2$.
-
-Two widths must not be mixed.
-The \textit{physical} widths are the field sizes the single-comment encoder actually writes: $w_1=W(n)$ and $w_2=W(A-1)$, where $W(m)=\lceil\log_2(m+1)\rceil$ for $m>0$.
-If the integer from those bits is larger than the last valid choice, the encoder reduces it modulo the choice count.
-Generation still succeeds, but several bit patterns then land on the same parent or the same topic, so those patterns cannot be inverted.
-
-The safe fixed-width budget for two independently coded power-of-two subsets is $\lfloor\log_2 C\rfloor$ and $\lfloor\log_2 A\rfloor$.
-For example, $C=3$ and $A=5$ give $1+2=3$ distinguishable bits; the remaining physical index states alias under modulo.
-This budget is neither Shannon capacity nor achieved useful throughput. The lossless writer described below makes these selections injective, but the reported single-comment runs used the modulo writer and sender-audit reconstruction.
-Section~\ref{sec:evaluation} distinguishes this available fixed-width selection budget from payload presented and payload independently verified by the receiver.
-
-The live single-comment encoder writes the physical widths and wraps with modulo.
-A separate lossless writer restricts each field to the recoverable width, then stores that value at the physical width.
-That injective path is used by the multi-frame planner in Section~\ref{sec:multiframe}, not by the single-comment path that produced the reported tables.
-
-Leftover bits beyond $w_1+w_2$ are reported as unembedded.
-They are not dropped, and they are not in the visible comment.
-Reconstructing the full compressed string from one comment then needs sender-side metadata.
-We call this audit-assisted reconstruction, and it is what the reported workloads use; we reserve ``recovery'' for bits Bob decodes from the channel itself.
-% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{../common/figures/two_layer_embedding}
-	\Description{Two-panel diagram: left, Layer 1 selects a reply parent in a flattened comment tree; right, Layer 2 selects a topic from a shared list; payload bits split across both layers before LLM synthesis.}
-	\caption{Two-layer embedding: Layer 1 selects a reply target in a depth-first flattened thread; Layer 2 selects a comment topic from a shared list; an LLM then writes a visible reply for that pair.}
-	\label{fig:two-layer}
-\end{figure*}
-
-\subsection{Writing the comment and checking that Bob can read it}
-A nonzero-temperature model writes a JSON array of exactly three short reply candidates.
-The balanced profile uses temperature 0.7.
-The prompt sees the post, the parent chain, the selected topic, and a research excerpt.
-The topic guides the reply; the comment should not announce it as a label.
-
-Before anything is treated as published, the sender runs the same topic-identification step Bob will use, in strict mode.
-A candidate is accepted only if that step returns the selected topic index and a contextuality gate passes.
-If none of the three candidates is accepted, the encoder retries with the same parent and topic; the balanced budget is 6 retries after the first attempt.
-On the last attempt it may also revise a near-miss with a contextual revision prompt rather than sampling a fresh triple.
-The live sender writes a local artifact.
-It does not post to Reddit.
-Figure~\ref{fig:verify-decode} shows the verify loop next to Bob's recovery path.
-% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/verify_and_decode_flow}
-	\Description{Swimlanes: sender loop synthesizes comments, verifies decode, then writes an artifact; receiver observes the comment, shortlists candidate topics by cosine similarity with lexical rerank, and uses an idx prompt to pick the topic index.}
-	\caption{Sender-side verification retries synthesis until a strict decode identifies the selected topic. The receiver recovers Layer~2 with a cosine shortlist of 20, a lexical rerank, and a temperature-0.7 \texttt{idx: N} prompt.}
-	\label{fig:verify-decode}
-\end{figure*}
-
-\subsection{How Bob recovers the bits}
-Layer~1 is public: Bob sees which comment Alice replied to, and that parent maps back to the DFS index.
-
-Layer~2 is not printed as a number.
-The full reconstruction path locates Alice's comment by author, deletes it from the supplied post, optionally rebuilds research and the candidate topics, then:
+The system parameters fall into the following groups:
 \begin{enumerate}
-    \item embeds the comment with a sentence transformer (\texttt{all-MiniLM-L6-v2}) and shortlists the nearest candidate topics, default 20 after a pool of up to 120;
-    \item reranks that shortlist with a mix of cosine similarity and lexical overlap;
-    \item asks the same stego model, at temperature 0.7, to return a single line \texttt{idx: N} naming the canonical topic index.
+\item Conversation settings: platform, accounts, post-selection rule, and comment ordering.
+\item Document settings: permitted search sources, query and result counts, text extraction, document ordering, and versions.
+\item Topic-list settings: helper model, extraction prompt, topic count, ordering rule, and the fields in each topic record.
+\item Encoding and writing settings: payload representation, allocation of bits to choices, writer model, comment length and style, acceptance criterion, and retry limit.
+\item Publication settings: reply location, publishing account, publication time, and intervals between comments in a multi-comment transmission. The reply location carries part of the payload; publication rules and timing are agreed beforehand.
+\item Decoding settings: shared-context reconstruction, topic identification, frame ordering, and message-integrity checks.
 \end{enumerate}
-If the model returns a 1-based rank into the shortlist, that rank is mapped back.
-If nothing parses, the top semantic candidate is used.
-Sender acceptance requires a strict parse and rejects those fallbacks.
-The reported workloads call the decoder in non-strict mode, pass the compressed bitstring from the encode audit, and may treat the audit's topic index as authoritative when it disagrees with the discriminator.
-Their success counts therefore measure audit-assisted reconstruction, not the receiver described in this subsection.
-Sender-side acceptance still required one strict discriminator hit at encode time, but no reported number measures Bob decoding Layer~2 from the public thread alone.
+
+Transmission proceeds through the following stages, explained below:
+\begin{enumerate}
+\item Select the post and prepare a copy of its comments for both parties to use.
+\item Generate search queries, collect domain documents, and build the source-text list.
+\item Map the source texts to an ordered comment-topic list.
+\item Prepare the payload and select the reply location and topic from its bits.
+\item Write and verify the comment, then publish it at the agreed time.
+\item Reconstruct the lists at the receiver, identify the choices, and extract the message bits.
+\end{enumerate}
+The conversation changes while the sender works: new comments may arrive before research and writing finish. Both parties therefore need a common copy of the post's comments. Section~\ref{sec:waiting} explains how they define that copy after we describe the materials used to build the lists.
+
+\subsection{Building the documents and comment-topic list}
+\label{sec:search_determinism}
+Alice needs material about the post's subject to support suitable replies. Bob needs the same material to reconstruct the topic list and interpret the selected topic index consistently.
+We first explain the public-document principle in OPPRESSION~\cite{zillien2024oppression}, then describe our adaptation for collecting conversation and research texts and turning them into comment topics.
+
+\paragraph{Public documents in OPPRESSION.}
+OPPRESSION~\cite{zillien2024oppression} reduces the information sent through a communication channel by using texts already available on the Internet.
+The parties agree on public documents, retrieve them, and build a codebook with a shared deterministic procedure. Instead of transmitting a long message fragment, the sender transmits a short pointer to a matching fragment in those materials.
+They may agree on a website address, a predefined query returning a fixed set of articles or posts, or the latest article on a site at a specified time.
+OPPRESSION~\cite{zillien2024oppression} handles representation and compression; it leaves embedding and extracting those pointers to another communication tool. It does not specify how to generate social-media comments.
+
+The paper describes two pointer methods. The first treats each document as a sequence of words. A pointer
+\[
+P=(i,o,k)
+\]
+specifies document $i$, starting offset $o$, and word count $k$. The sender finds the longest matching fragment and continues with the remaining message.
+The second extracts word sequences with a sliding window and combines them in a prefix tree. A node identifier represents the word path from the root to that node; the receiver reconstructs the fragment by reading the path.
+The paper also describes spelling out words absent from the codebook. Such fallbacks are needed to preserve a complete message when the documents do not cover all its words.
+
+Web documents can change or disappear, and search results can change even while the pages remain available. A publication timestamp does not necessarily identify a preserved version of the text.
+OPPRESSION~\cite{zillien2024oppression} therefore describes a persistent mode using documents or versions that can be retrieved again, and an ephemeral mode using a document copy collected during an agreed interval.
+Dated Wikipedia revisions suit the persistent mode; the latest articles at an agreed time can suit the ephemeral mode.
+The paper notes that an old document set becoming unreconstructable may limit a monitor's ability to decode earlier messages, but requires the parties to build the appropriate codebook at the required time.
+It also proposes comparing document hashes to detect changes. A hash detects a difference; it does not make different texts identical.
+
+Our implementation is an initial simplified adaptation: it builds shared material from the post, its comments, and domain documents, then uses that material to extract comment topics and prepare a compression dictionary.
+Model-generated search queries and reply-topic selection belong to our method, rather than to OPPRESSION~\cite{zillien2024oppression}.
+Section~\ref{sec:compression} explains how the shared materials support text-payload compression.
+
+\paragraph{Generating search queries and collecting domain documents.}
+Queries can be derived from a domain description, the community's subject, or the post and comments.
+Our implementation uses the post's title and body because they directly identify the issue addressed by the conversation.
+The helper model receives one prompt requesting varied queries related to that context. It produces multiple queries, rather than twelve distinct prompts.
+The configuration requests at least 12 unique queries, targets 15--20, and selects 8 according to a shared rule. These counts are adjustable settings, not essential requirements of the method.
+
+The parties search the agreed sources with those queries and take the top 10 results per query.
+Shared post-processing standardizes the extracted texts, removes duplicate material, and orders the documents consistently.
+The agreement identifies document versions or preserved content copies where needed: the same query does not guarantee the same search results at different times.
+Matching documents and their order are required alongside matching helper-model settings.
+
+\paragraph{The source-text list.}
+The texts we read are distinct from the comment topics extracted from them.
+The source-text list combines three groups: the post title and body, a copy of the post's comments with their reply relationships, and the domain documents collected through search.
+Each text retains its source reference so an extracted topic can be linked to the document or comment that inspired it.
+The conversation keeps its reply structure even when its texts are represented as a list for processing.
+Figure~\ref{fig:source-text-collection} shows the sources of this shared list.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/source_text_collection_en.pdf}
+\Description{The post title and body generate search queries and web texts. The post, its independently collected comments, and the web texts join the source-text list.}
+\caption{The post, its comments, and the texts obtained through search form an ordered list used by both parties to build comment topics.}
+\label{fig:source-text-collection}
+\end{figure}
+
+Let $D=(d_1,\ldots,d_m)$ be the ordered source-text list and $\theta$ the shared extraction configuration.
+The step $f_{\theta}$ extracts topics from each text. The step $R_{\theta}$ combines the outputs and applies the agreed ordering and count rules:
+\[
+\mathcal{A}=F_{\theta}(D)
+=R_{\theta}\bigl(f_{\theta}(d_1)\Vert\cdots\Vert f_{\theta}(d_m)\bigr).
+\]
+Here $\Vert$ concatenates lists while retaining their order.
+This is the intended deterministic mapping from texts to topics. Matching outputs require fixed texts, their order, the prompt, the model, and post-processing rules; searching the same domain is insufficient.
+Selecting a reply location does not reorder the prepared post-level topic list.
+
+\paragraph{The topic record and ordered list.}
+We use the name \emph{comment-topic list} for the structure called \texttt{tangent DB} in implementation artifacts.
+Each record contains a source quote, a description of the subject a comment could discuss, a category describing the idea, and a source reference.
+The quote supplies inspiration and the topic description specifies the idea to express. The writer is not required to copy the quotation.
+For example, a quote about high device-repair costs may inspire a comparison of repair with replacement.
+Each record receives an index in the final ordering; payload bits select one of these indices.
+The configuration sets a topic limit, with a cap of 32 in the reported runs.
+This topic list is separate from the compression dictionary, even when both use the same source texts.
+Figure~\ref{fig:source-to-topics} illustrates the mapping and the fields of one topic record.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/source_to_topics_en.pdf}
+\Description{A source-text list passes through per-text topic extraction and shared ordering. A sample record contains a quote about repair cost, a repair-versus-replacement topic, a comparison category, and its source reference.}
+\caption{Shared settings map the source texts to an ordered comment-topic list. The illustrative record shows the quote, derived idea, category, and source.}
+\label{fig:source-to-topics}
+\end{figure}
+
+\subsection{Preparing a copy of the post's comments}
+\label{sec:waiting}
+Collecting documents, extracting topics, and writing a comment take time while new comments continue to arrive.
+If Bob reads the complete conversation after publication, he may include comments that Alice did not see when she began. These additions change the reply-location list and may change the texts used to extract topics.
+The purpose is therefore to define a common copy of the comments.
+
+The parties agree on an interval $T_{sync}$ between Alice collecting the comments and publishing her reply.
+If she collects them at $t_{start}$ and publishes at $t_{publish}$, then
+\[
+t_{start}=t_{publish}-T_{sync}.
+\]
+Bob reads the carrier comment's publication time and retains comments available up to that cutoff. He excludes the carrier comment and its descendants.
+The interval must accommodate research, preparation, writing, and verification: $T_{sync}>T_{process}$.
+If processing finishes early, Alice waits for the agreed publication time. If it exceeds the interval, she cannot publish the result while assuming the old cutoff.
+
+This procedure requires readable publication times and an agreed rule for comments exactly at the cutoff.
+The cutoff identifies eligible comments but cannot reproduce text edited or deleted after Alice collected it. Preserved content or a versioned source is needed when such changes affect the lists.
+Figure~\ref{fig:tsync} shows the timing required to prepare the common copy.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{figures/temporal_sync_method.pdf}
+\Description{Bob derives the comment cutoff by subtracting the agreed synchronization interval from the carrier comment's publication time.}
+\caption{Preparing a common copy of the post's comments: the receiver uses comments preceding the carrier's publication time minus the agreed interval $T_{sync}$.}
+\label{fig:tsync}
+\end{figure}
+
+\subsection{Selecting the reply location and comment topic}
+\label{sec:layer1}
+\label{sec:layer2}
+Payload bits select one reply location and one comment topic. Figure~\ref{fig:two-layer} illustrates the two lists and their roles.
+\begin{enumerate}
+\item Both parties order the comments by a deterministic depth-first traversal of the reply tree. The list contains $C=n+1$ locations: index 0 means replying to the post, and indices $1$ through $n$ refer to comments. The first group of bits selects the reply location.
+\item The next group selects a topic from the prepared list $\mathcal{A}$. The writer receives its description, source quote, and source reference, together with the post, the selected comment, and its parent chain.
+\end{enumerate}
+\label{sec:channel-widths}
+Using independent power-of-two subsets of the lists gives a distinguishable selection budget of
+\[
+b=\lfloor\log_2 C\rfloor+\lfloor\log_2 A\rfloor,
+\]
+where $A$ is the topic count. Three reply locations and five topics, for example, provide $1+2=3$ distinguishable bits.
+Layer~1 takes its bits from the start of the stream prepared in Section~\ref{sec:compression}, and Layer~2 takes the following bits.
+The lossless writer uses the restricted choice sets so every choice can be inverted to its original bits.
+Reducing an excessive index modulo the choice count can map two different bit patterns to the same choice and prevents independent extraction of those bits.
+This is a distinguishable-choice budget, not Shannon capacity or useful payload size after control fields.
+Payloads exceeding this budget require additional frames, as described in Section~\ref{sec:multiframe}.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/two_layer_embedding_en.pdf}
+\Description{Bits 10 select Comment 2 from four reply locations. Bits 01 select Repair cost from four topics. The selected location, topic, and conversation context feed the writer.}
+\caption{The first bit group selects the reply location and the next selects the comment topic. The writer produces a suitable comment using those choices and the context.}
+\label{fig:two-layer}
+\end{figure}
+
+\subsection{Writing the comment and verifying that Bob can read it}
+The writer produces several short candidate replies from the context and selected topic. Its settings determine comment length, candidate count, and wording variation.
+It receives the post, parent chain, selected topic, and a research excerpt. The topic guides the reply's content without appearing as a category label.
+Before accepting a candidate, Alice uses the same topic-identification step as Bob, requiring a valid index.
+A reply is accepted only if that step identifies the selected topic and the contextuality check passes.
+Otherwise, the sender retries with the same reply location and topic until a candidate is accepted or the retry limit is reached. A near-miss may be revised before another check.
+The current sender saves the result locally and does not publish it on Reddit.
+Figure~\ref{fig:verify-decode} shows sender verification and receiver topic identification.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{figures/verify_decode_method.pdf}
+\Description{The sender retries writing until strict topic identification succeeds. The receiver shortlists and reranks topics before requesting the canonical index.}
+\caption{The sender retries when verification does not identify the selected topic. The receiver uses a cosine shortlist of 20, a lexical rerank, and an \texttt{idx: N} prompt. Topic identification uses a fixed shared setting separate from writing.}
+\label{fig:verify-decode}
+\end{figure}
+
+\subsection{How the receiver extracts the bits}
+Bob extracts Layer~1 from the visible reply location and its index in the depth-first ordering.
+The Layer~2 topic index is not printed in the reply.
+The reconstruction path identifies Alice's comment by account, removes it from the supplied post, and may repeat research and topic preparation. It then:
+\begin{enumerate}
+\item embeds the comment with \texttt{all-MiniLM-L6-v2} and selects the nearest 20 topics from a pool of up to 120;
+\item reranks them using cosine similarity and lexical overlap;
+\item asks the stego model for a line \texttt{idx: N} containing the canonical topic index, using the separately recorded identification setting.
+\end{enumerate}
+If the model returns a shortlist rank instead, the program maps it to the original index. If no index can be parsed, it uses the nearest semantic candidate. Sender acceptance requires strict identification without these fallbacks.
+Reconstruction using private sender records differs from independent receiver extraction. Section~\ref{sec:recovery-contract} specifies the inputs supplied in recovery experiments, and the evaluation chapter explains each experiment's limits.
 
 \subsection{Preparing a text payload}
 \label{sec:compression}
-If the secret is text, it is first optionally wrapped by a protection transform, then compressed against a session dictionary built from the post body, the search-result texts, and the flattened comment bodies, in that order.
-The default transform on the balanced profile is \texttt{plain}: the payload is unchanged.
-Two other modes exist, \texttt{hmac\_xor\_v1} and \texttt{secure\_compact\_v2}, which add a keyed stream cipher and a truncated MAC; they are recorded on the sender audit so Bob applies the matching inverse.
-They add confidentiality on top of the covert channel.
-They are not what makes the channel covert.
+A text message can first undergo an optional protection transform and then compression against a session dictionary built from the post body, search texts, and ordered comment bodies, in that order.
+The balanced profile defaults to \texttt{plain}, which leaves the payload unchanged.
+The modes \texttt{hmac\_xor\_v1} and \texttt{secure\_compact\_v2} use a keyed stream cipher and a truncated MAC. The sender records the mode so Bob can apply the matching inverse.
+These transforms protect the message contents; the publication method conceals the communication.
 
-The compressor emits a one-bit mode flag, then either raw UTF-8 bits or a dictionary parse of literals and pointers.
-It keeps the dictionary parse only when that parse is strictly shorter, so the worst-case expansion is one bit.
-Literal runs are capped at 250 characters; pointers are used only for matches of three characters or more.
-Field widths and the backward parse that chooses the token sequence are defined once in the shared codec; Section~\ref{sec:implementation} states the token layout.
-This compressor dictionary is not the same object as the comment topic sampler.
-Figure~\ref{fig:compression} sketches the two encoding modes.
-
-The first bit Layer~1 reads is therefore that mode flag.
-A payload that does not fit in $w_1+w_2$ physical bits leaves a surplus in the audit, as in Section~\ref{sec:channel-widths}.
-% Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{../common/figures/payload_compression_dp}
-	\Description{Schematic of dictionary synthesis from thread and search text, payload segmentation, and choice between literal UTF-8 and dictionary-pointer encoding.}
-	\caption{Payload compression builds a session dictionary from thread and research text, then keeps a dictionary parse only when it is strictly shorter than UTF-8.}
-	\label{fig:compression}
-\end{figure*}
+One compression representation starts with a mode bit and then uses either raw UTF-8 or literals and dictionary pointers.
+The dictionary parse is selected only if shorter, so expansion is at most the mode bit.
+Literal runs are limited to 250 characters, and pointers require matches of at least three characters.
+The shared codec defines field widths and selection of the literal/pointer sequence; Section~\ref{sec:implementation} describes their layouts.
+This compression dictionary is separate from the comment-topic list.
+Another representation uses versioned prefix-tree nodes. The system chooses the shorter representation with its identifying fields and preserves Unicode, whitespace, and punctuation exactly.
+Figure~\ref{fig:compression} illustrates payload preparation with a shared dictionary.
+The representation fields form part of the bitstream consumed by the two layers. One comment transfers only the bits that fit its selection budget; the remaining bits require additional frames.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{../common/figures/payload_compression_dp}
+\Description{The post, comments, and search texts form a compression dictionary. Dictionary encoding is retained only if shorter than direct UTF-8 encoding.}
+\caption{A shared dictionary is built from the post, comments, and search texts. Dictionary representation is used only when it requires fewer bits than direct UTF-8.}
+\label{fig:compression}
+\end{figure}
 
 \subsection{When one comment is not enough}
 \label{sec:multiframe}
-A longer payload can be split across several frames: each frame is one reply under one post.
-That planner is implemented.
-It is not the pipeline behind the reported comparison and ZLG~\cite{lin2024zero} tables, which used the single-comment encoder plus audit-assisted reconstruction.
+Longer messages can be distributed across several replies under the same post; each reply is a frame.
+This multi-frame path is implemented but was not used in the reported ZLG~\cite{lin2024zero} comparison data, which used a single-comment encoder and audit-assisted reconstruction.
+The unprotected-payload path uses a deterministic dictionary from the shared context and a prefix-tree codec derived from OPPRESSION~\cite{zillien2024oppression}. Exact-text pointers and literal fallbacks preserve the full text.
+The transport records its version and codec identity, adds Elias-gamma length and count fields and a CRC, and checks the bitstream before decompression. CRC detects corruption but provides neither confidentiality nor keyed authentication.
+The recoverable budget in Section~\ref{sec:channel-widths} determines each frame's bit count. The final frame is zero-padded where needed, and the receiver rejects inconsistent frame counts or padding.
+This path uses an invertible mapping from bit patterns to choices, avoiding modulo aliasing.
+The optional reply-chain mode rebuilds topics after the parent is selected for each frame; the default post-level mode retains the prepared ordered list.
+The receiver does not automatically discover the frames in the public conversation. An ordered list of carrier-comment references must be supplied.
+Selection budget, payload and control bits, generated frames, and exactly extracted message bytes are different quantities. Recoverable capacity requires identification of all choices needed for the message.
 
-On the multi-frame path the payload is protected, then compressed against an empty dictionary, which forces the UTF-8 mode of Section~\ref{sec:compression}.
-An Elias-gamma header then stores the frame count $F$ and the payload bit length.
-Each slot is sized by recoverable capacity from Section~\ref{sec:channel-widths}, the last slot is zero-padded, and the receiver rejects a stream whose declared $F$ or padding is wrong.
-This path uses the lossless writer, so the bits-to-selection map is injective.
-If the sampler is context-weighted, this is also the path that rebuilds candidate topics after resolving the parent of each frame.
-The receiver does not discover frames in the public thread; the caller must supply an ordered list of comment references.
+\subsection{Conditions for testing independent extraction}
+\label{sec:recovery-contract}
+Figure~\ref{fig:end-to-end} describes the proposed public-conversation protocol. The source-excerpt experiment tests the narrower conditions in Table~\ref{tab:recovery-contract}. It produces local files without publishing comments.
+An observer in a deployment could see the complete reply bundle, locations, and timing, so individual reply quality does not measure bundle detectability.
+\begin{table}[H]
+\centering\small
+\caption{Receiver inputs and exclusions in the source-excerpt extraction experiment.}
+\label{tab:recovery-contract}
+\begin{tabularx}{\linewidth}{|l|X|}
+\hline
+Input class & Tested conditions \\
+\hline
+Public observations & Visible reply text and comment/parent identifiers. \\
+\hline
+Shared setup & A pre-embedding copy of the post's comments, ordered topic list, deterministic dictionary, and codec/transport versions and settings. Hashes detect identity differences; fresh web reconstruction is not tested. \\
+\hline
+Supplied metadata & Ordered carrier references, sender identity, and the unprotected-payload mode. Length is extracted from the framing; the original message is not supplied. \\
+\hline
+Private audit & The original message, intended indices, and sender-acceptance traces are excluded from receiver inputs and joined for evaluation only after decoding. \\
+\hline
+\end{tabularx}
+\end{table}
+Shared setup has synchronization and storage costs. This experiment does not measure list reconstruction, carrier discovery, or resilience to deletion and reordering. Unprotected compression with public shared state does not establish payload confidentiality.
 \FloatBarrier
