@@ -70,7 +70,7 @@ The five checks reuse those pairs.
 They are not 2{,}928 independent generated samples.
 All 2{,}928 judge tasks completed with no task errors.
 
-Figures~\ref{fig:judge-standout}--\ref{fig:judge-register} walk through one worked example each, all drawn from the same post so a reader can follow one thread across all five checks: \texttt{1lqu69t} on r/news, ``First immigration detainees arrive at Florida center in the Everglades.''
+Figure~\ref{fig:judge-standout} and the additional figures in Appendix~\ref{app:judge-material} illustrate all five checks using the same post: \texttt{1lqu69t} on r/news, ``First immigration detainees arrive at Florida center in the Everglades.'' Full prompts and response schemas are preserved in that appendix.
 The three candidate texts are our comment (``It feels like we are just spinning wheels by assuming opposition inevitably creates enemies without looking at the actual outcomes of these policies.''), ZLG's~\cite{lin2024zero} comment (``He told them to leave and if not they'd be killed.''), and, where the criterion uses one, a held-out human comment (``They're not calling it that. Also, what was Auschwitz, hmm?'').
 One post is an illustration, not a result; the bottom panel of each figure carries the actual 244-pair aggregate, and Table~\ref{tab:llm-judge} collects all five.
 
@@ -81,20 +81,8 @@ Chance is 10\%.
 Lower means the comment was harder to pick out as the extra one.
 Figure~\ref{fig:judge-standout} shows this test on the worked example: the judge caught our comment at slot 1 with 93\% confidence, calling it ``unusually generic, abstract, and detached from the thread's concrete facility details''; when ZLG's~\cite{lin2024zero} comment was the one inserted instead, the judge named a different, unrelated comment and missed ZLG~\cite{lin2024zero} entirely.
 That is the harder direction for our method, not the flattering one.
-The judge prompt supplies the full post and all ten numbered comments and asks for JSON only:
-{\footnotesize
-\begin{verbatim}
-Below is a discussion thread from r/{subreddit}, followed by 10 comments from that thread.
-Exactly one comment was machine-generated and inserted. Identify it. Judge conversational
-fit, specificity, stance, register, and habits; do not use length or polish as a cue.
-Post title: {post_title}
-Post body: {post_body}
-Comments:
-{numbered_comments}
-Return JSON only: {"inserted_index": <1-10>, "confidence": <0-100>,
-"runner_up_index": <1-10>, "evidence": "<short sentence>"}
-\end{verbatim}
-}
+The judge prompt supplies the full post and all ten numbered comments and asks for JSON only.
+The full prompt is reproduced in Appendix~\ref{app:judge-material}.
 
 \begin{figure}[H]
 \centering
@@ -112,30 +100,10 @@ Lower is better.
 The three pick rates share the same 244 lineups and sum to 100\%.
 Figure~\ref{fig:judge-weak-link} describes this test on the worked example: the judge ranked ZLG's~\cite{lin2024zero} terse reply as most human-plausible, the human control's comment second, and named our comment weakest, calling it ``vague, polished abstraction [that] does not clearly engage the thread.''
 Individual rounds like this one do not average to the aggregate: over the full set, our comments are named weakest less often than ZLG's~\cite{lin2024zero} (29.1\% versus 47.5\%), though still more often than the human control (23.4\%), which is the honest floor no method should expect to beat by much.
-For each task, a seeded random generator keyed by the post and pair IDs shuffles the three replies. The permutation is reproducible for that task but varies across tasks. All six reply orders appeared across the 244 saved tasks, with 36 to 45 tasks per order. The prompt gives the thread and replies, then asks for a full ranking plus the weakest index:
-{\footnotesize
-\begin{verbatim}
-Below is a discussion thread from r/{subreddit}, then three replies. Rank them from most
-human-plausible (1) to least (3), then name the weakest. Ignore length and ordering.
-Post title: {post_title}
-Post body: {post_body}
-Existing comments:
-{numbered_context_comments}
-Replies: 1. {candidate_1}
-2. {candidate_2}
-3. {candidate_3}
-Return JSON only: {"weakest_index": <1-3>, "ranking": [<index>, <index>, <index>],
-"evidence": "<short sentence>"}
-\end{verbatim}
-}
+For each task, a seeded random generator keyed by the post and pair IDs shuffles the three replies. The permutation is reproducible for that task but varies across tasks. All six reply orders appeared across the 244 saved tasks, with 36 to 45 tasks per order. The prompt gives the thread and replies, then asks for a full ranking plus the weakest index.
+The full prompt is reproduced in Appendix~\ref{app:judge-material}.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_weakest_text}
-\Description{Three comment cards side by side labeled human control, our method, and ZLG baseline, with rank badges one, three, and one respectively showing the judge ranked our comment weakest; a bar chart below shows weakest-text pick rates of 23.4 percent for the human control, 29.1 percent for our method, and 47.5 percent for ZLG, against a 33 percent chance baseline.}
-\caption{Weakest-text pick, worked example. In this lineup the judge names our comment weakest; across 244 lineups the pattern reverses, with ZLG~\cite{lin2024zero} named weakest more often (47.5\% versus 29.1\%) than the human control (23.4\%).}
-\label{fig:judge-weak-link}
-\end{figure}
+
 
 \subsubsection{Suspicion AUROC}
 Each arm, including a held-out human comment, gets a 0--100 suspicion score.
@@ -146,31 +114,10 @@ Lower is closer to the human scores.
 The reported $p=0.385$ tests the paired raw scores, not the AUROC gap.
 Figure~\ref{fig:judge-suspicion} shows this test on the worked example, where the scores are unusually clean: our comment scored 82/100, flagged for four tells including \texttt{generic\_could\_fit\_any\_thread} and \texttt{register\_mismatch}; ZLG~\cite{lin2024zero} scored 10/100, ``no clear machine-generated signals''; the human control scored 3/100.
 The example's wide score gap does not hold up across all 244 pairs: AUROC is 0.661 for our method versus 0.650 for ZLG~\cite{lin2024zero}, and a paired test of the raw suspicion scores does not show a clear difference ($p=0.385$).
-Each text is scored alone, with no lineup and no knowledge of the other arms:
-{\footnotesize
-\begin{verbatim}
-You moderate r/{subreddit}. Score the reviewed comment from 0 (genuine human) to 100
-(machine-generated or edited). Do not treat bluntness, mistakes, or poor punctuation
-as evidence.
-Post title: {post_title}
-Post body: {post_body}
-Recent comments:
-{numbered_context_comments}
-Comment: {candidate}
-Select applicable tells from generic_could_fit_any_thread, ignores_thread_specifics,
-register_mismatch, unnatural_phrasing, repetition, over_hedged, over_polished,
-contradicts_thread_facts, none.
-Return JSON only: {"suspicion": <0-100>, "tells": ["<tell>"], "evidence": "<short sentence>"}
-\end{verbatim}
-}
+Each text is scored alone, with no lineup and no knowledge of the other arms.
+The full prompt is reproduced in Appendix~\ref{app:judge-material}.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_suspicion_auroc}
-\Description{Three horizontal gauges from 0 (genuine) to 100 (machine-generated) showing the human control at 3, ZLG at 10, and our method at 82, with four suspicion tells listed for our method; a ROC-curve panel to the right shows both methods hugging the chance diagonal, with AUROC 0.661 for our method and 0.650 for ZLG.}
-\caption{Suspicion score, worked example. This post shows scores of 82 versus 10. Across 244 pairs, AUROC is 0.661 for our method and 0.650 for ZLG~\cite{lin2024zero}; the paired test of raw suspicion scores shows no clear difference ($p=0.385$).}
-\label{fig:judge-suspicion}
-\end{figure}
+
 
 \subsubsection{Thread Attribution}
 The judge picks which of four thread blurbs a comment belongs to.
@@ -181,31 +128,10 @@ We did not run a significance test on this row.
 Figure~\ref{fig:judge-attribution} shows this test on the worked example: the judge correctly matched our comment back to its thread at 88\% confidence, citing its engagement with ``opposition to immigration enforcement policies.''
 It also matched ZLG's~\cite{lin2024zero} comment to a thread, but the wrong one, at 68\% confidence, because ``He told them to leave and if not they'd be killed'' reads generically enough to fit more than one immigration story.
 That pattern holds in aggregate: our method attributes more accurately than ZLG~\cite{lin2024zero} (89.3\% versus 75.0\%), which is not automatically a point in our favor here, since it means our comments carry more thread-specific content, not that they read more naturally.
-The comment is shown with no lineup context, only four candidate threads:
-{\footnotesize
-\begin{verbatim}
-Below is a comment and four discussion threads. The comment belongs to exactly one thread.
-Choose the most likely thread even if uncertain.
-Comment: {candidate}
-1. r/{sub_1} -- {title_1}
-{snippet_1}
-2. r/{sub_2} -- {title_2}
-{snippet_2}
-3. r/{sub_3} -- {title_3}
-{snippet_3}
-4. r/{sub_4} -- {title_4}
-{snippet_4}
-Return JSON only: {"thread_index": <1-4>, "confidence": <0-100>, "evidence": "<short sentence>"}
-\end{verbatim}
-}
+The comment is shown with no lineup context, only four candidate threads.
+The full prompt is reproduced in Appendix~\ref{app:judge-material}.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_thread_attribution}
-\Description{One comment card with an arrow pointing to the correct thread among four candidate thread cards, labeled judge's pick at 88 percent confidence, correct; a bar chart below shows attribution accuracy of 89.3 percent for our method and 75.0 percent for ZLG, against a 25 percent chance baseline.}
-\caption{Thread attribution, worked example. The judge correctly places our comment at 88\% confidence; across 244 comments our method attributes more accurately than ZLG~\cite{lin2024zero} (89.3\% versus 75.0\%), a sign of thread-specific content, not naturalness.}
-\label{fig:judge-attribution}
-\end{figure}
+
 
 \subsubsection{Register-Fit}
 Using five genuine subreddit comments as examples, the judge scores style on a 1--5 \texttt{overall} field.
@@ -214,26 +140,10 @@ Higher is better.
 This is the only criterion with a paired per-post sign test in the scoring artifact.
 Figure~\ref{fig:judge-register} shows this test on the worked example: ZLG~\cite{lin2024zero} scored 4/5, ``concise, direct, consistent with the thread's plainspoken political commentary,'' while our comment scored 2/5, ``more formal and generic than the thread's concrete, informal, profanity-laced discussion.''
 This example runs against the aggregate: over 244 posts our method scores higher on average (3.193 versus 2.791), with 106 posts favoring us, 67 favoring ZLG~\cite{lin2024zero}, and 71 ties (paired sign-test $p=0.00374$), a real if modest effect, not a rout.
-Five real comments from the same subreddit anchor the judge's sense of local style before it scores the candidate:
-{\footnotesize
-\begin{verbatim}
-Five genuine r/{subreddit} comments show the community register:
-{numbered_context_comments}
-Judge this comment's style only: {candidate}
-Score tone_formality, length_norm, mechanics, insider_knowledge, and overall 1 (out of
-place) to 5 (indistinguishable).
-Return JSON only: {"tone_formality": <1-5>, "length_norm": <1-5>, "mechanics": <1-5>,
-"insider_knowledge": <1-5>, "overall": <1-5>, "evidence": "<short sentence>"}
-\end{verbatim}
-}
+Five real comments from the same subreddit anchor the judge's sense of local style before it scores the candidate.
+The full prompt is reproduced in Appendix~\ref{app:judge-material}.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_register_fit}
-\Description{Five genuine comments shown as style anchors above two candidate cards, ZLG scored four out of five and our method scored two out of five on this post; a dot-and-whisker chart below shows the mean register-fit score across 244 posts is 3.193 for our method and 2.791 for ZLG, with 106 wins, 67 losses, and 71 ties.}
-\caption{Register-fit, worked example. ZLG~\cite{lin2024zero} scores higher on this post (4/5 versus 2/5), the reverse of the aggregate: over 244 posts our method's mean is higher (3.193 versus 2.791; paired sign-test $p=0.00374$).}
-\label{fig:judge-register}
-\end{figure}
+
 
 \begin{table}[H]
 \centering
@@ -344,6 +254,62 @@ This is an exploratory capacity and first-frame check, not a full-payload recove
 The semantic adapter bypassed the normal semantic-search service, and the remaining frames were not generated or decoded.
 These figures are separate from the historical comparisons and do not establish an end-to-end recovery rate.
 
+\FloatBarrier
+\subsection{October independent-recovery experiment}
+\label{sec:october-recovery}
+\input{../common/data/october_recovery_values.tex}
+The exploratory artifact \texttt{oppression25\_fresh\_20261003T113428Z} contains \OctAttempts{} source-excerpt payloads generated with Qwen 9B under the contract in Table~\ref{tab:recovery-contract}. The excerpts favor dictionary matches and are not independently assigned arbitrary messages. Of all assigned messages, \OctExact/\OctAttempts{} recovered exactly; \OctGenerationFailures{} failed generation and \OctReceiverFailures{} failed receiver recovery. Among complete generated sequences, recovery was \OctExact/\OctComplete{}. The all-attempt proportion is 28\%, with a 95\% Wilson interval of [\OctWilsonLow\%, \OctWilsonHigh\%]. This interval describes a convenience batch and does not establish population-wide reliability.
+
+A replay of saved classifier outputs through the real receiver reproduced all \OctComplete{} complete-sequence outcomes without new LLM calls. Among \OctFrames{} carriers, \OctCorrectFrames{} had the correct topic selection and \OctConfusedFrames{} had an incorrect selection despite the intended topic being in the receiver shortlist. Every one of the \OctReceiverFailures{} receiver-failed messages included such a confusion. In \OctIdenticalPromptConfusions{} confused frames, recorded sender and receiver prompts were identical; two others lacked a complete prompt record. Codebook and dictionary comparisons found no identity disagreement in the complete traces. These observations locate the saved failures at classification; they do not prove that a particular sampling change repairs them. No silent payload mismatch was observed, which is not a bound on its future probability.
+
+All \OctAttempts{} offline codec/transport checks passed. This differs from live recovery. Paired planning on the same source excerpts reduced compressed streams from 844 to 779 bits (7.70\%), framed streams from 2,522 to 2,419 bits (4.08\%), and planned replies from 198 to 187 (5.56\%). The \OctFrames{} saved carriers cover complete sequences; six further replies appear in aborted private traces and belong in generation-cost accounting. There is no matched baseline or naturalness assessment for this batch.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../common/figures/october_recovery_stages}
+\Description{Two bar charts with distinct denominators: 25 assigned messages comprise seven exact recoveries, five generation failures and thirteen receiver failures; 149 carriers in complete sequences comprise 124 correct and 25 confused selections.}
+\caption{Saved October outcomes. The left panel counts all assigned messages; the right counts carriers only in complete generated sequences. Frame accuracy cannot substitute for complete-message recovery. Counts and the Wilson interval are generated from one hashed diagnosis artifact by \texttt{scripts/build\_recovery\_evidence.py}.}
+\label{fig:october-stages}
+\end{figure}
+
+\subsubsection{Bounded Luna development check}
+\input{../common/data/luna_development_values.tex}
+The separate artifact \texttt{luna10\_20261003\_v2} assigned independent eight-byte printable payloads (64 UTF-8 storage bits) to ten development posts under the same shared-state contract. Planning covered 32, 64 and 128 bits at limits of 8, 12 and 20 carriers; all ten fit the primary 64-bit/20-carrier cell. Generation used one retry and fresh Codex CLI calls requesting GPT-6 Luna, followed by an independent receiver using ordinary MiniLM retrieval. CLI temperature control was unavailable, so this is neither a test of the classifier-temperature correction nor a matched model comparison.
+
+The prespecified engineering gate required 8/10 exact messages. Collection stopped at its third failure: \DevExact{} of \DevAttempted{} attempted messages recovered exactly, and \DevUnattempted{} remained unattempted. Every attempted message generated completely; \DevWrong{} of \DevFrames{} receiver selections were wrong despite target inclusion. Those four fresh responses differed from recorded sender responses to identical prompts. Two messages failed CRC; the third could not reconstruct a valid framed stream. No silent mismatch was observed. The unattempted cases were the title-only posts, so their live feasibility remains open. This stopped development outcome is not a fixed-size reliability estimate and cannot justify expansion to confirmation.
+
+The run made \DevCalls{} CLI calls (\DevSenderCalls{} sender-side, including rejected candidates and verification, and \DevReceiverCalls{} receiver), saved \DevWords{} visible carrier words, and used \DevMinutes{} minutes summed over attempts. Fresh search and codebook extraction costs are excluded because prepared contexts were reused. The ten prepared UTF-8 JSON inputs total 8,035,483 bytes; this is stored setup size, not measured synchronization traffic. Counts share a hashed analysis snapshot in both language versions. The initial adapter canary failed before receiver execution and is excluded from method results.
+
+\begin{table}[t]
+\centering\small
+\caption{Chronology and evidence levels. These endpoints are not interchangeable.}
+\label{tab:evidence-levels}
+\begin{tabularx}{\columnwidth}{|l|X|X|}
+\hline
+Artifact/date & Endpoint and population & Receiver or interpretive limitation \\
+\hline
+July/August workload & Recorded acceptance and nominal selection budget & Sender-audit reconstruction; token-assisted ZLG reveal. \\
+\hline
+244-post judge subset & J1: 51.6\% vs 28.3\%; J2: 29.1\% vs 47.5\% (ours vs ZLG) & Selected unique-output subset; task-specific LLM judgments. \\
+\hline
+26 September pilot & Our 0/25 fit eight carriers; ZLG 1/9 recovered before futility stopping & Capacity rejection and reveal failure are different stages; incomplete paired campaign. \\
+\hline
+September chain probe & One frame passed; 13/25 fit 20 frames & In-memory retrieval adapter; no full-message recovery. \\
+\hline
+October offline checks & Three clean messages recover; four damaged cases detected & Exact-tangent classifier, shared codebook and supplied order; no live classifier test. \\
+\hline
+October source excerpts & \OctExact/\OctAttempts{} live exact; \OctAttempts/\OctAttempts{} offline exact & Qwen 9B, shared prepared state and supplied order; no fresh reconstruction. \\
+\hline
+October Luna development & \DevExact/\DevAttempted{} attempted exact; \DevUnattempted{} unattempted; no-go & Independent UTF-8 payloads and normal retrieval; CLI sampling uncontrolled; stopped development panel. \\
+\hline
+Archive reconstruction panels & Six development and six untouched source posts & Independent public archive preparation, deterministic thread-only variant; Section~\ref{sec:fresh-archive}. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\FloatBarrier
+\input{sections/fresh_archive.tex}
+\FloatBarrier
 \subsection{What these comparisons do not show}
 
 The judge result is about the unique-ZLG-output subset~\cite{lin2024zero}, one pair per post.

@@ -1,0 +1,32 @@
+{
+  "analysis_sha256": "6286e53c44b2ef29c1287ff3f982fe4b9e19cba0a1e8be5086c7133a0e3d366d",
+  "signature": "c236b26a05589c5c0504fb3234d63c3c37b7bcf92f36a572afc13494ce407847",
+  "gate": "no-go",
+  "values": {
+    "DevAttempted": 7,
+    "DevExact": 4,
+    "DevFailed": 3,
+    "DevUnattempted": 3,
+    "DevFrames": 73,
+    "DevWrong": 4,
+    "DevCalls": 372,
+    "DevSenderCalls": 299,
+    "DevReceiverCalls": 73,
+    "DevWords": 2577,
+    "DevMinutes": "55.0"
+  },
+  "costs": {
+    "calls": 372,
+    "calls_by_stage": {
+      "sender": 299,
+      "receiver": 73
+    },
+    "input_tokens": 7525935,
+    "output_tokens": 12613,
+    "cached_input_tokens": 5521152,
+    "summed_call_duration_ms": 3136317,
+    "tool_calls": 0,
+    "calls_missing_usage": 0,
+    "effective_temperature": null
+  }
+}

@@ -47,7 +47,7 @@
 وليست \NUM{2{,}928} عينة مولَّدة مستقلة.
 وأُكملت المهام الـ\NUM{2{,}928} كلها بلا أخطاء.
 
-تعرض الأشكال~\ref{fig:judge-standout} إلى \ref{fig:judge-register} تطبيق المعايير الخمسة على المنشور نفسه، لتسهيل متابعة الأمثلة: المنشور \EN{1lqu69t} على \EN{r/news}، بعنوان «\EN{First immigration detainees arrive at Florida center in the Everglades}».
+يعرض الشكل~\ref{fig:judge-standout} والأشكال الإضافية في \hyperref[app:judge-material]{الملحق} المعايير الخمسة على المنشور نفسه: \EN{1lqu69t} على \EN{r/news}، بعنوان «\EN{First immigration detainees arrive at Florida center in the Everglades}». وتُحفظ المطالبات كاملة وأشكال الإجابات في ذلك الملحق.
 والتعليقات المعروضة في الأمثلة هي تعليقنا («\EN{It feels like we are just spinning wheels by assuming opposition inevitably creates enemies without looking at the actual outcomes of these policies.}»)، وتعليق \EN{ZLG}~\cite{lin2024zero} («\EN{He told them to leave and if not they'd be killed.}»)، وتعليق بشري من المنشور نفسه عند الحاجة إلى المقارنة («\EN{They're not calling it that. Also, what was Auschwitz, hmm?}»).
 والمنشور الواحد يوضح طريقة الاختبار فقط؛ أما النتائج المعتمدة فتظهر في الجزء السفلي من كل شكل، حيث تُجمع نتائج الأزواج الـ\NUM{244}. ويلخص الجدول~\ref{tab:llm-judge} المعايير الخمسة.
 
@@ -58,25 +58,8 @@
 والأدنى أفضل، إذ يعني أن التعليق المولَّد كان أصعب تمييزًا.
 وفي المثال المعروض، حدّد المحكّم تعليقنا في الموضع الأول بثقة \NUM{93\%}، واصفًا إياه بأنه «عام ومجرَّد ولا يتصل بتفاصيل المنشأة التي يناقشها المشاركون».
 وعندما أُضيف تعليق \EN{ZLG}~\cite{lin2024zero} بدلًا منه في مهمة مستقلة، اختار المحكّم تعليقًا آخر ولم يتعرف على تعليق \EN{ZLG}~\cite{lin2024zero}. وهكذا جاء هذا المثال أقل ملاءمة لطريقتنا من النتائج الإجمالية.
-ويزوَّد المحكّم بالمنشور كاملًا وبالتعليقات العشرة المرقَّمة كلها، ويُطلب منه \EN{JSON} فقط:
-\begin{LTR}
-{\footnotesize
-\begin{verbatim}
-Below is a discussion thread from r/{subreddit}, followed by 10 comments from that thread.
-Exactly one comment was machine-generated and inserted. Identify it. Judge conversational
-fit, specificity, stance, register, and habits; do not use length or polish as a cue.
-Post title: {post_title}
-Post body: {post_body}
-Comments:
-{numbered_comments}
-Return JSON only:
-{"inserted_index": INTEGER_1_TO_10,
- "confidence": INTEGER_0_TO_100,
- "runner_up_index": INTEGER_1_TO_10,
- "evidence": "SHORT_SENTENCE"}
-\end{verbatim}
-}
-\end{LTR}
+ويزوَّد المحكّم بالمنشور كاملًا وبالتعليقات العشرة المرقَّمة كلها، ويُطلب منه \EN{JSON} فقط.
+ترد المطالبة كاملة في \hyperref[app:judge-material]{الملحق}.
 
 \begin{figure}[H]
 	\centering
@@ -92,33 +75,10 @@ Return JSON only:
 وتُحسب نسب اختيار كل تعليق من المجموعات الثلاث على الأزواج الـ\NUM{244} نفسها، ولذلك يبلغ مجموعها \NUM{100\%}.
 وفي مثال الشكل~\ref{fig:judge-weak-link}، عدّ المحكّم رد \EN{ZLG}~\cite{lin2024zero} الموجز أقرب إلى تعليق بشري، يليه التعليق البشري المستخدم للمقارنة، ثم تعليقنا الذي وصفه بأنه «صياغة مجردة ومصقولة لا ترتبط بوضوح بما يدور في المحادثة».
 ولا تمثل هذه الحالة وحدها النتيجة الإجمالية: فقد اختير تعليقنا الأقل شبهًا بالبشري في \NUM{29.1\%} من الأزواج، مقابل \NUM{47.5\%} لتعليق \EN{ZLG}~\cite{lin2024zero} و\NUM{23.4\%} للتعليق البشري.
-يُخلط ترتيب الردود الثلاثة لكل مهمة بمولّد عشوائي ذي بذرة مشتقة من معرّفي المنشور والزوج. لذلك يمكن إعادة إنتاج الترتيب داخل المهمة نفسها، لكنه يختلف بين المهام. وظهرت الترتيبات الستة في المهام المحفوظة الـ\NUM{244}، بواقع يتراوح بين \NUM{36} و\NUM{45} مهمة لكل ترتيب. وتُعرض على المحكّم المحادثة والردود، ثم يُطلب منه ترتيبها وتحديد التعليق الأقل شبهًا بالبشري:
-\begin{LTR}
-{\footnotesize
-\begin{verbatim}
-Below is a discussion thread from r/{subreddit}, then three replies. Rank them from most
-human-plausible (1) to least (3), then name the weakest. Ignore length and ordering.
-Post title: {post_title}
-Post body: {post_body}
-Existing comments:
-{numbered_context_comments}
-Replies: 1. {candidate_1}
-2. {candidate_2}
-3. {candidate_3}
-Return JSON only:
-{"weakest_index": INTEGER_1_TO_3,
- "ranking": [INDEX, INDEX, INDEX],
- "evidence": "SHORT_SENTENCE"}
-\end{verbatim}
-}
-\end{LTR}
+يُخلط ترتيب الردود الثلاثة لكل مهمة بمولّد عشوائي ذي بذرة مشتقة من معرّفي المنشور والزوج. لذلك يمكن إعادة إنتاج الترتيب داخل المهمة نفسها، لكنه يختلف بين المهام. وظهرت الترتيبات الستة في المهام المحفوظة الـ\NUM{244}، بواقع يتراوح بين \NUM{36} و\NUM{45} مهمة لكل ترتيب. وتُعرض على المحكّم المحادثة والردود، ثم يُطلب منه ترتيبها وتحديد التعليق الأقل شبهًا بالبشري.
+ترد المطالبة كاملة في \hyperref[app:judge-material]{الملحق}.
 
-\begin{figure}[H]
-	\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_weakest_text}
-	\caption{اختيار التعليق الأقل شبهًا بالبشري. اختار المحكّم تعليقنا في المثال المعروض، لكن عبر الأزواج الـ\NUM{244} اختار تعليق \EN{ZLG}~\cite{lin2024zero} أكثر (\NUM{47.5\%}) من تعليقنا (\NUM{29.1\%}) أو التعليق البشري (\NUM{23.4\%}).}
-	\label{fig:judge-weak-link}
-\end{figure}
+
 
 \subsubsection{تمييز التعليقات المولَّدة بدرجة الاشتباه}
 يعطي المحكّم كل تعليق درجة اشتباه من صفر إلى \NUM{100}، ويقيّم التعليقات البشرية أيضًا للمقارنة.
@@ -128,35 +88,10 @@ Return JSON only:
 والقيمة \NUMM{p=0.385} ناتجة عن اختبار إشارة على درجات الاشتباه الخام للتعليقات المقترنة، ولا تختبر الفرق بين قيمتي \EN{AUROC}.
 ويُظهر الشكل~\ref{fig:judge-suspicion} هذا الاختبار على المثال المفصَّل، حيث كانت الدرجات متباينة على نحو غير معتاد: سجَّل تعليقنا \NUM{82/100}، مع رصد أربع علامات اشتباه من بينها \texttt{generic\_could\_fit\_any\_thread} و\texttt{register\_mismatch}؛ وسجَّل \EN{ZLG}~\cite{lin2024zero} \NUM{10/100}، بلا «إشارات توليد آلي واضحة»؛ وسجَّل الضابط البشري \NUM{3/100}.
 لكن المثال لا يمثل الأزواج الـ\NUM{244} كلها: بلغت قيمة \EN{AUROC} مقدار \NUM{0.661} لطريقتنا مقابل \NUM{0.650} لـ\EN{ZLG}~\cite{lin2024zero}، ولم يُظهر اختبار الإشارة فرقًا واضحًا بين درجات الاشتباه الخام المقترنة (\NUMM{p=0.385}).
-ويُقيَّم كل نص بمفرده، بلا لوحة وبلا معرفة بالأذرع الأخرى:
-\begin{LTR}
-{\footnotesize
-\begin{verbatim}
-You moderate r/{subreddit}. Score the reviewed comment from 0 (genuine human) to 100
-(machine-generated or edited). Do not treat bluntness, mistakes, or poor punctuation
-as evidence.
-Post title: {post_title}
-Post body: {post_body}
-Recent comments:
-{numbered_context_comments}
-Comment: {candidate}
-Select applicable tells from generic_could_fit_any_thread, ignores_thread_specifics,
-register_mismatch, unnatural_phrasing, repetition, over_hedged, over_polished,
-contradicts_thread_facts, none.
-Return JSON only:
-{"suspicion": INTEGER_0_TO_100,
- "tells": ["TELL"],
- "evidence": "SHORT_SENTENCE"}
-\end{verbatim}
-}
-\end{LTR}
+ويُقيَّم كل نص بمفرده، بلا لوحة وبلا معرفة بالأذرع الأخرى.
+ترد المطالبة كاملة في \hyperref[app:judge-material]{الملحق}.
 
-\begin{figure}[H]
-	\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_suspicion_auroc}
-\caption{درجة الاشتباه، مثال من منشور واحد. أعطى المحكّم تعليقنا \NUM{82} وتعليق \EN{ZLG}~\cite{lin2024zero} عشر درجات. وعبر \NUM{244} زوجًا، بلغت قيمة \EN{AUROC} مقدار \NUM{0.661} لطريقتنا و\NUM{0.650} لـ\EN{ZLG}~\cite{lin2024zero}؛ أما اختبار درجات الاشتباه الخام المقترنة فلم يُظهر فرقًا واضحًا (\NUMM{p=0.385}).}
-	\label{fig:judge-suspicion}
-\end{figure}
+
 
 \subsubsection{إسناد التعليق إلى المحادثة}
 يُعرض على المحكّم تعليق وأربعة ملخصات لمحادثات مختلفة، ويختار المحادثة التي ورد فيها التعليق.
@@ -166,35 +101,10 @@ Return JSON only:
 وفي المثال المعروض في الشكل~\ref{fig:judge-attribution}، نسب المحكّم تعليقنا إلى محادثته الصحيحة بثقة \NUM{88\%}، لأنه يتناول «معارضة سياسات إنفاذ الهجرة».
 كما طابق تعليق \EN{ZLG}~\cite{lin2024zero} بالمحادثة، لكنها كانت المحادثة الخطأ، بثقة \NUM{68\%}، لأن «\EN{He told them to leave and if not they'd be killed}» عام بما يكفي ليلائم أكثر من قصة هجرة واحدة.
 وعبر المجموعة كلها، نُسبت تعليقاتنا إلى محادثاتها الصحيحة بمعدل أعلى من تعليقات \EN{ZLG}~\cite{lin2024zero} (\NUM{89.3\%} مقابل \NUM{75.0\%}). ويقيس هذا الاختبار صلة محتوى التعليق بالمحادثة، ولا يكفي وحده للحكم على طبيعية صياغته.
-ويُعرض التعليق بلا سياق لوحة، مع أربع محادثات مرشحة فقط:
-\begin{LTR}
-{\footnotesize
-\begin{verbatim}
-Below is a comment and four discussion threads. The comment belongs to exactly one thread.
-Choose the most likely thread even if uncertain.
-Comment: {candidate}
-1. r/{sub_1} -- {title_1}
-{snippet_1}
-2. r/{sub_2} -- {title_2}
-{snippet_2}
-3. r/{sub_3} -- {title_3}
-{snippet_3}
-4. r/{sub_4} -- {title_4}
-{snippet_4}
-Return JSON only:
-{"thread_index": INTEGER_1_TO_4,
- "confidence": INTEGER_0_TO_100,
- "evidence": "SHORT_SENTENCE"}
-\end{verbatim}
-}
-\end{LTR}
+ويُعرض التعليق بلا سياق لوحة، مع أربع محادثات مرشحة فقط.
+ترد المطالبة كاملة في \hyperref[app:judge-material]{الملحق}.
 
-\begin{figure}[H]
-	\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_thread_attribution}
-	\caption{إسناد التعليق إلى محادثته. في المثال المعروض، اختار المحكّم المحادثة الصحيحة لتعليقنا بثقة \NUM{88\%}. وعبر \NUM{244} تعليقًا لكل طريقة، بلغت الدقة \NUM{89.3\%} لطريقتنا و\NUM{75.0\%} لـ\EN{ZLG}~\cite{lin2024zero}؛ ويقيس ذلك ارتباط المحتوى بالمحادثة.}
-	\label{fig:judge-attribution}
-\end{figure}
+
 
 \subsubsection{ملاءمة السياق}
 بعد الاطلاع على خمسة تعليقات بشرية من المنتدى للتعرف إلى أسلوب المشاركين، يقيّم المحكّم ملاءمة أسلوب التعليق بدرجة من \NUM{1} إلى \NUM{5} في الحقل \texttt{overall}.
@@ -203,29 +113,10 @@ Return JSON only:
 وهذا المعيار الوحيد ذو اختبار إشارة مزدوج مجمَّع حسب المنشور.
 وفي مثال الشكل~\ref{fig:judge-register}، حصل تعليق \EN{ZLG}~\cite{lin2024zero} على \NUM{4/5} لأنه «موجز ومباشر ويلائم أسلوب النقاش السياسي في المحادثة»، بينما حصل تعليقنا على \NUM{2/5} لأنه «أكثر رسمية وعمومية من النقاش المباشر وغير الرسمي الذي يتضمن ألفاظًا نابية».
 لكن المتوسط عبر \NUM{244} منشورًا أعلى لطريقتنا (\NUM{3.193} مقابل \NUM{2.791}). وكانت درجتنا أعلى في \NUM{106} منشورات، ودرجة \EN{ZLG}~\cite{lin2024zero} أعلى في \NUM{67}، وتعادلتا في \NUM{71} (اختبار إشارة مزدوج \NUMM{p=0.00374}). فالفرق ملحوظ، لكنه ليس كبيرًا في كل حالة.
-وتُعرض على المحكّم خمسة تعليقات بشرية من المنتدى نفسه قبل تقييم أسلوب كل تعليق مرشح:
-\begin{LTR}
-{\footnotesize
-\begin{verbatim}
-Five genuine r/{subreddit} comments show the community register:
-{numbered_context_comments}
-Judge this comment's style only: {candidate}
-Score tone_formality, length_norm, mechanics, insider_knowledge, and overall 1 (out of
-place) to 5 (indistinguishable).
-Schematic JSON shape only; numeric score placeholders:
-{"tone_formality": INTEGER_1_TO_5, "length_norm": INTEGER_1_TO_5,
- "mechanics": INTEGER_1_TO_5, "insider_knowledge": INTEGER_1_TO_5,
- "overall": INTEGER_1_TO_5, "evidence": SHORT_SENTENCE}
-\end{verbatim}
-}
-\end{LTR}
+وتُعرض على المحكّم خمسة تعليقات بشرية من المنتدى نفسه قبل تقييم أسلوب كل تعليق مرشح.
+ترد المطالبة كاملة في \hyperref[app:judge-material]{الملحق}.
 
-\begin{figure}[H]
-	\centering
-\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/llm_judge_register_fit}
-\caption{ملاءمة أسلوب التعليق للسياق. في المثال المعروض حصل \EN{ZLG}~\cite{lin2024zero} على \NUM{4/5} مقابل \NUM{2/5} لطريقتنا، بينما كان متوسط طريقتنا أعلى عبر \NUM{244} منشورًا (\NUM{3.193} مقابل \NUM{2.791}؛ اختبار إشارة مزدوج \NUMM{p=0.00374}).}
-	\label{fig:judge-register}
-\end{figure}
+
 
 \begin{table}[H]
 \centering
@@ -330,6 +221,63 @@ Schematic JSON shape only; numeric score placeholders:
 استخدم الاختبار أداة بحث دلالي داخل الذاكرة بدل خدمة البحث الدلالي المعتادة، ولم تُنشأ بقية الإطارات أو تُفك.
 وهذه الأرقام منفصلة عن المقارنات التاريخية، ولا تثبت معدل نجاح للاستخراج من البداية إلى النهاية.
 
+\FloatBarrier
+\subsection{تجربة أكتوبر للاستخراج المستقل}
+\label{sec:october-recovery}
+\input{../common/data/october_recovery_values.tex}
+يحوي التشغيل \EN{\texttt{oppression25\_fresh\_20261003T113428Z}} عددًا قدره \NUM{\OctAttempts} من حمولات مقتبسة من المصادر، مع التوليد باستخدام \EN{Qwen 9B} وفق شروط الجدول~\ref{tab:recovery-contract}. تفضل هذه المقتطفات التطابق مع القاموس، وليست رسائل مستقلة عن المصادر. استُخرجت \NUM{\OctExact/\OctAttempts} رسالة بدقة من جميع الرسائل المخصصة؛ وفشلت \NUM{\OctGenerationFailures} في التوليد و\NUM{\OctReceiverFailures} لدى المُستقبِل. وبين التتابعات مكتملة التوليد كانت النتيجة \NUM{\OctExact/\OctComplete}. النسبة من جميع المحاولات \NUM{28\%}، ومجال \EN{Wilson} بنسبة \NUM{95\%} هو \NUM{[\OctWilsonLow\%, \OctWilsonHigh\%]}. يصف المجال هذه المجموعة المتاحة، ولا يثبت موثوقية عامة عبر سياقات النقاش.
+
+أعادت إجابات تحديد الموضوع المحفوظة، عند تمريرها إلى المُستقبِل الفعلي دون استدعاءات جديدة، نتائج التتابعات المكتملة وعددها \NUM{\OctComplete}. ومن \NUM{\OctFrames} إطارًا، كان اختيار الموضوع صحيحًا في \NUM{\OctCorrectFrames} وخاطئًا في \NUM{\OctConfusedFrames} رغم وجود الموضوع المقصود في القائمة المختصرة. واحتوت كل رسالة من الرسائل التي فشلت لدى المُستقبِل وعددها \NUM{\OctReceiverFailures} على خطأ من هذا النوع. تطابقت المطالبات المسجلة للطرفين في \NUM{\OctIdenticalPromptConfusions} إطارًا مخطئًا؛ ولم يكتمل سجل المطالبات في إطارين آخرين. ولم تكشف المقارنة اختلاف هوية القائمة أو القاموس في التتابعات المكتملة. تحدد هذه المشاهدات مرحلة الإخفاق، لكنها لا تثبت أن تعديل أخذ العينات يعالجها. ولم تُلاحظ رسالة خاطئة قُبلت بصمت، ولا يحدد ذلك احتمال وقوعها لاحقًا.
+
+اجتازت اختبارات الضاغط والنقل دون نموذج لغة جميع الحالات وعددها \NUM{\OctAttempts}، وهي نتيجة مختلفة عن الاستخراج الفعلي. خفّض التخطيط المزدوج للمقتطفات نفسها تتابعات الضغط من \NUM{844} إلى \NUM{779} بتًا (\NUM{7.70\%})، والتتابعات مع حقول النقل من \NUM{2{,}522} إلى \NUM{2{,}419} بتًا (\NUM{4.08\%})، والردود المخططة من \NUM{198} إلى \NUM{187} (\NUM{5.56\%}). تخص الإطارات المحفوظة وعددها \NUM{\OctFrames} التتابعات المكتملة؛ وتوجد ستة ردود أخرى في سجلات محاولات أُوقفت، ويجب احتسابها في كلفة التوليد. ولا تتضمن المجموعة مقارنة مرجعية متوافقة أو تقييمًا لطبيعية الردود.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../common/figures/october_recovery_stages}
+\caption{نتائج أكتوبر المحفوظة. يحصي الرسم الأيسر جميع الرسائل المخصصة، والأيمن إطارات التتابعات مكتملة التوليد فقط. لا تحل دقة الإطار محل استخراج الرسالة كاملة. تُولّد الأعداد ومجال \EN{Wilson} من ملف تشخيص واحد ذي تجزئة محفوظة باستخدام \EN{\texttt{scripts/build\_recovery\_evidence.py}}.}
+\label{fig:october-stages}
+\end{figure}
+
+\subsubsection{فحص تطوير محدود باستخدام \EN{Luna}}
+\input{../common/data/luna_development_values.tex}
+خصص التشغيل المنفصل \EN{\texttt{luna10\_20261003\_v2}} حمولات مستقلة من ثمانية بايتات قابلة للطباعة (\NUM{64} بت تخزين \EN{UTF-8}) لعشرة منشورات تطوير، تحت شروط الحالة المشتركة نفسها. شمل التخطيط \NUM{32} و\NUM{64} و\NUM{128} بتًا، بحدود \NUM{8} و\NUM{12} و\NUM{20} إطارًا؛ واستوعبت المنشورات العشرة الخلية الأساسية، وهي \NUM{64} بتًا ضمن \NUM{20} إطارًا. استخدم التوليد إعادة واحدة واستدعاءات جديدة عبر \EN{Codex CLI} تطلب \EN{GPT-6 Luna}، ثم مُستقبِلًا مستقلًا مع البحث الدلالي المعتاد في \EN{MiniLM}. لم تتيح الواجهة التحكم في الحرارة؛ لذلك لا يقيس الفحص أثر تعديل حرارة المصنف ولا فرقًا متوافقًا بين النماذج.
+
+اشترطت عتبة الجدوى المعلنة استخراج \NUM{8/10} رسائل بدقة. وتوقف الجمع عند الإخفاق الثالث: استُخرجت \NUM{\DevExact} رسائل من \NUM{\DevAttempted} جرت محاولتها، وبقيت \NUM{\DevUnattempted} دون محاولة. اكتمل توليد جميع الرسائل التي جرت محاولتها؛ وأخطأ المُستقبِل في \NUM{\DevWrong} من \NUM{\DevFrames} اختيارًا رغم وجود الموضوع المقصود في القائمة المختصرة. واختلفت الإجابات الأربع عن إجابات المُرسِل المسجلة للمطالبات نفسها. فشلت رسالتان في \EN{CRC}، وتعذر بناء تتابع نقل صالح في الثالثة. ولم يُلاحظ قبول حمولة خاطئة بصمت. وكانت الحالات غير المحاوَلة منشورات ذات عنوان فقط، فتبقى جدواها الفعلية غير مقاسة. هذه نتيجة تطوير متوقفة، وليست تقدير موثوقية بعينة ذات حجم ثابت، ولا تبرر التوسع إلى دراسة تأكيدية.
+
+أجرى التشغيل \NUM{\DevCalls} استدعاءً (\NUM{\DevSenderCalls} لدى المُرسِل تشمل المرشحات المرفوضة والتحقق، و\NUM{\DevReceiverCalls} لدى المُستقبِل)، وحفظ \NUM{\DevWords} كلمة ظاهرة في الإطارات، واستغرق مجموع المحاولات \NUM{\DevMinutes} دقيقة. لا تشمل الكلفة بحثًا جديدًا أو استخراج موضوعات جديدًا، لأن السياقات المحضرة أُعيد استخدامها. وتبلغ ملفات السياق العشرة بصيغة \EN{UTF-8 JSON} مقدار \NUM{8{,}035{,}483} بايتًا؛ وهي مساحة تخزين وليست حركة مزامنة مقاسة. تعتمد الأعداد في النسختين على ملف تحليل ذي تجزئة محفوظة. وتُستبعد محاولة الأداة الأولية، التي فشلت قبل تنفيذ المُستقبِل، من نتائج الطريقة.
+
+\begin{table}[t]
+\centering\small
+\caption{تتابع الأدلة ومستوياتها؛ تقيس هذه النتائج نقاط نهاية مختلفة.}
+\label{tab:evidence-levels}
+\begin{RTL}
+\begin{tabularx}{\columnwidth}{|D|B|B|}
+\hline
+البيانات أو التاريخ & النتيجة والمجموعة & شروط الاستقبال أو حدود التفسير \\
+\hline
+تشغيل يوليو وأغسطس & القبول المسجل وميزانية الاختيار & إعادة بناء بسجل المُرسِل؛ وكشف \EN{ZLG} بمعرفات الرموز. \\
+\hline
+محكّم \NUM{244} منشورًا & \EN{J1}: \NUM{51.6\%} مقابل \NUM{28.3\%}؛ \EN{J2}: \NUM{29.1\%} مقابل \NUM{47.5\%} (طريقتنا ثم \EN{ZLG}) & مجموعة مختارة ذات مخرجات فريدة؛ أحكام نموذج لغة لمهام محددة. \\
+\hline
+اختبار \NUM{26} سبتمبر & طريقتنا: \NUM{0/25} ضمن ثمانية إطارات؛ \EN{ZLG}: \NUM{1/9} قبل التوقف & رفض السعة وفشل الكشف مرحلتان مختلفتان؛ المقارنة المزدوجة غير مكتملة. \\
+\hline
+فحص سلسلة الرد & نجاح إطار واحد؛ \NUM{13/25} ضمن \NUM{20} إطارًا & أداة استرجاع داخل الذاكرة؛ لا استخراج لرسالة كاملة. \\
+\hline
+اختبارات أكتوبر دون نموذج & ثلاث رسائل سليمة تُستخرج؛ أربع تالفة تُرفض & تحديد بالتطابق التام، وقائمة مشتركة وترتيب مزود؛ لا اختبار للمصنف الفعلي. \\
+\hline
+مقتطفات أكتوبر & \NUM{\OctExact/\OctAttempts} فعليًا؛ \NUM{\OctAttempts/\OctAttempts} دون نموذج & \EN{Qwen 9B} وحالة محضرة مشتركة وترتيب مزود؛ لا إعادة بناء جديدة. \\
+\hline
+تطوير \EN{Luna} في أكتوبر & \NUM{\DevExact/\DevAttempted} بدقة؛ \NUM{\DevUnattempted} دون محاولة؛ عدم اجتياز & حمولات مستقلة واسترجاع معتاد؛ لا تحكم في حرارة الواجهة؛ مجموعة تطوير متوقفة. \\
+\hline
+مجموعتا إعادة البناء من الأرشيف & ستة منشورات تطوير وستة غير مستخدمة & تحضير مستقل من الأرشيف العام، بنمط حتمي للمحادثة وحدها؛ القسم~\ref{sec:fresh-archive}. \\
+\hline
+\end{tabularx}
+\end{RTL}
+\end{table}
+
+\FloatBarrier
+\input{sections/fresh_archive.tex}
+\FloatBarrier
 \subsection{حدود التقييم وصلاحية الاستنتاج}
 
 تخص أحكام المحكّم \NUM{244} زوجًا اختير لها زوج واحد لكل منشور بشرط أن يكون تعليق \EN{ZLG}~\cite{lin2024zero} فريدًا بين مخرجات التشغيل.

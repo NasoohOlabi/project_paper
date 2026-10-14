@@ -1,0 +1,38 @@
+{
+  "artifact": "oppression25_fresh_20261003T113428Z",
+  "diagnosis_sha256": "f5d85701f8c09a1dde0f7151dc6b83e918e25c462f678b2017340a78238afcd7",
+  "counts": {
+    "attempts": 25,
+    "sample_stages": {
+      "exact_recovery": 7,
+      "generation_failure": 5,
+      "receiver_failure": 13
+    },
+    "complete_frames": 149,
+    "frame_stages": {
+      "correct_selection": 124,
+      "classification_confusion": 25
+    },
+    "codebook_mismatches": 0,
+    "dictionary_mismatches": 0,
+    "payload_dictionary_mismatches": 0,
+    "silent_mismatches": 0,
+    "identical_prompt_disagreement_frames": 23,
+    "frames_missing_receiver_user_prompt": 1,
+    "frames_missing_receiver_system_prompt": 4,
+    "receiver_replay": "recorded_outputs_through_real_receiver_no_llm_calls"
+  },
+  "values": {
+    "OctAttempts": 25,
+    "OctExact": 7,
+    "OctGenerationFailures": 5,
+    "OctReceiverFailures": 13,
+    "OctComplete": 20,
+    "OctFrames": 149,
+    "OctCorrectFrames": 124,
+    "OctConfusedFrames": 25,
+    "OctIdenticalPromptConfusions": 23,
+    "OctWilsonLow": "14.3",
+    "OctWilsonHigh": "47.6"
+  }
+}

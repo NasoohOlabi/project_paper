@@ -4,7 +4,7 @@
 The runnable pipeline is five stages: data load, research, comment topic generation, stego encoding, and decode.
 Each stage writes artifacts to disk so later stages can reuse the same corpus and hashes.
 Search-term generation and comment topic extraction run at \texttt{temperature=0} from the same inputs.
-Comment writing and comment topic identification do not: both use the shared stego temperature (0.7 on the balanced profile).
+Historically, writing and topic identification shared temperature 0.7 on balanced. The October revision keeps that writer setting and gives topic identification a separate setting, default 0, recorded in the encoding settings signature.
 
 \subsection{Pipeline stages}
 \begin{itemize}
@@ -12,7 +12,7 @@ Comment writing and comment topic identification do not: both use the shared ste
     \item Research generates search terms from the post title, body, and URL at temperature 0, trims them to the profile cap (8 on balanced), queries a fixed-shape search backend with fallbacks after Google, drops duplicate links and PDFs, and fetches page text in batches of three. It stores the flat search-results corpus and integrity hashes.
     \item Comment-topic generation flattens the chosen input documents and extracts triplets of category, source quote, and description. Long inputs are split into 30k-character segments and batched up to 80k characters by default. If the backend path fails, the pipeline falls back to a direct LLM prompt with the same JSON schema. The reported runs used a context-weighted sampler at this stage, once per post. An exploratory multi-frame option rebuilds the list after selecting a reply target and limits the inputs to the post and its selected parent chain; title-only posts use the title as the post document. This reduces the available topic choices and is evaluated in Section~\ref{sec:reply-chain-probe}.
     \item Encoding protects and compresses the payload, spends bits on a reply target and a comment topic, writes three candidate comments, and keeps a candidate only if a strict local decode identifies the selected topic and a contextuality gate passes.
-    \item Decode shortlists comment topics with MiniLM cosine similarity, reranks with lexical overlap, and asks for \texttt{idx: N} at the stego temperature. The full reconstruction path can rebuild research and comment topics; the reported workloads decode against the sender's post with its topic list already built and pass the audit bitstring.
+    \item Decode shortlists comment topics with MiniLM cosine similarity, reranks with lexical overlap, and asks for \texttt{idx: N} at the separate classification setting. The full reconstruction path can rebuild research and topics; historical workloads instead passed the audit bitstring. The historical October source-excerpt receiver receives shared prepared context and ordered carrier references, without that audit override. The later archive driver independently fetches public thread inputs and rebuilds the existing extractive list before invoking the receiver, with cutoff and reference order derived externally (Section~\ref{sec:fresh-archive}).
 \end{itemize}
 Figure~\ref{fig:impl-pipelines} aligns these stages with the on-disk artifacts.
 
@@ -28,7 +28,7 @@ Three configuration choices change the bit layer, so both sides must agree: the 
 The sender records the transform in the run audit.
 The compressor capacity profile is off by default because dictionary indices are positional.
 
-Table~\ref{tab:token-layout} is the token layout used by the dictionary parse.
+Table~\ref{tab:token-layout} gives the legacy character-span dictionary layout retained for compatibility.
 A literal is flag \texttt{0}, an 8-bit character length, then UTF-8 bytes.
 A reference is flag \texttt{1} plus index, offset, and length fields sized by $W$.
 Decoding is sequential: a token’s start depends on where the previous token ended.
@@ -49,6 +49,8 @@ Reference & \texttt{1} $\Vert$ index $j$ ($W(|D|)$ b) $\Vert$ offset ($W(|d_j|)$
 \end{tabularx}
 \end{table}
 
+The October extension also builds an exact-token sliding-window trie, bounded to 16 tokens per indexed phrase and 100,000 nodes, in deterministic document order. It adds a versioned escape header, represents matches by trie node IDs, and stores misses as UTF-8 literal chunks of at most 255 bytes. The selected codec is recorded as \texttt{utf8\_v1}, \texttt{character\_span\_v1}, or \texttt{oppression\_node\_v1}; the encoder compares complete lengths including codec headers. This local adaptation preserves exact text rather than applying the upstream word sanitizer or null-pointer behavior. Its source attribution is pinned to author-code revision \texttt{26a68a54}.
+
 The single-comment encoder writes physical widths and wraps overflow with modulo.
 The multi-frame planner uses the lossless writer that stores only recoverable widths.
 % Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
@@ -57,15 +59,14 @@ The multi-frame planner uses the lossless writer that stores only recoverable wi
 	\centering
 	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/implementation_pipelines}
 	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting replay and sender--receiver alignment.}
-	\caption{Implementation stages and persisted artifacts. Search-term and comment topic stages replay at temperature 0 when the inputs match; comment writing and comment topic identification remain stochastic.}
+	\caption{Implementation stages and persisted artifacts. Temperature-0 setup calls and identity hashes support alignment, but cannot guarantee reconstruction. Comment writing remains stochastic; October topic identification uses a separate sampling setting.}
 	\label{fig:impl-pipelines}
 \end{figure*}
 
 \subsection{Model roles}
-Exact model IDs are configuration.
-The roles are not:
+Model identifiers and sampling settings are recorded for each role:
 \begin{itemize}
-    \item Search-term generation and comment topic extraction run at \texttt{temperature=0} so both parties can rebuild the same lists from the same inputs.
+    \item Search-term generation and topic extraction request \texttt{temperature=0}; actual list agreement must still be checked.
     \item Comment writing runs at nonzero temperature (0.7 on balanced) so retries produce different wording for the same parent and comment topic.
-    \item Comment-topic identification uses MiniLM cosine similarity, a default shortlist of 20 with lexical rerank, then the same stego temperature for an \texttt{idx: N} prompt. It is not a temperature-0 oracle.
+    \item Comment-topic identification uses MiniLM cosine similarity, a default shortlist of 20 with lexical rerank, then an \texttt{idx: N} prompt. The October implementation defaults its own setting to 0; historical results used 0.7. A backend that cannot expose temperature control must record the effective setting as unavailable.
 \end{itemize}

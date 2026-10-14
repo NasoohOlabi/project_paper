@@ -1,11 +1,9 @@
 \section{Related Work}
 \label{sec:related_work}
 
-Majeed et al. (2021) \cite{math9212829} surveyed pre-LLM text steganography techniques, predating the current transformer era, emphasizing synonym replacement, spacing manipulation, and coding schemes such as Huffman coding. The methods of that generation often relied on context-free grammars or Markov chains and tended to produce syntactically correct but semantically incoherent cover text. Setiadi et al. (2025) \cite{Setiadi_Ghosal_Sahu_2025} examine more recent AI-powered data hiding across image, linguistic, and 3D mesh carriers (2021--2025), observing that LLMs have ``revitalized'' linguistic steganography through methods built on GPT-2 \cite{radford2019gpt2}, GPT-3 \cite{brown2020language}, LLaMA2 \cite{xi2025rise}, and Baichuan2 \cite{xiao2024baichuan2}. On the detection side, Wang et al. \cite{Wang_2023} review deep-learning linguistic steganalysis and document how detection techniques have evolved alongside generative hiding methods.
+Majeed et al. (2021) \cite{math9212829} surveyed pre-LLM text steganography techniques, predating the current transformer era, emphasizing synonym replacement, spacing manipulation, and coding schemes such as Huffman coding. The methods of that generation often relied on context-free grammars or Markov chains and tended to produce syntactically correct but semantically incoherent cover text. Setiadi et al. (2025) \cite{Setiadi_Ghosal_Sahu_2025} examine more recent AI-powered data hiding across image, linguistic, and 3D mesh carriers (2021--2025), observing that LLMs have ``revitalized'' linguistic steganography through methods built on GPT-2 \cite{radford2019gpt2}, GPT-3 \cite{brown2020language}, LLaMA2 \cite{touvron2023llama2}, and Baichuan2 \cite{xiao2024baichuan2}. On the detection side, Wang et al. \cite{Wang_2023} review deep-learning linguistic steganalysis and document how detection techniques have evolved alongside generative hiding methods.
 
-Those surveys cover the field.
-None of them treats fit-to-thread as the main criterion for LLM-based methods.
-We do, because that is the channel.
+This study evaluates reply fit within a threaded discussion and distinguishes that property from fluency and payload recovery.
 The remainder of this section synthesizes 31 primary studies from 2020 to 2025 on what was published, where it was applied, how it was evaluated, how it used external knowledge, and where it still breaks.
 Table~\ref{tab:survey_comparison} places this synthesis next to the three surveys above.
 

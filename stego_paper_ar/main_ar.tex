@@ -88,7 +88,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[R]{\small الإخفاء اللغوي للمعلومات المدرك للسياق}
+\fancyhead[R]{\small\textarabic{الإخفاء اللغوي للمعلومات المدرك للسياق}}
 \renewcommand{\headrulewidth}{0.4pt}
 \fancyfoot[C]{\small\thepage}
 
@@ -160,6 +160,8 @@
 \newcommand{\makehiastcover}{%
   \begin{titlepage}
   \thispagestyle{empty}
+  \setcounter{page}{0}
+  \thispdfpagelabel{}
   \setstretch{1.15}
   \vspace*{0.70cm}
   \begin{LTR}
@@ -214,11 +216,6 @@
 
 \makehiastcover
 
-% Front matter follows the reference thesis: Roman page numbers and a clear
-% contents section before the numbered chapters.
-\pagenumbering{roman}
-\setcounter{page}{1}
-
 \begin{abstract}
 \input{sections/abstract.tex}
 \end{abstract}
@@ -230,7 +227,7 @@
 
 \section*{ملاحظة ما قبل النشر}
 \begin{center}
-\small هذه المخطوطة نسخة ما قبل النشر مؤرخة في 26 أيلول/سبتمبر 2026.
+\small هذه المخطوطة نسخة ما قبل النشر مؤرخة في 4 تشرين الأول/أكتوبر 2026.
 \end{center}
 \bigskip
 
@@ -242,8 +239,6 @@
 \listoftables
 
 \clearpage
-\pagenumbering{arabic}
-\setcounter{page}{1}
 
 \input{sections/introduction.tex}
 \input{sections/background.tex}
@@ -259,5 +254,7 @@
 \bibliographystyle{IEEEtran}
 \bibliography{bibliography}
 \end{otherlanguage}
+
+\input{sections/judge_supplement.tex}
 
 \end{document}

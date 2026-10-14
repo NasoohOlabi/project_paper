@@ -1,0 +1,396 @@
+{
+  "scope": "Local archive public-observation simulation, deterministic thread-only variant; development and untouched panels separate.",
+  "artifact_sha256": {
+    "AstrasReview\\iterations\\round-4\\live_analysis.json": "fc9f99af1e7e017bb1b727ad7513adeb115dd6b570ed1888f5b263c6ec0c0184",
+    "AstrasReview\\iterations\\round-4\\live_manifest.json": "279a504a950245aabe4222cdef1b714f1bf0807ed0f84b1ceeaaa75f1ccf4ebb",
+    "AstrasReview\\iterations\\round-4\\receiver_retry_supplement.json": "57ad4db2eceb5797808b25602998adead6af2d00ea3505a61def188475402013",
+    "AstrasReview\\iterations\\round-5\\analysis.json": "acd1496b05a8dd57819923550b0c4df9478b23614c4fb6785f34a00fb1431dd7",
+    "AstrasReview\\iterations\\round-5\\manifest_private.json": "5131e50a21a64738a952896788f19715eca829c402b80bbeee4afa766a018882",
+    "AstrasReview\\iterations\\round-5\\quality_audit.json": "0da2339e87859353537e5db8181e07d4db82a0a000bfecd51d3496a772f0ce55",
+    "AstrasReview\\iterations\\round-5\\quality_preflight.json": "8cfdb998eaf427788735d3b23bedf6e9963b82d975c42d2d41842adee8ed5c65",
+    "AstrasReview\\iterations\\round-5\\quality_judge_freeze.json": "a55b6ea940178bcda5d91e7b4b3ea1506cb33226d6a5af4bbe7a06338a798a84",
+    "AstrasReview\\iterations\\round-5\\runs\\00\\result.json": "f71897976fcf98488285afc423dbd19abe45516ea72f46e576c6a97894b78770",
+    "AstrasReview\\iterations\\round-5\\runs\\01\\result.json": "6473d2368cf4a02b8c09037804cb570e1f7f1103696c4b2531c1b2c9f14a0643",
+    "AstrasReview\\iterations\\round-5\\runs\\02\\result.json": "11123d2c12ac64b7bb1b3620c1b295fbc329c4e4d18984f836ee0f5169d48021",
+    "AstrasReview\\iterations\\round-5\\runs\\03\\result.json": "689f6aabf5c1628bf59ed0144dc1db983b7b33d7b0083cda4ebea21d7dacdd8b",
+    "AstrasReview\\iterations\\round-5\\runs\\04\\result.json": "7f92fea8ba94282a18dfadc9df7df30644a0aeb2856569cf1ec88b2669c86a41",
+    "AstrasReview\\iterations\\round-5\\runs\\05\\result.json": "2f61d049ac4907937e430b588364ce86123026a90593617161433f148c5e5e75",
+    "AstrasReview\\iterations\\round-6\\analysis.json": "2bd1a5de1ec0e55c34b89b9745501e7f87590dbf6da4d2cc03984f53520251e8",
+    "AstrasReview\\iterations\\round-6\\manifest_private.json": "93f65640790193013b024470d6ec7ee7a54b9f50c19d08e975a6dbb482dd323f",
+    "AstrasReview\\iterations\\round-6\\quality_audit.json": "9c7464fb0e16b940dc73fb7969cbdb0fe09d1472314e05cf317ef573f7fec514",
+    "AstrasReview\\iterations\\round-6\\quality_preflight.json": "fcc640b1d5903fb30b7ba5c58ac9695f075989e8f28c49f6426c0b9a9dc93268",
+    "AstrasReview\\iterations\\round-6\\quality_judge_freeze.json": "b4a507c99ab55fef173f4e4851b3ddd4cf28bf7580d8862db1cfb2d2ec6fc4be",
+    "AstrasReview\\iterations\\round-6\\runs\\00\\result.json": "a75e65f839d8df6364e67bd654eead96ed7f40a5a3096ab08639594bb3946aad",
+    "AstrasReview\\iterations\\round-6\\runs\\01\\result.json": "4e9f9e53dc0faf48392f15a0f3fd23a539a9216fd86eda70dcd5eec271af9459",
+    "AstrasReview\\iterations\\round-6\\runs\\02\\result.json": "6ae2df054206b77f9c8d76091bfe4eb6781e6639fc7f32debab7795de2a187b6",
+    "AstrasReview\\iterations\\round-6\\runs\\03\\result.json": "0c75aa8f2ca9b4dda4a82c873b0e342e582b1b2cbbad2b49b4c33962cafdf169",
+    "AstrasReview\\iterations\\round-6\\runs\\04\\result.json": "a81c6f7000988d2f842f3955c2a7046b5c6e3eaacb604e041b2ee5758f5d4479",
+    "AstrasReview\\iterations\\round-6\\runs\\05\\result.json": "1b3608d731adbde377e1d16cc4121bb60be23491db62eb947ebe4b8aca8c1e4b"
+  },
+  "round4_primary": {
+    "anchored": 4,
+    "g5": 0,
+    "assigned_each": 6
+  },
+  "campaigns": {
+    "5": {
+      "policies": {
+        "baseline2": {
+          "assigned": 6,
+          "planned": 6,
+          "generation_complete": 3,
+          "exact": 3,
+          "silent_mismatch": 0,
+          "emitted_frames": 53,
+          "words_all": 1935,
+          "recovered_storage_bits": 192,
+          "bits_per_word_all_attempts": 0.09922480620155039,
+          "bits_per_word_successes": 0.13559322033898305,
+          "generation_cost": {
+            "calls": 236,
+            "elapsed_ms": 347361,
+            "prompt_tokens": 386962,
+            "completion_tokens": 10172
+          },
+          "receiver_cost": {
+            "calls": 53,
+            "elapsed_ms": 30642,
+            "prompt_tokens": 102419,
+            "completion_tokens": 294
+          },
+          "selection_ms": 0,
+          "model_load_ms": 0
+        },
+        "baseline7": {
+          "assigned": 6,
+          "planned": 6,
+          "generation_complete": 5,
+          "exact": 5,
+          "silent_mismatch": 0,
+          "emitted_frames": 74,
+          "words_all": 2752,
+          "recovered_storage_bits": 320,
+          "bits_per_word_all_attempts": 0.11627906976744186,
+          "bits_per_word_successes": 0.12866907921190188,
+          "generation_cost": {
+            "calls": 348,
+            "elapsed_ms": 502914,
+            "prompt_tokens": 563339,
+            "completion_tokens": 14703
+          },
+          "receiver_cost": {
+            "calls": 74,
+            "elapsed_ms": 27382,
+            "prompt_tokens": 140050,
+            "completion_tokens": 413
+          },
+          "selection_ms": 0,
+          "model_load_ms": 0
+        },
+        "concise7": {
+          "assigned": 6,
+          "planned": 6,
+          "generation_complete": 5,
+          "exact": 5,
+          "silent_mismatch": 0,
+          "emitted_frames": 74,
+          "words_all": 2640,
+          "recovered_storage_bits": 320,
+          "bits_per_word_all_attempts": 0.12121212121212122,
+          "bits_per_word_successes": 0.13451029844472467,
+          "generation_cost": {
+            "calls": 348,
+            "elapsed_ms": 502914,
+            "prompt_tokens": 563339,
+            "completion_tokens": 14703
+          },
+          "receiver_cost": {
+            "calls": 74,
+            "elapsed_ms": 31843,
+            "prompt_tokens": 139887,
+            "completion_tokens": 413
+          },
+          "selection_ms": 1947,
+          "model_load_ms": 365
+        }
+      },
+      "selected": [
+        {
+          "post_id": "1wp8brv",
+          "subreddit": "AskScience",
+          "archived_available": 69,
+          "unresolved": 0,
+          "raw_post_search": "posts_AskScience.json",
+          "raw_comments": "comments_1wp8brv.json"
+        },
+        {
+          "post_id": "1wp4b11",
+          "subreddit": "AskScience",
+          "archived_available": 47,
+          "unresolved": 0,
+          "raw_post_search": "posts_AskScience.json",
+          "raw_comments": "comments_1wp4b11.json"
+        },
+        {
+          "post_id": "1wp7mv4",
+          "subreddit": "technology",
+          "archived_available": 93,
+          "unresolved": 0,
+          "raw_post_search": "posts_technology.json",
+          "raw_comments": "comments_1wp7mv4.json"
+        },
+        {
+          "post_id": "1wp3sd8",
+          "subreddit": "technology",
+          "archived_available": 95,
+          "unresolved": 0,
+          "raw_post_search": "posts_technology.json",
+          "raw_comments": "comments_1wp3sd8.json"
+        },
+        {
+          "post_id": "1wp8q5f",
+          "subreddit": "technology",
+          "archived_available": 95,
+          "unresolved": 0,
+          "raw_post_search": "posts_technology.json",
+          "raw_comments": "comments_1wp8q5f.json"
+        },
+        {
+          "post_id": "1wp0not",
+          "subreddit": "technology",
+          "archived_available": 96,
+          "unresolved": 0,
+          "raw_post_search": "posts_technology.json",
+          "raw_comments": "comments_1wp0not.json"
+        }
+      ],
+      "quality": {
+        "baseline7": 3,
+        "discordant": 6,
+        "concise7": 1,
+        "tie": 1
+      },
+      "quality_usage": {
+        "prompt_tokens": 6940,
+        "completion_tokens": 4760,
+        "elapsed_ms": 245047
+      }
+    },
+    "6": {
+      "policies": {
+        "baseline2": {
+          "assigned": 6,
+          "planned": 6,
+          "generation_complete": 2,
+          "exact": 2,
+          "silent_mismatch": 0,
+          "emitted_frames": 36,
+          "words_all": 1277,
+          "recovered_storage_bits": 128,
+          "bits_per_word_all_attempts": 0.10023492560689115,
+          "bits_per_word_successes": 0.1606022584692597,
+          "generation_cost": {
+            "calls": 189,
+            "elapsed_ms": 277355,
+            "prompt_tokens": 294065,
+            "completion_tokens": 8221
+          },
+          "receiver_cost": {
+            "calls": 36,
+            "elapsed_ms": 16503,
+            "prompt_tokens": 67239,
+            "completion_tokens": 202
+          },
+          "selection_ms": 0,
+          "model_load_ms": 0
+        },
+        "baseline7": {
+          "assigned": 6,
+          "planned": 6,
+          "generation_complete": 4,
+          "exact": 4,
+          "silent_mismatch": 0,
+          "emitted_frames": 59,
+          "words_all": 2186,
+          "recovered_storage_bits": 256,
+          "bits_per_word_all_attempts": 0.1171088746569076,
+          "bits_per_word_successes": 0.13882863340563992,
+          "generation_cost": {
+            "calls": 344,
+            "elapsed_ms": 559610,
+            "prompt_tokens": 538821,
+            "completion_tokens": 17719
+          },
+          "receiver_cost": {
+            "calls": 59,
+            "elapsed_ms": 29472,
+            "prompt_tokens": 110541,
+            "completion_tokens": 326
+          },
+          "selection_ms": 0,
+          "model_load_ms": 0
+        },
+        "concise7": {
+          "assigned": 6,
+          "planned": 6,
+          "generation_complete": 4,
+          "exact": 4,
+          "silent_mismatch": 0,
+          "emitted_frames": 59,
+          "words_all": 2118,
+          "recovered_storage_bits": 256,
+          "bits_per_word_all_attempts": 0.12086874409820586,
+          "bits_per_word_successes": 0.1439820022497188,
+          "generation_cost": {
+            "calls": 344,
+            "elapsed_ms": 559610,
+            "prompt_tokens": 538821,
+            "completion_tokens": 17719
+          },
+          "receiver_cost": {
+            "calls": 59,
+            "elapsed_ms": 32716,
+            "prompt_tokens": 110223,
+            "completion_tokens": 326
+          },
+          "selection_ms": 2084,
+          "model_load_ms": 498
+        }
+      },
+      "selected": [
+        {
+          "post_id": "1wp1960",
+          "subreddit": "AskScience",
+          "archived_available": 61,
+          "unresolved": 0,
+          "raw_post_search": [
+            "posts_AskScience_page0.json",
+            "posts_AskScience_page1.json",
+            "posts_AskScience_page2.json"
+          ],
+          "raw_comments": "comments_retrieval2_1wp1960.json"
+        },
+        {
+          "post_id": "1wonvuh",
+          "subreddit": "AskScience",
+          "archived_available": 31,
+          "unresolved": 0,
+          "raw_post_search": [
+            "posts_AskScience_page0.json",
+            "posts_AskScience_page1.json",
+            "posts_AskScience_page2.json"
+          ],
+          "raw_comments": "comments_retrieval2_1wonvuh.json"
+        },
+        {
+          "post_id": "1wpgktp",
+          "subreddit": "technology",
+          "archived_available": 95,
+          "unresolved": 0,
+          "raw_post_search": [
+            "posts_technology_page0.json"
+          ],
+          "raw_comments": "comments_retrieval2_1wpgktp.json"
+        },
+        {
+          "post_id": "1wp9eoa",
+          "subreddit": "technology",
+          "archived_available": 91,
+          "unresolved": 0,
+          "raw_post_search": [
+            "posts_technology_page0.json"
+          ],
+          "raw_comments": "comments_retrieval2_1wp9eoa.json"
+        },
+        {
+          "post_id": "1wpczw3",
+          "subreddit": "news",
+          "archived_available": 78,
+          "unresolved": 0,
+          "raw_post_search": "posts_news.json",
+          "raw_comments": "comments_1wpczw3.json",
+          "reserved_from_round4": true
+        },
+        {
+          "post_id": "1wp5grv",
+          "subreddit": "news",
+          "archived_available": 78,
+          "unresolved": 0,
+          "raw_post_search": "posts_news.json",
+          "raw_comments": "comments_1wp5grv.json",
+          "reserved_from_round4": true
+        }
+      ],
+      "quality": {
+        "concise7": 1,
+        "baseline7": 7,
+        "discordant": 1
+      },
+      "quality_usage": {
+        "prompt_tokens": 5926,
+        "completion_tokens": 3504,
+        "elapsed_ms": 159145
+      }
+    }
+  },
+  "values": {
+    "FreshAssigned": 6,
+    "FreshStorageBits": 64,
+    "FreshFourAnchoredExact": 4,
+    "FreshFourGfiveExact": 0,
+    "FreshDevTwoExact": 3,
+    "FreshDevTwoWords": 1935,
+    "FreshDevTwoFrames": 53,
+    "FreshDevTwoCalls": 236,
+    "FreshDevTwoReceiverCalls": 53,
+    "FreshDevTwoBpw": "0.099225",
+    "FreshDevSevenExact": 5,
+    "FreshDevSevenWords": 2752,
+    "FreshDevSevenFrames": 74,
+    "FreshDevSevenCalls": 348,
+    "FreshDevSevenReceiverCalls": 74,
+    "FreshDevSevenBpw": "0.116279",
+    "FreshDevConciseExact": 5,
+    "FreshDevConciseWords": 2640,
+    "FreshDevConciseFrames": 74,
+    "FreshDevConciseCalls": 348,
+    "FreshDevConciseReceiverCalls": 74,
+    "FreshDevConciseBpw": "0.121212",
+    "FreshDevSaving": "4.07",
+    "FreshDevBaselineWins": 3,
+    "FreshDevConciseWins": 1,
+    "FreshDevTies": 1,
+    "FreshDevDiscordant": 6,
+    "FreshDevInvalidPairs": 0,
+    "FreshDevPairs": 11,
+    "FreshDevOrders": 22,
+    "FreshDevQualityPosts": 6,
+    "FreshHeldTwoExact": 2,
+    "FreshHeldTwoWords": 1277,
+    "FreshHeldTwoFrames": 36,
+    "FreshHeldTwoCalls": 189,
+    "FreshHeldTwoReceiverCalls": 36,
+    "FreshHeldTwoBpw": "0.100235",
+    "FreshHeldSevenExact": 4,
+    "FreshHeldSevenWords": 2186,
+    "FreshHeldSevenFrames": 59,
+    "FreshHeldSevenCalls": 344,
+    "FreshHeldSevenReceiverCalls": 59,
+    "FreshHeldSevenBpw": "0.117109",
+    "FreshHeldConciseExact": 4,
+    "FreshHeldConciseWords": 2118,
+    "FreshHeldConciseFrames": 59,
+    "FreshHeldConciseCalls": 344,
+    "FreshHeldConciseReceiverCalls": 59,
+    "FreshHeldConciseBpw": "0.120869",
+    "FreshHeldSaving": "3.11",
+    "FreshHeldBaselineWins": 7,
+    "FreshHeldConciseWins": 1,
+    "FreshHeldTies": 0,
+    "FreshHeldDiscordant": 1,
+    "FreshHeldInvalidPairs": 0,
+    "FreshHeldPairs": 9,
+    "FreshHeldOrders": 18,
+    "FreshHeldQualityPosts": 5
+  }
+}
