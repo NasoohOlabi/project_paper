@@ -2,6 +2,21 @@
 
 Apply these rules when revising either language version. Use [ARABIC_WRITING_GUIDELINES.md](ARABIC_WRITING_GUIDELINES.md) for Arabic wording and [BILINGUAL_NOTES.md](BILINGUAL_NOTES.md) for the current revision coverage.
 
+## Scope and application of author feedback
+
+Apply this procedure whenever the author gives a correction or preference, even while reviewing one sentence or chapter.
+
+1. Determine the scope from the instruction and its meaning. A requested sentence rewrite, figure adjustment, or example-specific correction is local. A terminology choice, prohibited expression, recurring writing principle, or correction to the method's definition applies wherever that concept occurs in the paper, unless the author limits it. The passage that prompted the note is an example, not automatically its boundary. A question or proposed alternative remains exploratory until the author adopts it.
+2. Act immediately when the scope is clear. If it is genuinely unclear whether a note is local, language-wide, paper-wide, or project-wide, ask one concise scope question before making dependent changes. Continue work whose scope is already established. Do not repeatedly ask about a scope the author has already confirmed.
+3. Record durable rules in their authoritative guide in the same change. Put Arabic wording rules in the Arabic guide and shared writing or method rules here. State the scope and any exceptions. Update an older rule when the author supersedes it; keep historical audit quotations as history. A local edit does not become a permanent global rule merely because it was accepted.
+4. Apply a broad rule to every affected occurrence now, including earlier chapters, summaries, terminology, tables, captions, appendices, and figure labels. Inspect figure sources and visible image text as well as LaTeX prose; update and rebuild affected assets. For shared technical changes, update both languages. An Arabic vocabulary choice applies to the Arabic version, not to unrelated English terms or backend identifiers. Extend changes to presentations or other repositories only when the author's scope includes them.
+5. Preserve protected content. Either abstract still requires explicit authorization for the specific edit. If propagation reaches protected content, request that authorization and identify the pending occurrence; do not silently exempt it or claim complete application. Preserve verbatim research prompts, quotations, and historical records unless the instruction includes changing them; explain any necessary exception.
+6. Before finishing, search the entire applicable scope for the old wording, its grammatical variants, and equivalent descriptions of the corrected concept. Read each remaining match in context. For a structural or method correction, inspect related explanations and conclusions rather than relying on word replacement. Rebuild affected papers and inspect changed figures or layout. Report what scope was covered and any unresolved exceptions. Updating the guide or the currently open chapter alone does not complete a paper-wide instruction.
+
+For example, “keep prompt in English” governs every Arabic description of model input, including appendix headings. “Rewrite this caption” changes that caption. “Explain the problem before the mechanism” governs relevant explanations throughout the paper without forcing every paragraph into one template.
+
+## Shared writing and method rules
+
 - Present the final methodology in the present tense. Put configuration history and differences between evaluated runs in implementation or evaluation when they affect interpretation.
 - Explain the problem before the mechanism. Introduce changing comments before the shared comment copy and changing web content before persistent and ephemeral document sets.
 - Introduce components, parameter groups, and an ordered workflow before explaining its stages. Define the fixed helper-model setting once as a displayed `temperature = 0` equation; keep writing and topic-identification settings separate.

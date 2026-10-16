@@ -4,6 +4,8 @@ Use this guide when drafting or revising the Arabic version of the paper. It rec
 
 Shared method and citation rules are also recorded in [PAPER_WRITING_GUIDELINES.md](PAPER_WRITING_GUIDELINES.md). Port substantive method changes to both languages.
 
+For every author correction, follow **Scope and application of author feedback** in that shared guide. Arabic terminology and general style choices apply throughout the Arabic paper, including captions, appendices, and visible figure text; a sentence-specific rewrite remains local. Apply confirmed broad rules immediately and ask when their scope is genuinely ambiguous.
+
 ## Style
 
 - **NEVER USE «نقاش» OR ITS DERIVATIVES IN THE ARABIC PAPER.** Choose **تعليقات** for comments or comment threads, **دردشة** for chat, and **تواصل** for communication or contact, according to context. For a social-media exchange, use **محادثة**.
@@ -13,6 +15,10 @@ Shared method and citation rules are also recorded in [PAPER_WRITING_GUIDELINES.
 - Use the paper's actual concepts. For example, say **موضوع التعليق** for the comment's topic; do not replace it with an angle, tangent, or generic prompt.
 - When a phrase is unclear or can be translated in more than one way, give the author several complete alternatives and explain briefly what each means. Do not silently settle on a paraphrase.
 - Preserve the paper's claims and scope. Do not add defensive disclaimers that do not help explain the method or findings.
+- Do not mention internal project codenames in the paper. Name the proposed method or the technical component instead.
+- Do not begin a paragraph with **لكن**. Establish the point directly and explain any qualification in context.
+- Explain success-rate counts in plain language: count all attempted samples, including failures; calculate quality and judge scores on accepted generations. Avoid **مقام** and **قصد المعالجة** as shorthand for these populations.
+- Rewrite implementation and evaluation paragraphs from their technical meaning, following the same clear exposition as the approved methodology. Explain the purpose, then the procedure, then settings and results. Do not turn them into translated development logs.
 - Add Arabic diacritics selectively when they resolve ambiguity or improve reading, as in **مَوْضِعِ الرَّدِّ** and **مَوْضُوعِ التَّعْلِيقِ**.
 
 - Use **نسخة من تعليقات المنشور** consistently for a comments snapshot or dump in prose, headings, terminology tables, captions, and figure prompts. Timing is implicit; describe the cutoff separately when explaining synchronization. For snapshots of web documents, use **نسخة من الوثائق** or **نسخة من محتوى الوثيقة**, according to context.
