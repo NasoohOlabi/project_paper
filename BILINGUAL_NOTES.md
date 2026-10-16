@@ -29,8 +29,12 @@ The discussion about domain similarity and compression was a question, not an ap
 
 ## Rebuilding
 
+The 16 October author-approved reconstruction-validation explanation is included in both evaluation chapters under `sec:reconstruction-validation`. It distinguishes development-only repeated processing from deployed sender/receiver behavior and from message-extraction experiments. The Arabic introduction now gives a brief pointer instead of the rejected blanket statement about untested reconstruction. Both abstracts remain unchanged.
+
 Run `python scripts/build_bilingual_notes.py` from the repository root. It compiles the five vector figures, builds both papers, compares methodology label sets, and rejects unresolved references. Logs and the build summary are under `build/bilingual-notes/`. The figures are also checked visually in the built pages; successful compilation alone is not a layout check.
 
 ## Review
+
+The author-approved second Arabic research question now asks about sender generation, receiver extraction, and causes of failure. Experimental run/runs is rendered throughout the Arabic chapters as تجربة/تجارب, or اختبار/اختبارات for a specific check, following the Arabic guide. This is an Arabic wording rule; English run and technical expressions such as نظام التشغيل remain valid. Neither abstract required a change.
 
 Reviewed inline. The Git checkpoint preserves the earlier workspace. The change does not turn audit-assisted results into independent receiver results. English figures have different drawing geometry from the Arabic raster figures but the same inputs, output structures, examples, and selections.

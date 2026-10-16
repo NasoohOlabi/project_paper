@@ -17,6 +17,8 @@ For example, “keep prompt in English” governs every Arabic description of mo
 
 ## Shared writing and method rules
 
+- Describe processing the same post twice as a development/research validation procedure. In deployment, the sender prepares its message and the receiver reconstructs the agreed inputs; the sender is not required to repeat preparation twice for every message. Keep the validation explanation in evaluation, with only a brief introduction reference where useful.
+- Treat cache reuse as an implementation optimization to reduce repeated processing, service-quota use, and time on limited hardware, not as a requirement of the proposed method or the source of its intended reproducibility. Mention it only in implementation/resource details when needed. Distinguish a separate repeatability validation from processing the evaluation dataset: do not require every post to be processed twice, or call the dataset invalid merely because it was not. Describe the scope and outcome of verified validation evidence accurately, separately from message-extraction results.
 - Present the final methodology in the present tense. Put configuration history and differences between evaluated runs in implementation or evaluation when they affect interpretation.
 - Explain the problem before the mechanism. Introduce changing comments before the shared comment copy and changing web content before persistent and ephemeral document sets.
 - Introduce components, parameter groups, and an ordered workflow before explaining its stages. Define the fixed helper-model setting once as a displayed `temperature = 0` equation; keep writing and topic-identification settings separate.

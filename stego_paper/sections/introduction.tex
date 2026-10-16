@@ -29,8 +29,8 @@ Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with this two-l
 
 The primary contributions of this paper are:
 \begin{itemize}
-    \item A two-layer selection-channel architecture for threaded discussions that encodes bits through reply targeting and comment topic selection, with a visible reply rather than a hidden carrier.
-    \item A receiver-side reconstruction pipeline (thread plus hash-checked research) that does not need white-box logits. The reported results do not exercise it alone: they use audit-assisted reconstruction from sender-side metadata.
+    \item A context-aware black-box linguistic steganography method in which reply-location and comment-topic choices carry message bits, and a language model writes a comment suited to those choices and the context. The method calls the model through an API for embedding and extraction without requiring its internal token probabilities.
+    \item A sender--receiver coordination procedure that specifies shared texts, list-construction and ordering rules, and how both parties identify the comments they use as the conversation changes. This agreement lets both parties interpret the reply location and comment topic using the same indices.
     \item A closed-loop verification mechanism that simulates decoding before the comment is kept and retries synthesis, with an optional revision pass, under stochastic generation.
-    \item An independent LLM-judge comparison on 244 posts, each with one unique output from the official Zero-shot Generative Linguistic Steganography (ZLG) baseline~\cite{lin2024zero}, reported with source-run success rates and a historical 304-pair configuration table, without a superiority claim.
+    \item An experimental evaluation covering comment quality, generation success, and message extraction. An independent language model compares our comments with ZLG~\cite{lin2024zero} comments on 244 posts, and a separate configuration comparison covers 304 comment pairs. We also report independent-receiver extraction experiments, specifying the shared data available to the receiver in each experiment.
 \end{itemize}

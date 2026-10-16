@@ -237,6 +237,15 @@ Our replies are longer and score slightly higher on the lexical-quality index.
 The numerical gap is narrow because the candidate topic list was capped at 32.
 It is not a general upper bound on either system.
 
+\subsection{Validating list reconstruction during development}
+\label{sec:reconstruction-validation}
+
+During development, we test whether the parties can build the same lists by processing the same post independently twice and comparing the outputs. This is a research validation procedure, not an additional step the sender performs for every message. In use, the sender processes the post to prepare the message, and the receiver reconstructs the lists during extraction, using the agreed inputs and settings.
+
+The reconstruction test covers search-query generation, document-text collection, and comment-topic extraction. Each pass performs these stages independently. Corresponding stage outputs are then compared to check agreement in the texts, lists, and ordering. This procedure does not require processing every dataset post twice: development validation of reconstruction is separate from preparation of the experimental dataset.
+
+Successful message transmission requires a separate test. After the sender selects the reply location and topic and generates the comment, we attempt to extract the message from that comment. We therefore distinguish agreement in the parties' lists from the receiver's ability to identify the choices and extract the bits. The following sections specify the receiver inputs and the scope of each experiment.
+
 \subsection{Exploratory reply-chain alignment probe}
 \label{sec:reply-chain-probe}
 
