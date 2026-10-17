@@ -1,0 +1,48 @@
+\subsection{Data sources, selection, and reuse across experiments}
+\label{sec:datasets}
+\input{../common/data/dataset_overlap_values.tex}
+
+The data choices follow the questions being tested. Comparing comment quality requires shared post contexts and an explicit rule for selecting generated pairs. Testing message recovery additionally requires specifying where the secret text comes from: a source excerpt can compress differently from an independently assigned message. Testing context reconstruction requires the parties to obtain their inputs separately. These distinctions explain why the evaluation uses more than one collection.
+
+Table~\ref{tab:dataset-map} is a reference map for those collections and their supporting checks. Its ten rows include experiments, prompt-development comparisons, repeated-preparation validation, and transport diagnostics; they do not represent ten independent datasets. The explanation below connects the selection choices, while Table~\ref{tab:evidence-levels} identifies the corresponding outcomes.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Source material and payload selection across the ten experiment and validation groups. Counts of source posts, generated pairs, and diagnostic cases refer to different units.}
+\label{tab:dataset-map}
+\begin{tabularx}{\linewidth}{|p{0.23\linewidth}|X|X|}
+\hline
+Group & Context and selection & Payload or reuse relationship \\ \hline
+Initial configuration comparison & 167-post research pool; accepted metric pairs cover 100 posts. & Repeated generation on some posts; baseline receives a budget-based payload excerpt. \\ \hline
+Comment-quality evaluation & 1,608 pairs over 339 posts; select one eligible pair for each of 244 posts. & Five judge tasks reuse the same selected pairs; generation-success counts come from the parent campaign. \\ \hline
+Prompt-development screen & \DsPromptPosts{} posts stratified from the 244-post judge set. & Seven conditions reuse these posts and reply targets; no-target controls do not transmit messages. \\ \hline
+Limited-carrier pilot & First 25 posts of a locked 100-post archive manifest. & Assigned 64-bit payloads; eight-comment transport limit. \\ \hline
+List-reconstruction validation & Independently repeat preparation of the same post. & Compare intermediate texts and ordered lists; no separate message population. \\ \hline
+Reply-chain probe & One pilot post, then planning over the first 25 pilot posts. & A 64-bit payload and parent-specific topic list; not a new 25-post sample. \\ \hline
+Offline transport checks & Controlled carrier/decoder inputs and deliberately damaged cases. & Check bit assembly and rejection; source-excerpt transport replays reuse that batch. \\ \hline
+Source-excerpt recovery & \DsExcerptPosts{} frozen prepared news posts. & Messages are excerpts of shared source texts, selected for dictionary-based compression. \\ \hline
+Independent-payload development & \DsIndependentPosts{} posts: \DsDevelopmentReused{} reused body posts and \DsDevelopmentAdditional{} additional title-only posts. & Independent eight-byte printable messages; seven attempted before stopping. \\ \hline
+Archive reconstruction & Six earlier writer-comparison posts; six-post development and six-post untouched panels. & Development reuses the earlier six; the untouched panel uses different posts. Independent eight-byte messages. \\ \hline
+\end{tabularx}
+\end{table}
+
+\subsubsection{Comparing comments in shared contexts}
+The initial configuration comparison draws from a research pool of 167 posts: 139 previously prepared posts and 28 newly researched posts. Search-service quotas limited expansion, so the campaign reused posts rather than treating every generated comment as a new source context. Thirty-five posts contributed ten samples each. The reported metric table ultimately contains 304 accepted pairs covering 100 source posts; these are successive selection stages, not interchangeable dataset sizes.
+
+The comment-quality collection uses a separate campaign and selects one eligible pair per post. Eligibility requires the ZLG~\cite{lin2024zero} comment to be unique within the frozen pool. This reduces repeated baseline texts in the judgment task but makes the subset a selected collection rather than a random draw. All five judge criteria reuse those pairs; the larger generation totals describe the parent campaign.
+
+The two comparison collections have different selection histories. They are not designated as a training/test split, and the paper does not assume their source-post sets are disjoint. Within either collection, repeated comments from one post share context; post-level aggregation accounts for that grouping where specified. The prompt-development screen in Section~\ref{sec:prompt-ablation} draws \DsPromptPosts{} posts from the judge set using the known joint detection outcomes. It reuses those contexts to examine writing components; it does not enlarge the independent quality sample.
+
+\subsubsection{Moving from comment quality to message recovery}
+The quality comparisons examine the text readers see. Recovery adds another requirement: all the choices carrying one message must remain readable to the receiver. The pilot and reply-chain probe examine capacity and contextual alignment, while the excerpt and independent-payload experiments examine complete messages under different compression conditions.
+
+The limited-carrier pilot uses archived AskReddit and NoStupidQuestions posts, with a locked manifest of 100 posts and a 25-post pilot prefix. Its 64-bit payload assignments are fixed before execution. The reply-chain probe reuses one of these posts, then assesses planning on the same first 25. It therefore adds a diagnostic view of existing contexts rather than another independent sample.
+
+The source-excerpt recovery batch uses \DsExcerptPosts{} frozen prepared news posts with their collected source texts and ordered topic lists. The runner loads prepared files in sorted order and selects messages from the shared compression dictionary. This tests exact transport of source-related text and gives the compressor access to matching material. The separate independent-payload development panel changes that payload condition: its \DsIndependentPosts{} posts include \DsDevelopmentReused{} body posts reused from the diagnosed excerpt batch and \DsDevelopmentAdditional{} title-only archive posts. One of the latter also belongs to the limited-carrier pilot. Messages are printable eight-byte strings assigned by post identity, independently of the dictionary text. The development and excerpt outcomes consequently share some contexts and must not be pooled as independent replications. All ten development posts enter planning; seven enter generation before the stopping rule leaves three unattempted.
+
+The archive experiments obtain posts and comments through the public archive. The earlier writer comparison selects the first six successfully acquired eligible posts in recorded acquisition order. Its six posts are reused by the development policy comparison: two AskScience and four technology posts. The untouched panel uses six different posts, two each from AskScience, technology, and news. Eligibility requires at least 24 available archived comments, so sparse threads are excluded. Four untouched-panel posts are newly acquired; the other two were acquired earlier but had not been used for generation. Here ``untouched'' describes prior use for generation and policy development, not a claim that every source was newly downloaded. Independent eight-byte printable messages are derived from source identity and a round-specific salt. Policies within a panel use the same posts and assigned messages, enabling paired comparisons; they do not create new independent source samples.
+
+\subsubsection{Locating failures within the communication process}
+Repeated-preparation validation compares search queries, collected texts, and topic ordering for the same input. Offline transport diagnostics instead use controlled topic observations, including damaged streams, to isolate assembly and error handling. The three clean-message cases and four damaged cases in the overview are diagnostic cases, not a sampled corpus of seven posts. The 25 source-excerpt transport checks reuse the corresponding prepared contexts and messages. Component tests described in Section~\ref{sec:receiver-operation} provide another level of validation and are not added to experimental population counts.
+
+Together, these checks help separate a failure to build matching lists from a failure to identify a comment's topic or assemble its bits. Each result is interpreted within its own population rather than through a combined count across the ten groups.

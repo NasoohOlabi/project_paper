@@ -37,7 +37,7 @@
   % retry
   \draw[amber, thick, ->]
     (6.85,5.85) -- (6.85,5.25) -- (2.45,5.25) -- (2.45,6.25);
-  \node[font=\sffamily\tiny, text=amber, align=center] at (4.65,4.90) {No $\cdot$ retry same parent + topic\\then optional revision $\cdot$ budget 6};
+  \node[font=\sffamily\tiny, text=amber, align=center] at (4.65,4.90) {No $\cdot$ retry same parent + topic\\within configured retry limit};
 
   % receiver
   \fill[card] (1.0,1.55) rectangle (3.5,3.15);
@@ -50,8 +50,8 @@
   \fill[lightteal] (4.45,1.35) rectangle (7.85,3.35);
   \draw[teal] (4.45,1.35) rectangle (7.85,3.35);
   \node[font=\sffamily\tiny\bfseries, align=center] at (6.15,2.85) {MiniLM cosine};
-  \node[font=\sffamily\tiny, align=center] at (6.15,2.25) {shortlist top 20};
-  \node[chip=teal] at (6.15,1.70) {then lexical rerank};
+  \node[font=\sffamily\tiny, align=center] at (6.15,2.25) {retrieve candidate pool};
+  \node[chip=teal] at (6.15,1.70) {rerank, then shortlist};
 
   \draw[thick, ->] (7.95,2.35) -- (8.70,2.35);
 

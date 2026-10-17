@@ -1,0 +1,77 @@
+\subsection{Large payloads in multi-comment mode}
+\label{sec:multiframe}
+\input{../common/data/multicomment_example_values.tex}
+
+\subsubsection{One message carried by several comments}
+One comment carries the reply-location and topic choices available in its shared lists. Making that comment longer does not add further choices to those two fields. When a message exceeds that selection budget, the sender can distribute its bitstream across several comments. We call this \emph{multi-comment mode}; each carrier comment is one frame of the same message. The frames need not reply to one another: each has the reply target selected by its own bits.
+
+Single-comment embedding and multi-comment transport are separate modes. The single-comment selection path does not automatically prepend the message-assembly header described below. Its compression or protection settings may have their own fields. Multi-comment mode adds information for reconstructing a complete message from a sequence of carriers. The cost belongs to that transport mode, even if a sufficiently large selection budget lets its complete stream fit in one carrier.
+
+The multi-comment path is implemented. The baseline comparisons used the single-comment path with audit-assisted reconstruction; they do not evaluate this larger-message transport. The source-excerpt and archive experiments examine different multi-comment receiver conditions, as specified in the evaluation section.
+
+\subsubsection{Preparing and planning the complete message}
+The parties agree on the context, topic lists, payload representation, and protection mode. The sender prepares the complete payload before splitting it into carriers. In the unprotected path, a deterministic dictionary from the shared texts supports exact compression. Available representations include UTF-8, text-span pointers, and the prefix-tree adaptation of OPPRESSION~\cite{zillien2024oppression}. The compression representation identifies how the payload is read; this is distinct from the transport prefix used to assemble comments.
+
+Let $P$ be the prepared payload bitstream, $L=|P|$ its length, and $N$ the number of carrier comments. The implemented transport is
+\[
+S=M\Vert V\Vert\Gamma(N)\Vert\Gamma(L)\Vert P\Vert R,
+\]
+where $M$ is a fixed recognition prefix, $V$ is the transport version, $\Gamma$ is Elias-gamma encoding of a positive integer, and $R$ is the CRC-32 check of $P$. Gamma encoding marks an integer's own end, so the receiver can read the count and length without knowing them beforehand. Its field length is
+\[
+\ell_\gamma(x)=2\lfloor\log_2 x\rfloor+1.
+\]
+
+The planner accounts for the whole stream, including these fields. If carrier $i$ has an invertible selection budget $b_i$ from Section~\ref{sec:channel-widths}, it chooses the first feasible carrier count for which
+\[
+\sum_{i=1}^{N}b_i\ \ge\ L+16+2+\ell_\gamma(N)+\ell_\gamma(L)+32.
+\]
+It recomputes the count field as candidate values of $N$ change. If the available slots cannot carry the complete stream within the configured limit, planning fails before a partial message is treated as deliverable. For reply-chain topic construction, the parent is selected first and the topic budget is recomputed from that parent's context.
+
+The configured carrier limit bounds delivery work and the number of visible comments; it does not fix $N$ or change the bits available in each choice. A larger limit can make a longer stream feasible while requiring more comments to generate and read. The eight- and twenty-comment limits used in the evaluation are experimental delivery budgets, not requirements of the method or established optimal bundle sizes.
+
+\subsubsection{What the transport fields do}
+\label{sec:multicomment-overhead}
+Table~\ref{tab:multicomment-fields} separates assembly information from message content. These fields occur \emph{once per complete message}, not once per comment. They can cross comment boundaries, just like payload bits.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Fields in the implemented multi-comment stream, before final-carrier padding. $L$ counts prepared payload bits and $N$ counts carrier comments.}
+\label{tab:multicomment-fields}
+\begin{tabularx}{\linewidth}{|p{0.24\linewidth}|p{0.16\linewidth}|X|}
+\hline
+Field & Bits & Purpose \\ \hline
+Recognition prefix $M$ & 16 & Recognize the versioned transport form. \\ \hline
+Version $V$ & 2 & Specify the implemented transport revision. \\ \hline
+Carrier count & $\ell_\gamma(N)$ & Check the expected number of comments against the supplied sequence. \\ \hline
+Payload length & $\ell_\gamma(L)$ & Locate the end of $P$ and distinguish it from the check and padding. \\ \hline
+Prepared payload $P$ & $L$ & Carry the compressed/protected message representation. \\ \hline
+Integrity check $R$ & 32 & Check the reconstructed payload before decompression. \\ \hline
+\end{tabularx}
+\end{table}
+
+A fixed recognition pattern is a sequence of bits that the sender and receiver agree to place at the start of the assembled stream. Here it is \texttt{\McMarkerString}. The sender writes these same 16 bits for every message using this transport, regardless of the message text, its length, or the number of comments. After recovering and joining the carrier bits, the receiver compares the first 16 bits with that expected sequence. The marker acts as a label meaning ``this stream uses the versioned multi-comment layout.'' It is carried by the reply and topic choices, like the other stream bits, rather than printed in the comments.
+
+The next two bits identify the version, currently \texttt{\McVersionString}. When both the marker and version match, the receiver reads the following fields as the comment count, payload length, payload, and CRC. Thus the marker recognizes the transport layout, while the version identifies its revision. Neither field identifies the compression representation or verifies that the message is correct; those roles belong to the payload encoding and the integrity check. The code also reads an earlier count-and-length stream without this marker or a CRC, marking its result as lacking integrity verification. UTF-8, text-span pointers, and prefix-tree pointers are payload encodings, separate from transport recognition.
+
+The fixed pattern is an implementation choice for recognizing the transport form and retaining the earlier parsing path. The record does not establish that 16 is the minimum or most efficient prefix length. A pre-agreed transport could use a shorter prefix or omit format recognition, but would require a corresponding sender/receiver protocol change. The expected count is also a consistency check when an ordered carrier list is already supplied. Its purpose is to reject a sequence inconsistent with the encoded count, not to discover or order comments automatically. An agreed payload length could similarly replace the transmitted length in a different mode. Thus message assembly needs an explicit agreement about boundaries and order; the exact field sizes in this implementation are not an intrinsic cost of selection-based embedding.
+
+CRC-32 gives the receiver a check on the reconstructed payload, including cases where topic identification produces incorrect bits. The implementation calculates it over the ASCII sequence of zeros and ones representing $P$. The receiver repeats that calculation before decompression. A mismatch rejects the reconstruction. Matching CRC values do not guarantee identical payloads because collisions are possible. CRC does not correct errors or provide keyed authentication or confidentiality. It is separate from any payload-protection mode.
+
+\subsubsection{Writing the carriers and handling the last comment}
+After planning, the sender takes consecutive slices of $S$. Each slice selects a reply target and topic, and the writer generates a comment for those choices. Sender verification applies to every carrier; a rejected candidate is retried under the agreed limit. A generation failure leaves the complete-message attempt unsuccessful rather than turning its already generated comments into a successful shorter message.
+
+Only the final slice may be shorter than its carrier budget. The encoder completes it with zeros. The transmitted length $L$ and the fixed check size let the receiver remove those padding bits after assembly. Padding consumes choices but is neither message content nor extra integrity information. In the default post-level mode, carriers use the agreed prepared lists; new carrier comments do not become additional secret choices in those original lists.
+
+\subsubsection{Receiver assembly and rejection conditions}
+The receiver obtains the shared inputs and an ordered list of carrier references. This implementation does not discover the full message bundle automatically from the public platform. It resolves each referenced comment, identifies its parent and topic, and converts those choices to candidate bit slices. It concatenates the slices in the supplied order and parses the resulting stream. It rejects failed carrier observations, inconsistent count or length fields, invalid CRC results, and nonzero data where final padding is expected. If candidate interpretations do not yield one recoverable payload, it reports failure. Only a valid payload proceeds to decompression and reversal of the agreed protection transform.
+
+Success is measured for the complete message. Correctly reading most carriers is insufficient when the remaining choices prevent reconstruction. The field count does not provide error correction or a retransmission procedure. Grouping, ordering, publication, and recovery conditions must therefore accompany any reported multi-comment result.
+
+\subsubsection{Accounting for the seven-comment example}
+The recorded example in Section~\ref{sec:multicomment-example} is \emph{one message across \McCount{} comments}. Its prepared payload has \McCompressedBits{} bits. The count $N=\McCount$ uses \McCountBits{} gamma-coded bits, and the length $L=\McCompressedBits$ uses \McLengthBits{} bits. Consequently, its control prefix has
+\[
+\McMarkerBits+\McVersionBits+\McCountBits+\McLengthBits=\McControlBits\text{ bits}.
+\]
+The separate \McIntegrityBits{}-bit CRC makes total transport overhead 64 bits. Adding the \McCompressedBits{} payload bits gives a \McStreamBits{}-bit stream. Seven \McFrameBits{}-bit carrier budgets provide \McSlotBits{} bit positions, of which \McPaddingBits{} are final padding bits. No 32-bit header is added to each of the seven comments.
+
+For this short compressed payload, transport information is larger than the message representation. The fixed prefix, version, and CRC are spread over the complete message; count and length fields grow logarithmically. This explains the implementation's cost without claiming that its header is optimal. The single-comment baseline results must not be charged this separate multi-comment overhead.

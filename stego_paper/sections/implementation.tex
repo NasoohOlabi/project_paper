@@ -3,18 +3,19 @@
 
 The runnable pipeline is five stages: data load, research, comment topic generation, stego encoding, and decode.
 Each stage writes artifacts to disk so later stages can reuse the same corpus and hashes.
-Search-term generation and comment topic extraction run at \texttt{temperature=0} from the same inputs.
-Historically, writing and topic identification shared temperature 0.7 on balanced. The October revision keeps that writer setting and gives topic identification a separate setting, default 0, recorded in the encoding settings signature.
+The shared configuration records the settings used for preparation, writing, and identification. Their different roles and practical defaults are explained in Section~\ref{sec:model-settings}.
 
 \subsection{Pipeline stages}
 \begin{itemize}
     \item Data load fetches unresolved URL content and replaces the post body with the extracted text.
     \item Research generates search terms from the post title, body, and URL at temperature 0, trims them to the profile cap (8 on balanced), queries a fixed-shape search backend with fallbacks after Google, drops duplicate links and PDFs, and fetches page text in batches of three. It stores the flat search-results corpus and integrity hashes.
-    \item Comment-topic generation flattens the chosen input documents and extracts triplets of category, source quote, and description. Long inputs are split into 30k-character segments and batched up to 80k characters by default. If the backend path fails, the pipeline falls back to a direct LLM prompt with the same JSON schema. The reported runs used a context-weighted sampler at this stage, once per post. An exploratory multi-frame option rebuilds the list after selecting a reply target and limits the inputs to the post and its selected parent chain; title-only posts use the title as the post document. This reduces the available topic choices and is evaluated in Section~\ref{sec:reply-chain-probe}.
+    \item Comment-topic generation flattens the chosen input documents and extracts triplets of category, source quote, and description. Long inputs are split into 30k-character segments and batched up to 80k characters by default. If the backend path fails, the pipeline falls back to a direct LLM prompt with the same JSON schema. The reported runs used a context-weighted sampler at this stage, once per post. An exploratory multi-comment option rebuilds the list after selecting a reply target and limits the inputs to the post and its selected parent chain; title-only posts use the title as the post document. This reduces the available topic choices and is evaluated in Section~\ref{sec:reply-chain-probe}.
     \item Encoding protects and compresses the payload, spends bits on a reply target and a comment topic, writes three candidate comments, and keeps a candidate only if a strict local decode identifies the selected topic and a contextuality gate passes.
-    \item Decode shortlists comment topics with MiniLM cosine similarity, reranks with lexical overlap, and asks for \texttt{idx: N} at the separate classification setting. The full reconstruction path can rebuild research and topics; historical workloads instead passed the audit bitstring. The historical October source-excerpt receiver receives shared prepared context and ordered carrier references, without that audit override. The later archive driver independently fetches public thread inputs and rebuilds the existing extractive list before invoking the receiver, with cutoff and reference order derived externally (Section~\ref{sec:fresh-archive}).
+    \item Decode shortlists comment topics with MiniLM cosine similarity, reranks with lexical overlap, and asks for \texttt{idx: N} at the separate classification setting. The full reconstruction path can rebuild research and topics; the initial comparison experiments instead passed the audit bitstring. The source-excerpt receiver receives shared prepared context and ordered carrier references, without that audit override. The later archive driver independently fetches public thread inputs and rebuilds the existing extractive list before invoking the receiver, with cutoff and reference order derived externally (Section~\ref{sec:fresh-archive}).
 \end{itemize}
 Figure~\ref{fig:impl-pipelines} aligns these stages with the on-disk artifacts.
+
+The preparation limits bound work on the available hardware and external services. The balanced profile's eight search terms limit query and page-fetch costs; fetching three pages concurrently bounds acquisition concurrency without changing their agreed ordering. Splitting long inputs into 30,000-character segments and grouping at most 80,000 characters per request limits model input size. These are configurable processing defaults, expressed in characters rather than model tokens, so they are not guarantees that a request fits every model's context window. The three generated candidates provide alternative wording for one target and topic within a generation step; the retry budget limits how often generation can be repeated. These two counts describe different sources of work.
 
 \subsection{Shared codec}
 The bit layer in Sections~\ref{sec:compression}--\ref{sec:multiframe} lives in one module of pure functions.
@@ -33,7 +34,9 @@ A literal is flag \texttt{0}, an 8-bit character length, then UTF-8 bytes.
 A reference is flag \texttt{1} plus index, offset, and length fields sized by $W$.
 Decoding is sequential: a token’s start depends on where the previous token ended.
 
-\begin{table}[t]
+This representation limits a literal run to 250 characters and considers reference matches of at least three characters. These defaults bound literal segmentation and omit very short reference candidates; the encoder still compares complete bit costs before selecting a reference. Text not represented by a pointer remains available through literals, so these search limits do not discard message content.
+
+\begin{table}[H]
 \centering
 \caption{Token layout of the compressed payload stream. Every field has a fixed width given the session dictionary $D$, but decoding is sequential: a token's start position depends on where the previous token ended.}
 \label{tab:token-layout}
@@ -49,24 +52,37 @@ Reference & \texttt{1} $\Vert$ index $j$ ($W(|D|)$ b) $\Vert$ offset ($W(|d_j|)$
 \end{tabularx}
 \end{table}
 
-The October extension also builds an exact-token sliding-window trie, bounded to 16 tokens per indexed phrase and 100,000 nodes, in deterministic document order. It adds a versioned escape header, represents matches by trie node IDs, and stores misses as UTF-8 literal chunks of at most 255 bytes. The selected codec is recorded as \texttt{utf8\_v1}, \texttt{character\_span\_v1}, or \texttt{oppression\_node\_v1}; the encoder compares complete lengths including codec headers. This local adaptation preserves exact text rather than applying the upstream word sanitizer or null-pointer behavior. Its source attribution is pinned to author-code revision \texttt{26a68a54}.
+The extended compression implementation also builds an exact-token sliding-window trie, bounded to 16 tokens per indexed phrase and 100,000 nodes, in deterministic document order. It adds a versioned escape header, represents matches by trie node IDs, and stores misses as UTF-8 literal chunks of at most 255 bytes. The selected codec is recorded as \texttt{utf8\_v1}, \texttt{character\_span\_v1}, or \texttt{oppression\_node\_v1}; the encoder compares complete lengths including codec headers. This local adaptation preserves exact text rather than applying the upstream word sanitizer or null-pointer behavior. Its source attribution is pinned to author-code revision \texttt{26a68a54}.
+
+The phrase-depth and node limits bound index construction and memory. Raising them can index longer phrases or more distinct prefixes; lowering them can leave more text to literal encoding. Exact text is preserved through that literal path when a reference is unavailable. The 255-byte chunk limit follows the representation's eight-bit literal-length field. These limits describe the implemented codec and its resource budget, rather than experimentally selected optimal phrase or dictionary sizes.
 
 The single-comment encoder writes physical widths and wraps overflow with modulo.
-The multi-frame planner uses the lossless writer that stores only recoverable widths.
+The multi-comment planner uses the lossless writer that stores only recoverable widths.
 % Figure drawn in common/tikz/; compile with scripts/compile_tikz_figures.py.
 
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{../common/figures/implementation_pipelines}
 	\Description{Block diagram of implementation pipeline stages and on-disk artifacts supporting replay and sender--receiver alignment.}
-	\caption{Implementation stages and persisted artifacts. Temperature-0 setup calls and identity hashes support alignment, but cannot guarantee reconstruction. Comment writing remains stochastic; October topic identification uses a separate sampling setting.}
+	\caption{Implementation stages and persisted artifacts. Temperature-0 setup calls and identity hashes support alignment, but cannot guarantee reconstruction. Comment writing remains stochastic; Revised topic identification uses a separate sampling setting.}
 	\label{fig:impl-pipelines}
 \end{figure*}
 
 \subsection{Model roles}
+\label{sec:model-settings}
 Model identifiers and sampling settings are recorded for each role:
 \begin{itemize}
     \item Search-term generation and topic extraction request \texttt{temperature=0}; actual list agreement must still be checked.
     \item Comment writing runs at nonzero temperature (0.7 on balanced) so retries produce different wording for the same parent and comment topic.
-    \item Comment-topic identification uses MiniLM cosine similarity, a default shortlist of 20 with lexical rerank, then an \texttt{idx: N} prompt. The October implementation defaults its own setting to 0; historical results used 0.7. A backend that cannot expose temperature control must record the effective setting as unavailable.
+    \item Comment-topic identification uses its own sampling setting, defaulting to 0 in the revised implementation; the initial comparisons used 0.7 for both writing and identification. This separation targets a stable decision for the same observed comment while preserving variation in writing. The settings are recorded in the encoding signature. A backend that cannot expose temperature control must record the effective setting as unavailable.
 \end{itemize}
+
+These values are profile defaults chosen for their respective roles. The record does not contain a temperature sweep establishing 0.7 as optimal or isolating the effect of the revised identification setting. Repeatability checks and the observed classification outcomes are reported separately in the evaluation.
+
+The identification prompt uses a configurable candidate limit $k$, defaulting to 20. Before forming that prompt, the implementation retrieves $\min(|\mathcal{A}|,\max(k,120))$ semantic candidates, combines their similarity scores with lexical overlap, and retains at most $k$. Thus, with the default $k$, 120 bounds the preliminary retrieval pool and 20 bounds the final prompt; neither caps the complete topic list. The broader pool gives lexical reranking alternatives that a narrower semantic search would omit. The prompt limit bounds model input, with a tradeoff between candidate coverage, processing cost, and the number of competing topics. Both numbers are implementation defaults, not experimentally established optima. A larger prompt limit also enlarges the preliminary pool when it exceeds 120.
+
+The balanced sender allows six retries after the initial generation attempt: seven attempts in total. This budget offers further wording choices after a failed verification, while bounding model calls and waiting time. The comment-quality campaign instead used one retry, or two attempts, as an experimental resource setting. The archive comparison evaluates two- and seven-attempt policies (Section~\ref{sec:fresh-archive}). A failed attempt is never accepted merely because the budget is exhausted.
+
+\input{sections/receiver_operation.tex}
+
+\input{sections/multicomment_example.tex}

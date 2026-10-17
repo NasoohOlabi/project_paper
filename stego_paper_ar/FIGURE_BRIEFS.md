@@ -1,5 +1,7 @@
 # Diagram prompts for the Arabic methodology
 
+The evaluation roadmap has a separate bilingual brief: [EXPERIMENT_ROADMAP_FIGURE_PROMPT.md](../EXPERIMENT_ROADMAP_FIGURE_PROMPT.md). It contains the complete generation prompts, exact Arabic labels, captions, placement, and asset names. The author-generated images are inserted in both papers beside the setup narrative and table.
+
 Read [ARABIC_WRITING_GUIDELINES.md](../ARABIC_WRITING_GUIDELINES.md) before writing or revising any Arabic figure prompt. Use the exact visible labels specified below. Technical symbols and binary values read left to right; the diagram reads right to left.
 
 ## Figure 3: collecting the source texts

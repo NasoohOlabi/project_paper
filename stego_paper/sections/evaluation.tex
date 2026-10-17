@@ -1,18 +1,85 @@
 \section{Evaluation}
 \label{sec:evaluation}
+\raggedbottom
+
+The evaluation follows the message from a plausible comment to a recovered payload. We first ask whether the generated comments fit their conversations compared with ZLG. We then examine whether their reply and topic choices let a receiver recover a complete message. Finally, the archive experiments examine reception when the parties independently acquire their public context. A comment can read naturally yet carry a topic the receiver misidentifies, so each step answers a question that the preceding measurements alone cannot settle.
+
+This progression connects the research questions to the evidence. The methodology explains the embedding mechanism and shared inputs; the quality comparisons assess the resulting text, while the recovery experiments examine generation, extraction, and their failure causes. Preparation and transport checks help distinguish those causes within the larger communication process.
 
 We compared our comments with the official implementation of the ZLG baseline~\cite{lin2024zero} on two separate runs.
-Table~\ref{tab:llm-judge} is a quality check. A language model scored a 244-post subset of a 2026-08-15 generation freeze, chosen where ZLG's~\cite{lin2024zero} output was unique.
-Table~\ref{tab:paired-results} is a 2026-07-30 configuration comparison on capacity, GPT-2 perplexity, length, lexical quality, and BERTScore.
+Table~\ref{tab:llm-judge} is a quality check. A language model scored a 244-post subset of the fixed comment-quality dataset, chosen where ZLG's~\cite{lin2024zero} output was unique.
+Table~\ref{tab:paired-results} is the initial configuration comparison on capacity, GPT-2 perplexity, length, lexical quality, and BERTScore.
 The two tables do not share a sample and do not measure the same thing.
 
-Two setup facts apply to every number below.
-First, none of them comes from the public-thread receiver described in Section~\ref{sec:methodology}.
-Project-side payloads were rebuilt from the sender's audit metadata (audit-assisted reconstruction), and the decoder was allowed to take the audit's comment topic index over the discriminator's. The ZLG~\cite{lin2024zero} reveal lane was token-assisted: it received the sender's token IDs and an externally supplied payload length, so it does not represent visible-text-only recovery.
-Second, the run behind the 2026-08-15 comparison set \texttt{max\_retries} to 1, rather than the balanced-profile budget of 6 retries after the first attempt, so its success rate describes a lower-retry configuration.
+Two setup facts apply to the two baseline comparisons.
+\label{par:baseline-receiver-inputs}
+First, our payloads were rebuilt from sender audit metadata, and the decoder could take the recorded topic index instead of identifying it from the comment. ZLG's~\cite{lin2024zero} reveal received the sender's token IDs and an externally supplied payload length. Supplying the IDs avoids reconstructing the token sequence from visible text; the length identifies where the payload ends. Each method therefore received different assistance. These comparisons do not determine which is more reliable when the receiver has only public text.
+Second, the generation experiment behind the comment-quality comparison set \texttt{max\_retries} to 1, rather than the balanced-profile budget of 6 retries after the first attempt, so its success rate describes a lower-retry configuration.
 
 
 Data hashes detect differences between the parties' inputs but do not ensure stable web results or matching copies of the post's comments. These comparisons do not test a receiver rebuilding the search and topic lists from the public conversation alone.
+
+\input{../common/data/october_recovery_values.tex}
+\input{../common/data/luna_development_values.tex}
+\input{../common/data/prompt_ablation_values.tex}
+
+\input{sections/datasets.tex}
+
+Table~\ref{tab:evidence-levels} summarizes the experiments in this section, what each measures, and the inputs available to the receiver.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Experiments and the outcomes they measure. Planning, frame identification, and complete-message recovery are distinct outcomes.}
+\label{tab:evidence-levels}
+\begin{tabularx}{\columnwidth}{|p{0.23\columnwidth}|X|X|}
+\hline
+Experiment & Endpoint and population & Receiver or interpretive limitation \\
+\hline
+Initial comparison experiments & Recorded acceptance and nominal selection budget & Sender-audit reconstruction; token-assisted ZLG reveal. \\
+\hline
+244-post judge subset & J1: 51.6\% vs 28.3\%; J2: 29.1\% vs 47.5\% (ours vs ZLG) & Selected unique-output subset; task-specific LLM judgments. \\
+\hline
+Prompt-development screen & \PaPosts{} posts, seven conditions; \PaGenerationAttempts{} assignments & Candidate topic verification and conditional standout judgments, not complete-message recovery. \\ \hline
+Limited-carrier pilot & Our 0/25 fit eight carriers; ZLG 1/9 recovered before futility stopping & Capacity rejection and reveal failure are different stages; incomplete paired campaign. \\
+\hline
+Reply-chain probe & One frame passed; 13/25 fit 20 frames & In-memory retrieval adapter; no full-message recovery. \\
+\hline
+List-reconstruction validation & Independent repeated preparation of the same post & Agreement of intermediate texts and ordered lists; separate from message extraction. \\ \hline
+Offline transport checks & Three clean messages recover; four damaged cases detected & Exact-tangent classifier, shared codebook and supplied order; no live classifier test. \\
+\hline
+Source-excerpt recovery & \OctExact/\OctAttempts{} live exact; \OctAttempts/\OctAttempts{} offline exact & Qwen 9B, shared prepared state and supplied order; no fresh reconstruction. \\
+\hline
+Independent-payload development & \DevExact/\DevAttempted{} attempted exact; \DevUnattempted{} unattempted; no-go & Independent UTF-8 payloads and normal retrieval; CLI sampling uncontrolled; stopped development panel. \\
+\hline
+Archive reconstruction panels & Six development and six untouched source posts & Independent public archive preparation, deterministic thread-only variant; Section~\ref{sec:fresh-archive}. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\FloatBarrier
+\input{sections/experiment_setup.tex}
+\FloatBarrier
+\subsection{Baseline selection and comparison conditions}
+\label{sec:baseline-choice}
+
+Assessing the proposed improvements required a reference method, and finding a directly comparable method was difficult. Our method carries bits through reply-location and comment-topic choices, calls a language model through an API, and uses domain texts to construct topics. The reviewed methods differ in their information-carrying choices, shared data, and model-access requirements. These differences affect capacity, text quality, and extraction conditions, so comparing scores published on different datasets cannot establish improvement. Components also have precedents: LLM-Stega~\cite{wu2024generative} already uses black-box prompting and text verification, as discussed in Section~\ref{sec:related_work}.
+
+We selected ZLG~\cite{lin2024zero} because it generates carrier text without task-specific training and has an official implementation\footnote{\url{https://github.com/leonardodalinky/zero-shot-GLS}} that we could run on the same source posts. This permits a common-context comparison instead of relying on results from unrelated datasets. The comparison addresses specific comment-quality criteria and the recorded outcomes under the tested settings; different criteria can favor different methods.
+
+\paragraph{Model access and choice.}
+\label{par:baseline-model-access}
+ZLG~\cite{lin2024zero} needs token probabilities to carry bits in generation choices. Our method calls the model through an API to write comments and identify their topics. Its design can therefore use a compatible model that does not expose token probabilities, including one offered by an external service. Evaluating both methods with a locally runnable model covers only part of the model choices available to our design.
+
+\label{par:baseline-model-scale}
+To reduce the effect of differing model capability, the comment-quality experiment used local models from the Qwen 3.5 9B family for both methods. Sharing a model family does not imply identical quantization, runtime, or retry policies. This comparison did not evaluate our method with a larger model or one with stronger reasoning capabilities. A wider context window could accommodate more source text, and a stronger model might extract more varied topics and identify them more reliably. These remain potential benefits requiring a controlled comparison.
+
+The value of more topics depends on whether their choices remain distinguishable, as explained in Section~\ref{par:topic-count-choice}. A stronger model's effect on that tradeoff requires a controlled comparison.
+
+\paragraph{How the channels carry larger messages.}
+\label{par:baseline-capacity}
+ZLG~\cite{lin2024zero} can carry additional bits through additional generated tokens, within generation and acceptance limits. In our method, a longer comment alone does not enlarge the budget of its reply-location and topic choices. A larger message needs further choices carried by other comments, using the frames in Section~\ref{sec:multiframe}. Payload growth can thus mean a longer text for the baseline or more comments for our method. Comparing larger messages requires accounting for carrier count, total words, recovered bits, and failures together.
+
+The initial comparisons used the single-comment path. Their \texttt{capacity\_matched} setting attempted to approximate each sample's budget for ZLG by rounding to bytes and selecting a payload excerpt; it did not establish identical recoverable useful payloads. The reported 16.00 bits in the initial comparison is neither a fixed target imposed on every sample nor ZLG's maximum capacity. This setting limits what the comparison reveals about capacity growth in both methods and does not evaluate our multi-comment path.
 
 \subsection{How the printed metrics are computed}
 
@@ -22,7 +89,7 @@ The available fixed-width selection budget for two independently coded power-of-
 \]
 where $C$ is the number of reply targets (flattened comments plus the post) and $A$ is the number of candidate comment topics.
 For non-power-of-two choice counts, leftover physical index states are excluded; for example, $C=3,A=5$ yield $1+2=3$ distinguishable bits, while modulo aliases the remaining states. This is a fixed-width selection budget, not Shannon capacity or achieved useful throughput.
-On the 2026-08-15 freeze, the stored 13.42 bits/comment for our method is this available budget, not a measurement of independently embedded or recovered useful payload. The audit-assisted reconstruction does not establish receiver recovery. The ZLG~\cite{lin2024zero} values describe its reported successful payload in a capacity-matched setting, not its native token-channel maximum, and its reveal used sender token IDs plus externally supplied payload length.
+In the comment-quality dataset, the stored 13.42 bits/comment for our method is this available budget, not a measurement of independently embedded or recovered useful payload. The audit-assisted reconstruction does not establish receiver recovery. The ZLG~\cite{lin2024zero} values describe its reported successful payload in a capacity-matched setting, not its native token-channel maximum, and its reveal used sender token IDs plus externally supplied payload length.
 
 Success rates count every attempted sample, including failures.
 Quality scores, including the judge table, are computed only on accepted generations.
@@ -34,7 +101,7 @@ That makes the post the independent unit when several comments share a thread.
 GPT-2 perplexity is how surprised a GPT-2 model is by the comment.
 Per text it is $\exp(\sum \mathrm{NLL}/\sum \text{scored tokens})$, then averaged.
 Lower means more GPT-2-predictable, not more human.
-The 2026-08-15 paired freeze did not score GPT-2, unigram KL, JSD, BLEU, ROUGE, or BERTScore.
+The fixed comment-quality dataset did not score GPT-2, unigram KL, JSD, BLEU, ROUGE, or BERTScore.
 Those columns appear only in Table~\ref{tab:paired-results}.
 
 The lexical-quality index is a 0--100 score from the comparison builder, version \texttt{lexical\_quality\_v2}.
@@ -48,7 +115,7 @@ Word count in both printed tables is the number of \texttt{[A-Za-z0-9']+} tokens
 The later publication runner uses a different word-boundary regex.
 Those lengths are not in these tables.
 
-BERTScore F1 in Table~\ref{tab:paired-results} is the unrescaled figure from the 2026-07-30 report.
+BERTScore F1 in Table~\ref{tab:paired-results} is the unrescaled figure from the initial configuration report.
 It is overlap with a human reference comment, not a security score.
 
 The LLM judge is not G-Eval.
@@ -171,7 +238,21 @@ ZLG~\cite{lin2024zero} is harder to pick out of a same-thread lineup.
 Our comments are named weakest less often than ZLG's~\cite{lin2024zero}, though still more often than the human control.
 Register-fit favors our method on the paired sign test.
 Suspicion AUROC is close for both arms.
-None of this is a security result, and none of it uses the 244 unique-text count from the 2026-07-30 run.
+None of this is a security result, and none of it uses the 244 unique-text count from the initial configuration experiment.
+
+ZLG's~\cite{lin2024zero} advantage in standout detection may relate to its generation prompt, which provides example sentences and asks the model to imitate their vocabulary, tone, grammar, and semantic content. This objective aligns with part of the judge's task: identifying a comment that differs from the surrounding human comments. Example-based imitation is therefore a possible explanation for the result, but the experiment did not isolate the effect of the prompt from that of the embedding method.
+
+Figure~\ref{fig:zlg-prompt-standout} juxtaposes excerpts from the two prompts.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../common/figures/zlg_prompt_standout_alignment.png}
+\Description{Side-by-side excerpts from the ZLG generation prompt and the standout judge prompt, highlighting example imitation and conversational fit. The figure identifies their related objectives as a possible explanation, without claiming that the prompt effect was isolated.}
+\caption{ZLG's~\cite{lin2024zero} example-imitation prompt and the standout judge prompt. Their related objectives offer a possible explanation for the standout result; the experiment did not isolate the effect of prompt alignment.}
+\label{fig:zlg-prompt-standout}
+\end{figure}
+
+\input{sections/prompt_ablation.tex}
+\FloatBarrier
 
 \subsection{How often generation succeeded}
 
@@ -180,8 +261,8 @@ These counts are not the 244-pair judge set.
 The run that fed the comparison requested 4{,}044 samples and recorded 2{,}543 successes and 1{,}501 failures (846 generation failures, 613 comment topic mismatches, 42 invalid JSON).
 Every recorded success reconstructed the compressed bitstring from sender-side audit metadata.
 That is an engineering check, not Bob reading a public thread alone.
-The campaign set \texttt{max\_retries} to 1.
-The balanced profile default is 6 retries after the first attempt, which is what Section~\ref{sec:methodology} describes.
+\label{par:baseline-retries}
+The campaign allowed one retry, whereas the balanced implementation profile permits six after the first attempt. This gives the sender fewer opportunities to obtain an acceptable comment whose topic is correctly identified. It is a resource setting for this experiment; the method allows other retry limits. ZLG~\cite{lin2024zero} used a different retry policy, and no controlled comparison isolated retry budgets or equalized total processing cost. Generation-success differences therefore cannot be attributed to the embedding mechanism alone.
 
 The ZLG~\cite{lin2024zero} freeze that produced the 1{,}608-pair source file attempted 1{,}711 hides, accepted 1{,}610, and decode-verified 1{,}603 (96 quality-gate failures, 5 leakage-check failures, 0 harness skips).
 Our paired rows in that freeze are also 1{,}608, all reconstructed from sender audit metadata.
@@ -196,23 +277,24 @@ GPT-2 perplexity and unigram KL/JSD were not scored on this paired freeze.
 The same freeze also stores a self-consistency score (mean MiniLM cosine to other same-post outputs of that method), a shared naturalness gate (ours 1603/1608 passed, ZLG~\cite{lin2024zero} 1509/1608), and a repetition ratio.
 Self-consistency has no preferred direction for this comparison, so it is not a ranking row.
 
-\subsection{Historical configuration comparison}
+\subsection{Initial configuration comparison}
 
-Table~\ref{tab:paired-results} is the 2026-07-30 \texttt{context\_weighted\_v2} run, not the 2026-08-15 freeze.
+Table~\ref{tab:paired-results} is the initial \texttt{context\_weighted\_v2} configuration experiment, not the comment-quality dataset.
 Our method attempted 627 samples and succeeded on 554 (88.4\%).
 Failures were 70 comment topic mismatches and 3 generation failures.
 ZLG~\cite{lin2024zero} was fed those 554 successes in a capacity-matched setting with EGS parameters $(\text{threshold}=0.01,\text{temperature}=0.7,\text{alpha}=1.0,\text{max\_bpw}=2)$.
-The original writeup counts 304 accepted of 554 (54.9\%).\footnote{A 2026-07-31 recode of the same run treats 94 cover-sentence extraction skips as harness faults, leaving 460 server invocations, 304 accepted (66.1\%), and 156 genuine ZLG~\cite{lin2024zero} failures (133 quality-gate, 22 leakage, 1 HTTP 500). The metric table still uses the 304 accepted pairs.}
+The original writeup counts 304 accepted of 554 (54.9\%).\footnote{A subsequent reclassification of the same experiment treats 94 cover-sentence extraction skips as harness faults, leaving 460 server invocations, 304 accepted (66.1\%), and 156 genuine ZLG~\cite{lin2024zero} failures (133 quality-gate, 22 leakage, 1 HTTP 500). The metric table still uses the 304 accepted pairs.}
 The metric table uses those accepted pairs, then averages over 100 source posts.
 
 The candidate topic list was capped at 32, so the comment topic component contributed at most 5 bits to the available fixed-width selection budget per frame.
+This corresponds to the medium capacity preset's topic limit, not an experimentally optimized universal count. The general tradeoff is described in Section~\ref{par:topic-count-choice}.
 Project-side rows reconstructed the compressed bitstring from sender-side audit metadata.
 The research pool was 167 posts, 35 of them sampled ten times, and 244 of the 304 our-method texts were unique.
 That 244 is not the judge subset.
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
-\caption{Historical paired results over 100 source posts (2026-07-30). Lower is better for GPT-2 perplexity. Lexical quality is the run's 0--100 index, not a raw MATTR column. BERTScore F1 is the unrescaled figure from that report.}
+\caption{Initial configuration comparison over 100 source posts. Lower is better for GPT-2 perplexity. Lexical quality is the run's 0--100 index, not a raw MATTR column. BERTScore F1 is the unrescaled figure from that report.}
 \label{tab:paired-results}
 \small
 \begin{tabularx}{\columnwidth}{|l|c|c|X|}
@@ -234,11 +316,12 @@ BERTScore F1 & 0.842 & 0.848 & Comparable in that report \\
 
 On that configuration, the reported ZLG~\cite{lin2024zero} value exceeds our available fixed-width selection budget, and ZLG~\cite{lin2024zero} has lower GPT-2 perplexity. The bit comparison is not a comparison of independently recovered useful payload.
 Our replies are longer and score slightly higher on the lexical-quality index.
-The numerical gap is narrow because the candidate topic list was capped at 32.
-It is not a general upper bound on either system.
+The 32-topic cap limits the topic-choice component to five bits per frame; it does not establish why the two reported bit figures differ or bound either method in other configurations.
 
 \subsection{Validating list reconstruction during development}
 \label{sec:reconstruction-validation}
+
+The quality comparisons assess the generated text. To examine extraction, we distinguish two possible sources of disagreement: the parties may build different lists, or they may identify different topics within matching lists. Repeated preparation checks the first; the message experiments examine the second alongside complete recovery.
 
 During development, we test whether the parties can build the same lists by processing the same post independently twice and comparing the outputs. This is a research validation procedure, not an additional step the sender performs for every message. In use, the sender processes the post to prepare the message, and the receiver reconstructs the lists during extraction, using the agreed inputs and settings.
 
@@ -249,7 +332,7 @@ Successful message transmission requires a separate test. After the sender selec
 \subsection{Exploratory reply-chain alignment probe}
 \label{sec:reply-chain-probe}
 
-On 2026-09-26, a diagnostic probe on the frozen post \texttt{1vygsir} found that the post-wide topic list could pair a reply to a college comment with a topic quoted from a sibling discussion about a restaurant.
+A diagnostic probe on the frozen post \texttt{1vygsir} found that the post-wide topic list could pair a reply to a college comment with a topic quoted from a sibling discussion about a restaurant.
 The writer followed the selected parent and produced college-related text, while the receiver could not identify the unrelated restaurant topic.
 This was a source-alignment failure, not an angle-index mapping error.
 
@@ -261,13 +344,14 @@ In the first 25 frozen posts, 13 could be planned within 20 frames in the extrac
 
 This is an exploratory capacity and first-frame check, not a full-payload recovery result.
 The semantic adapter bypassed the normal semantic-search service, and the remaining frames were not generated or decoded.
-These figures are separate from the historical comparisons and do not establish an end-to-end recovery rate.
+These figures are separate from the initial comparisons and do not establish an end-to-end recovery rate.
 
 \FloatBarrier
-\subsection{October independent-recovery experiment}
+\subsection{Source-excerpt recovery experiment}
 \label{sec:october-recovery}
-\input{../common/data/october_recovery_values.tex}
-The exploratory artifact \texttt{oppression25\_fresh\_20261003T113428Z} contains \OctAttempts{} source-excerpt payloads generated with Qwen 9B under the contract in Table~\ref{tab:recovery-contract}. The excerpts favor dictionary matches and are not independently assigned arbitrary messages. Of all assigned messages, \OctExact/\OctAttempts{} recovered exactly; \OctGenerationFailures{} failed generation and \OctReceiverFailures{} failed receiver recovery. Among complete generated sequences, recovery was \OctExact/\OctComplete{}. The all-attempt proportion is 28\%, with a 95\% Wilson interval of [\OctWilsonLow\%, \OctWilsonHigh\%]. This interval describes a convenience batch and does not establish population-wide reliability.
+The next question is whether readable choices can carry a complete message across several comments. This experiment holds the prepared context shared, allowing us to examine generation, topic identification, and message assembly together. Source excerpts provide the initial payload condition; the independent-payload check below then removes that source-text selection.
+
+The source-excerpt recovery experiment contains \OctAttempts{} source-excerpt payloads generated with Qwen 9B under the contract in Table~\ref{tab:recovery-contract}. The excerpts favor dictionary matches and are not independently assigned arbitrary messages. Of all assigned messages, \OctExact/\OctAttempts{} recovered exactly; \OctGenerationFailures{} failed generation and \OctReceiverFailures{} failed receiver recovery. Among complete generated sequences, recovery was \OctExact/\OctComplete{}. The all-attempt proportion is 28\%, with a 95\% Wilson interval of [\OctWilsonLow\%, \OctWilsonHigh\%]. This interval describes a convenience batch and does not establish population-wide reliability.
 
 A replay of saved classifier outputs through the real receiver reproduced all \OctComplete{} complete-sequence outcomes without new LLM calls. Among \OctFrames{} carriers, \OctCorrectFrames{} had the correct topic selection and \OctConfusedFrames{} had an incorrect selection despite the intended topic being in the receiver shortlist. Every one of the \OctReceiverFailures{} receiver-failed messages included such a confusion. In \OctIdenticalPromptConfusions{} confused frames, recorded sender and receiver prompts were identical; two others lacked a complete prompt record. Codebook and dictionary comparisons found no identity disagreement in the complete traces. These observations locate the saved failures at classification; they do not prove that a particular sampling change repairs them. No silent payload mismatch was observed, which is not a bound on its future probability.
 
@@ -277,53 +361,33 @@ All \OctAttempts{} offline codec/transport checks passed. This differs from live
 \centering
 \includegraphics[width=\columnwidth]{../common/figures/october_recovery_stages}
 \Description{Two bar charts with distinct denominators: 25 assigned messages comprise seven exact recoveries, five generation failures and thirteen receiver failures; 149 carriers in complete sequences comprise 124 correct and 25 confused selections.}
-\caption{Saved October outcomes. The left panel counts all assigned messages; the right counts carriers only in complete generated sequences. Frame accuracy cannot substitute for complete-message recovery. Counts and the Wilson interval are generated from one hashed diagnosis artifact by \texttt{scripts/build\_recovery\_evidence.py}.}
+\caption{Source-excerpt recovery outcomes. The left panel counts all assigned messages; the right counts carriers only in complete generated sequences. Frame accuracy cannot substitute for complete-message recovery. Counts and the Wilson interval are generated from one hashed diagnosis artifact by \texttt{scripts/build\_recovery\_evidence.py}.}
 \label{fig:october-stages}
 \end{figure}
 
 \subsubsection{Bounded Luna development check}
-\input{../common/data/luna_development_values.tex}
-The separate artifact \texttt{luna10\_20261003\_v2} assigned independent eight-byte printable payloads (64 UTF-8 storage bits) to ten development posts under the same shared-state contract. Planning covered 32, 64 and 128 bits at limits of 8, 12 and 20 carriers; all ten fit the primary 64-bit/20-carrier cell. Generation used one retry and fresh Codex CLI calls requesting GPT-6 Luna, followed by an independent receiver using ordinary MiniLM retrieval. CLI temperature control was unavailable, so this is neither a test of the classifier-temperature correction nor a matched model comparison.
+The separate independent-payload development experiment assigned independent eight-byte printable payloads (64 UTF-8 storage bits) to ten development posts under the same shared-state contract. Planning covered 32, 64 and 128 bits at limits of 8, 12 and 20 carriers; all ten fit the primary 64-bit/20-carrier cell. Generation used one retry and fresh Codex CLI calls requesting GPT-6 Luna, followed by an independent receiver using ordinary MiniLM retrieval. CLI temperature control was unavailable, so this is neither a test of the classifier-temperature correction nor a matched model comparison.
 
 The prespecified engineering gate required 8/10 exact messages. Collection stopped at its third failure: \DevExact{} of \DevAttempted{} attempted messages recovered exactly, and \DevUnattempted{} remained unattempted. Every attempted message generated completely; \DevWrong{} of \DevFrames{} receiver selections were wrong despite target inclusion. Those four fresh responses differed from recorded sender responses to identical prompts. Two messages failed CRC; the third could not reconstruct a valid framed stream. No silent mismatch was observed. The unattempted cases were the title-only posts, so their live feasibility remains open. This stopped development outcome is not a fixed-size reliability estimate and cannot justify expansion to confirmation.
 
 The run made \DevCalls{} CLI calls (\DevSenderCalls{} sender-side, including rejected candidates and verification, and \DevReceiverCalls{} receiver), saved \DevWords{} visible carrier words, and used \DevMinutes{} minutes summed over attempts. Fresh search and codebook extraction costs are excluded because prepared contexts were reused. The ten prepared UTF-8 JSON inputs total 8,035,483 bytes; this is stored setup size, not measured synchronization traffic. Counts share a hashed analysis snapshot in both language versions. The initial adapter canary failed before receiver execution and is excluded from method results.
 
-\begin{table}[t]
-\centering\small
-\caption{Chronology and evidence levels. These endpoints are not interchangeable.}
-\label{tab:evidence-levels}
-\begin{tabularx}{\columnwidth}{|l|X|X|}
-\hline
-Artifact/date & Endpoint and population & Receiver or interpretive limitation \\
-\hline
-July/August workload & Recorded acceptance and nominal selection budget & Sender-audit reconstruction; token-assisted ZLG reveal. \\
-\hline
-244-post judge subset & J1: 51.6\% vs 28.3\%; J2: 29.1\% vs 47.5\% (ours vs ZLG) & Selected unique-output subset; task-specific LLM judgments. \\
-\hline
-26 September pilot & Our 0/25 fit eight carriers; ZLG 1/9 recovered before futility stopping & Capacity rejection and reveal failure are different stages; incomplete paired campaign. \\
-\hline
-September chain probe & One frame passed; 13/25 fit 20 frames & In-memory retrieval adapter; no full-message recovery. \\
-\hline
-October offline checks & Three clean messages recover; four damaged cases detected & Exact-tangent classifier, shared codebook and supplied order; no live classifier test. \\
-\hline
-October source excerpts & \OctExact/\OctAttempts{} live exact; \OctAttempts/\OctAttempts{} offline exact & Qwen 9B, shared prepared state and supplied order; no fresh reconstruction. \\
-\hline
-October Luna development & \DevExact/\DevAttempted{} attempted exact; \DevUnattempted{} unattempted; no-go & Independent UTF-8 payloads and normal retrieval; CLI sampling uncontrolled; stopped development panel. \\
-\hline
-Archive reconstruction panels & Six development and six untouched source posts & Independent public archive preparation, deterministic thread-only variant; Section~\ref{sec:fresh-archive}. \\
-\hline
-\end{tabularx}
-\end{table}
 
 \FloatBarrier
 \input{sections/fresh_archive.tex}
 \FloatBarrier
+\input{sections/research_answers.tex}
+
 \subsection{What these comparisons do not show}
 
+\paragraph{Domain texts and word-distribution metrics.}
+\label{par:baseline-domain-vocabulary}
+Domain texts broaden the topics related to the post in our method. They may introduce vocabulary uncommon in the human reference comments, changing the unigram distributions measured by KL and JSD. Our ZLG~\cite{lin2024zero} adaptation receives examples from the post context but does not use the same domain-document research stage. Divergence can therefore reflect content differences as well as writing style, and is also affected by text length and vocabulary sparsity. This is a possible explanation: the experiments did not isolate domain research through an otherwise matched comparison with research enabled and disabled. These metrics were not computed on the comment-quality dataset and cannot be inferred from the judge scores.
+
 The judge result is about the unique-ZLG-output subset~\cite{lin2024zero}, one pair per post.
-The historical table is one comment topic capacity configuration and one baseline service configuration, with reused posts and audit-assisted reconstruction on our side.
-KL/JSD, synthetic detection, and grouped passive-detector ROC-AUC are computed by later runners and are not in the 2026-08-15 paired freeze.
+The initial configuration table covers one comment-topic capacity configuration and one baseline service configuration, with reused posts and audit-assisted reconstruction on our side.
+KL/JSD, synthetic detection, and grouped passive-detector ROC-AUC are computed by later runners and are not in the fixed comment-quality dataset.
 A dedicated steganalysis and editing-attack evaluation remains future work.
 This paper does not claim a security advantage for either method.
 \FloatBarrier
+\flushbottom

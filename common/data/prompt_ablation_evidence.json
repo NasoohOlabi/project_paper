@@ -1,0 +1,185 @@
+{
+  "scope": "Exploratory topic-validation and conditional standout screen; not full-message delivery.",
+  "source_sha256": {
+    "stego-side-wing\\metrics\\experiments\\wren\\g0_g3\\g0_g3_live_20260919\\manifest.json": "dfdb5ac45d170a0b16b64de6b831956d8c8c2aaf0e3104a02cd46f386934dd6a",
+    "stego-side-wing\\metrics\\experiments\\wren\\g4_g5_barb\\g4_g5_barb_screen48_20260919\\manifest.json": "3b813033b25262001285fc2db10cef4a5b2e40d231984310ba5bdb9bd558cf53",
+    "stego-side-wing\\metrics\\zlg_comparison_runs\\zlg_lucid_fresh_6x_20260815_independent_unique_judge\\comparison_dataset\\codex_judgments\\standout_judgments.jsonl": "e670311b5b8de000d9184bed9cd380fd17b4e58001bd098c633d41cbddbecbad",
+    "stego-side-wing\\metrics\\experiments\\wren\\g0_g3\\g0_g3_live_20260919\\attempts.jsonl": "a8753e433dacbf907a590806c9b18c12ee068719b75f84f236937bb4da83136d",
+    "stego-side-wing\\metrics\\experiments\\wren\\g4_g5_barb\\g4_g5_barb_screen48_20260919\\attempts.jsonl": "ddcb525d067a6bb019c665a4350c4467df293655499483182c6fde4462ed9efb",
+    "stego-side-wing\\metrics\\experiments\\wren\\g0_g3_j1\\j1_screen48_20260919\\standout_tasks.jsonl": "ff5f7bed69207755152ebdf02d772ca4e2a0626a85beadc1a2f3231beaaef1e1",
+    "stego-side-wing\\metrics\\experiments\\wren\\g0_g3_j1\\j1_screen48_20260919\\standout_judgments.jsonl": "377a7ebc64a9a52593a82b8d07c772c8fd282c7bdf7238f9875c57a6d98d2f96",
+    "stego-side-wing\\metrics\\experiments\\wren\\g4_g5_barb\\j1_screen48_20260919\\standout_tasks.jsonl": "4c2c562ff4d51e03b92715890f76978a1b1fbbff9faf5342142fbc7c629156b5",
+    "stego-side-wing\\metrics\\experiments\\wren\\g4_g5_barb\\j1_screen48_20260919\\standout_judgments.jsonl": "bd1400eb737fcc97110c25c0fe2b9b08a2399e29764aa5c87e5210f7fe3fb5eb",
+    "stego-side-wing\\metrics\\experiments\\wren\\g0_g3\\g0_g3_traced_screen48_20260920\\summary.json": "2849a7bd0dd807348223c26c574b72e0b2e9f9a04602c1df95c58e460a9a8f85",
+    "stego-side-wing\\src\\workflows\\utils\\workflow_llm_prompts.py": "57e9eb0dbe1665374b834004b3f34a7bc7e07bc9f280305a1695d0606858a8ad",
+    "stego-side-wing\\docs\\reports\\project-wren\\wren2_prompt_diffs.md": "492420b3ada2c7ea7d424aa57ae748897e128a646074c0359e4d1ae1929c5106",
+    "stego-side-wing\\scripts\\run_wren_g0_g3_pilot.py": "b4988d8508fc9f4164ae1a7fb62fca69027a7705bbaf4fb2cf170a0c5eb8c453",
+    "stego-side-wing\\scripts\\run_wren_g4_g5_barb_pilot.py": "2adfbff82a8dbc51a7a78db8d6ecd2e26c0562d5450e1a870e765d942b0857a0"
+  },
+  "post_ids": [
+    "1lp0ze7",
+    "1lp23nz",
+    "1lqc72m",
+    "1lqp4kb",
+    "1lr7tc1",
+    "1lrjlzj",
+    "1lsjy5t",
+    "1lslb2c",
+    "1lt5vph",
+    "1ltwhle",
+    "1luclxs",
+    "1lw4su3",
+    "1lws1jl",
+    "1lxidh4",
+    "1lxjls6",
+    "1m05yyw",
+    "1m0l9lz",
+    "1m1bj63",
+    "1m1e97x",
+    "1m29seb",
+    "1m6uyrm",
+    "1m964jv",
+    "1mdeqxi",
+    "1mffxft",
+    "1mg1x0u",
+    "1mhqzuk",
+    "1mip1gn",
+    "1mjz67e",
+    "1ml2lhd",
+    "1mmersm",
+    "1mmjnsv",
+    "1mmr1fc",
+    "1mnnv15",
+    "1ms9q17",
+    "1mt1btp",
+    "1mtzg07",
+    "1mxc4ma",
+    "1mxsijq",
+    "1mylsi1",
+    "1mz96ww",
+    "1n2nrn6",
+    "1n6qd7d",
+    "1n74p67",
+    "1n7fw71",
+    "1n7iqqv",
+    "1n7vgtl",
+    "1n8fp1b",
+    "1n940lx"
+  ],
+  "selection_strata": {
+    "ours_1_zlg_1": 12,
+    "ours_1_zlg_0": 12,
+    "ours_0_zlg_1": 12,
+    "ours_0_zlg_0": 12
+  },
+  "arms": [
+    {
+      "arm": "G0",
+      "targeted": false,
+      "assigned": 48,
+      "produced": 48,
+      "topic_verified": null,
+      "judged": 48,
+      "detected": 12,
+      "generation_failures": 0,
+      "validation_failures": 0
+    },
+    {
+      "arm": "G1",
+      "targeted": true,
+      "assigned": 48,
+      "produced": 46,
+      "topic_verified": 24,
+      "judged": 24,
+      "detected": 12,
+      "generation_failures": 2,
+      "validation_failures": 22
+    },
+    {
+      "arm": "G2",
+      "targeted": false,
+      "assigned": 48,
+      "produced": 48,
+      "topic_verified": null,
+      "judged": 48,
+      "detected": 12,
+      "generation_failures": 0,
+      "validation_failures": 0
+    },
+    {
+      "arm": "G3",
+      "targeted": true,
+      "assigned": 48,
+      "produced": 46,
+      "topic_verified": 29,
+      "judged": 29,
+      "detected": 15,
+      "generation_failures": 2,
+      "validation_failures": 17
+    },
+    {
+      "arm": "G4",
+      "targeted": false,
+      "assigned": 48,
+      "produced": 44,
+      "topic_verified": null,
+      "judged": 44,
+      "detected": 2,
+      "generation_failures": 4,
+      "validation_failures": 0
+    },
+    {
+      "arm": "G5",
+      "targeted": true,
+      "assigned": 48,
+      "produced": 41,
+      "topic_verified": 28,
+      "judged": 28,
+      "detected": 10,
+      "generation_failures": 7,
+      "validation_failures": 13
+    },
+    {
+      "arm": "BARB",
+      "targeted": true,
+      "assigned": 48,
+      "produced": 39,
+      "topic_verified": 15,
+      "judged": 15,
+      "detected": 11,
+      "generation_failures": 9,
+      "validation_failures": 24
+    }
+  ],
+  "paired_accepted_subsets": {
+    "G1__G3": {
+      "common_judged_posts": 19,
+      "left_detected": 8,
+      "right_detected": 9
+    },
+    "G3__G5": {
+      "common_judged_posts": 21,
+      "left_detected": 8,
+      "right_detected": 8
+    },
+    "G1__G5": {
+      "common_judged_posts": 17,
+      "left_detected": 8,
+      "right_detected": 5
+    }
+  },
+  "judge_models": [
+    "gpt-5.6-luna"
+  ],
+  "judge_reasoning": [
+    "high"
+  ],
+  "generation_attempts": 336,
+  "judge_tasks": 236,
+  "traced_rerun": {
+    "n_posts": 48,
+    "n_attempts": 192,
+    "G1_verified": 28,
+    "G3_verified": 33
+  }
+}

@@ -25,6 +25,9 @@ For every author correction, follow **Scope and application of author feedback**
 
 ## Methodology exposition
 
+- عند شرح اختيار الطريقة المرجعية، وضّح صعوبة المقارنة المباشرة وسبب اختيار \EN{ZLG}، دون ادعاء التفرد أو تحويل كل اختلاف إلى عيب في طريقتنا. ميّز بين قيود التجربة وقدرات المنهجية، وبين تفسير محتمل للنتيجة وأثر اختُبر بصورة مستقلة. حافظ على تفسير تقارب الـprompt مع مهمة تمييز التعليق المُضاف في موضعه؛ ولا تعمّمه على AUROC الاشتباه. تُفصّل قواعد المقارنة والتحقق من تغطيتها في دليل الكتابة المشترك.
+- عند الإشارة إلى تجربة المقارنة الأولى، استخدم **مقارنة الطريقتين في التجربة الأولى**، وصُغ الجملة المحيطة بها بما يلائم السياق. صرّح بالطريقتين اللتين تجري مقارنتهما، وميّز بين التجربة والإعدادات المستخدمة فيها؛ لا تجعل الإعداد نفسه موضوع المقارنة حين يكون المقصود مقارنة أداء الطريقتين.
+- لا تستخدم التواريخ أو أسماء الأشهر أو أسماء الملفات المؤرخة لتسمية نسخ الطريقة أو التنفيذ أو التجارب في أي موضع من الورقة. استخدم وصفًا ثابتًا لغرض التجربة، مثل **مقارنة الطريقتين في التجربة الأولى** و**تقييم جودة التعليقات** و**استخراج مقتطفات المصادر**، أو **التنفيذ الأولي** و**التنفيذ المعدّل** حين تكون المقارنة بين نسختين. وضّح القيد الذي يعالجه التعديل وما يغيّره، مع إبقاء حدود النتائج والمقايضات. لا تفترض أن النسخة المعدّلة أفضل تجريبيًا لمجرد أنها أحدث. تُحفظ التواريخ ومعرّفات الملفات الدقيقة في سجل التوثيق خارج الورقة؛ وتبقى تواريخ النشر والمراجع والقيم الزمنية اللازمة للبروتوكول كما هي. اتبع القاعدة المشتركة في دليل الكتابة لكلا اللغتين.
 - Present the final approach in the present tense. Do not narrate development history, month-specific changes, previous defaults, or implementation milestones in the methodology. Put differences between evaluated configurations in the implementation or evaluation chapter when they affect the findings.
 - Explain the problem and purpose before introducing its mechanism or parameters. Introduce changing comments before snapshotting and changing web documents before persistent and ephemeral sources.
 - Open the methodology with system components, parameter groups, and an ordered overview of the workflow. Keep configuration distinct from the payload-dependent choices.
@@ -66,6 +69,7 @@ Apply these rules to every future Arabic diagram prompt, figure label, and capti
 | helper model | النموذج المساعد; use النموذج المساعد الحتمي when its fixed generation setting matters |
 | writer model | نموذج الكتابة |
 | shared configuration | إعداد مشترك |
+| multi-comment mode | نمط التعليقات المتعددة؛ رسالة واحدة تحملها عدة تعليقات. يُسمى كل تعليق حامل إطارًا، ولا يعني كل إطار رسالة مستقلة. افصل كلفة نقل الرسالة كاملة عن كلفة التعليق الواحد. |
 | experimental run / runs | تجربة / تجارب؛ ويُستخدم اختبار / اختبارات عندما يكون المقصود فحصًا محددًا. لا تُستخدم «تشغيلات» أو «التشغيلات»، ولا «تشغيل» للدلالة على تجربة بحثية. تبقى «نظام التشغيل» و«زمن التشغيل» صحيحتين عند وصف نظام الحاسوب أو تنفيذ البرنامج، وكذلك «معاملات التشغيل المشتركة» في سياق الإعدادات. |
 | application programming interface | يُستخدم API في النص، ويُعرَّف في فصل المصطلحات بأنه واجهة برمجة التطبيقات. عند وصف الاستدعاء البرمجي، قل «عبر API» بدل «عبر واجهته المتاحة». لا تستبدل به واجهة المستخدم حين يكون المقصود UI. |
 | cache | يُكتب cache بالإنجليزية عند الحاجة إلى ذكره في التنفيذ؛ لا يُترجم إلى «مخازن مؤقتة». لا يُقدَّم بوصفه مكوّنًا لازمًا للمنهجية. |

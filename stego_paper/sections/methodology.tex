@@ -122,7 +122,9 @@ Each record contains a source quote, a description of the subject a comment coul
 The quote supplies inspiration and the topic description specifies the idea to express. The writer is not required to copy the quotation.
 For example, a quote about high device-repair costs may inspire a comparison of repair with replacement.
 Each record receives an index in the final ordering; payload bits select one of these indices.
-The configuration sets a topic limit, with a cap of 32 in the reported runs.
+The shared configuration sets the maximum number of comment topics, and both parties use the same value when building the list. The evaluation section specifies the limit used in each experiment.
+\label{par:topic-count-choice}
+This limit controls a tradeoff between the selection budget and reliable identification. Doubling the number of distinguishable topics adds one nominal bit, while additional similar topics can make the intended choice harder to identify. It also increases list-construction and matching work. The count is therefore a shared configuration choice, not a fixed requirement of the method; a larger list is useful only when its choices remain recoverable.
 This topic list is separate from the compression dictionary, even when both use the same source texts.
 Figure~\ref{fig:source-to-topics} illustrates the mapping and the fields of one topic record.
 \begin{figure}[H]
@@ -198,7 +200,7 @@ Figure~\ref{fig:verify-decode} shows sender verification and receiver topic iden
 \centering
 \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{figures/verify_decode_method.pdf}
 \Description{The sender retries writing until strict topic identification succeeds. The receiver shortlists and reranks topics before requesting the canonical index.}
-\caption{The sender retries when verification does not identify the selected topic. The receiver uses a cosine shortlist of 20, a lexical rerank, and an \texttt{idx: N} prompt. Topic identification uses a fixed shared setting separate from writing.}
+\caption{The sender retries when verification does not identify the selected topic. The receiver retrieves semantic candidates, reranks them with lexical overlap, then supplies the retained shortlist to an \texttt{idx: N} prompt. Section~\ref{sec:model-settings} explains the limits and the identification setting, which is separate from writing.}
 \label{fig:verify-decode}
 \end{figure}
 
@@ -207,8 +209,8 @@ Bob extracts Layer~1 from the visible reply location and its index in the depth-
 The Layer~2 topic index is not printed in the reply.
 The reconstruction path identifies Alice's comment by account, removes it from the supplied post, and may repeat research and topic preparation. It then:
 \begin{enumerate}
-\item embeds the comment with \texttt{all-MiniLM-L6-v2} and selects the nearest 20 topics from a pool of up to 120;
-\item reranks them using cosine similarity and lexical overlap;
+\item embeds the comment with \texttt{all-MiniLM-L6-v2} and retrieves a preliminary set of nearby topics from the shared list;
+\item combines semantic similarity with lexical overlap to rerank that set and retain the candidates shown to the identification model; Section~\ref{sec:model-settings} explains the retrieval and prompt limits;
 \item asks the stego model for a line \texttt{idx: N} containing the canonical topic index, using the separately recorded identification setting.
 \end{enumerate}
 If the model returns a shortlist rank instead, the program maps it to the original index. If no index can be parsed, it uses the nearest semantic candidate. Sender acceptance requires strict identification without these fallbacks.
@@ -223,7 +225,7 @@ These transforms protect the message contents; the publication method conceals t
 
 One compression representation starts with a mode bit and then uses either raw UTF-8 or literals and dictionary pointers.
 The dictionary parse is selected only if shorter, so expansion is at most the mode bit.
-Literal runs are limited to 250 characters, and pointers require matches of at least three characters.
+Literal segmentation and reference-search limits are implementation choices described in Section~\ref{sec:implementation}.
 The shared codec defines field widths and selection of the literal/pointer sequence; Section~\ref{sec:implementation} describes their layouts.
 This compression dictionary is separate from the comment-topic list.
 Another representation uses versioned prefix-tree nodes. The system chooses the shorter representation with its identifying fields and preserves Unicode, whitespace, and punctuation exactly.
@@ -237,17 +239,7 @@ The representation fields form part of the bitstream consumed by the two layers.
 \label{fig:compression}
 \end{figure}
 
-\subsection{When one comment is not enough}
-\label{sec:multiframe}
-Longer messages can be distributed across several replies under the same post; each reply is a frame.
-This multi-frame path is implemented but was not used in the reported ZLG~\cite{lin2024zero} comparison data, which used a single-comment encoder and audit-assisted reconstruction.
-The unprotected-payload path uses a deterministic dictionary from the shared context and a prefix-tree codec derived from OPPRESSION~\cite{zillien2024oppression}. Exact-text pointers and literal fallbacks preserve the full text.
-The transport records its version and codec identity, adds Elias-gamma length and count fields and a CRC, and checks the bitstream before decompression. CRC detects corruption but provides neither confidentiality nor keyed authentication.
-The recoverable budget in Section~\ref{sec:channel-widths} determines each frame's bit count. The final frame is zero-padded where needed, and the receiver rejects inconsistent frame counts or padding.
-This path uses an invertible mapping from bit patterns to choices, avoiding modulo aliasing.
-The optional reply-chain mode rebuilds topics after the parent is selected for each frame; the default post-level mode retains the prepared ordered list.
-The receiver does not automatically discover the frames in the public conversation. An ordered list of carrier-comment references must be supplied.
-Selection budget, payload and control bits, generated frames, and exactly extracted message bytes are different quantities. Recoverable capacity requires identification of all choices needed for the message.
+\input{sections/multicomment.tex}
 
 \subsection{Conditions for testing independent extraction}
 \label{sec:recovery-contract}
@@ -263,7 +255,7 @@ Input class & Tested conditions \\
 \hline
 Public observations & Visible reply text and comment/parent identifiers. \\
 \hline
-Shared setup & A pre-embedding copy of the post's comments, ordered topic list, deterministic dictionary, and codec/transport versions and settings. Hashes detect identity differences; fresh web reconstruction is not tested. \\
+Shared setup & A pre-embedding copy of the post's comments, ordered topic list, deterministic dictionary, and codec/transport versions and settings. This experiment supplies prepared web texts; hashes detect identity differences. \\
 \hline
 Supplied metadata & Ordered carrier references, sender identity, and the unprotected-payload mode. Length is extracted from the framing; the original message is not supplied. \\
 \hline
@@ -271,5 +263,5 @@ Private audit & The original message, intended indices, and sender-acceptance tr
 \hline
 \end{tabularx}
 \end{table}
-Shared setup has synchronization and storage costs. This experiment does not measure list reconstruction, carrier discovery, or resilience to deletion and reordering. Unprotected compression with public shared state does not establish payload confidentiality.
+Shared setup has synchronization and storage costs. This experiment measures extraction with prepared lists; reconstruction checks and receiver component validation are described in Sections~\ref{sec:reconstruction-validation} and~\ref{sec:receiver-operation}. Carrier discovery and resilience to deletion and reordering are outside this experiment's measurements. Unprotected compression with public shared state does not establish payload confidentiality.
 \FloatBarrier

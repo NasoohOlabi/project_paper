@@ -1,0 +1,42 @@
+\subsection{Recorded example: one message across seven comments}
+\label{sec:multicomment-example}
+
+This saved case follows one complete multi-comment message from preparation to extraction. It uses the unprotected payload mode and prepared shared context, not seven independent single-comment messages. The receiver was supplied with ordered carrier references. The broader source-excerpt results and their receiver conditions are reported in Section~\ref{sec:october-recovery}.
+
+\subsubsection{Source texts, topic list, and message representation}
+The prepared post and comments concern an alleged abduction. Their shared source texts also include collected web material. The ordered topic list has \McTopicChoices{} entries, and the compression dictionary has \McDictionaryEntries{} distinct texts. Topic index \McTopicIndex{} concerns the logistical safety implications of holding people in industrial warehouses, inspired by the source phrase ``warehouse by bounty hunters.'' The topic list supplies conversational choices; the dictionary supplies exact text references for compression.
+
+The original message is the following source excerpt:
+\begin{quote}
+\ttfamily
+"All forms of violence are evil"\\
+Nelson
+\end{quote}
+There is one newline between the two displayed lines and one trailing space after \texttt{Nelson}. These characters are part of the saved message. Its \McPayloadBytes{} UTF-8 bytes occupy \McPayloadStorageBits{} storage bits. In this case, the text-span representation points to dictionary entry 1, offset 0, length 40; its complete compressed representation has \McCompressedBits{} bits. Because this message was selected from source text, the dictionary contains an exact match.
+
+\subsubsection{One transport header for the whole seven-comment message}
+The sender uses the multi-comment transport in Section~\ref{sec:multiframe}. The recognition prefix has \McMarkerBits{} bits and the version has \McVersionBits{}. Elias-gamma encodes the carrier count 7 as \texttt{\McGammaCount} (\McCountBits{} bits), and the compressed length 31 as \texttt{\McGammaLength} (\McLengthBits{} bits). Thus the entire message has \McControlBits{} control bits, \McCompressedBits{} compressed payload bits, and \McIntegrityBits{} CRC bits: \McStreamBits{} bits before padding. Compression identity is part of the prepared representation, not another 16-bit transport-format identifier.
+
+The context offers \McCommentChoices{} reply locations, including the post itself, and \McTopicChoices{} topics. The recoverable widths are \McCommentBits{} and \McTopicBits{} bits, giving \McFrameBits{} per comment. Six comments provide 90 bits, which is insufficient for the \McStreamBits{}-bit stream; seven provide \McSlotBits{}. The last comment therefore carries five remaining stream bits and \McPaddingBits{} zero-padding bits. These last five stream bits belong to the CRC, not a new message.
+
+\begin{table}[H]
+\centering\small
+\caption{The seven comments of one recorded message. Indices start at zero; reply index zero selects the post itself. Stream bits include transport fields, payload, and CRC. Padding is counted separately.}
+\label{tab:multicomment-example}
+\begin{tabularx}{\linewidth}{|X|X|X|X|X|}
+\hline
+Comment & Reply index & Topic index & Stream bits & Padding bits \\ \hline
+\McFrameRowsEn
+\end{tabularx}
+\end{table}
+
+\subsubsection{From bit choices to text and back}
+The first \McFrameBits{} bits are split into \texttt{\McFirstReplyBits} and \texttt{\McFirstTopicBits}, selecting reply index \McReplyIndex{} and topic index \McTopicIndex{}. In this first comment, the bits belong to the message's recognition prefix. They are carried through the same reply and topic choices as later payload bits; no literal marker is inserted into the visible text.
+
+The saved generated comment begins:
+\begin{quote}
+This whole 'warehouse by bounty hunters' setup sounds like a logistical nightmare waiting to happen.
+\end{quote}
+The remainder develops the selected safety topic. Sender verification accepted topic \McTopicIndex{}, and the independently invoked receiver also returned that index. Across the seven comments, the recorded receiver indices are 18, 7, 2, 5, 17, 5, and 0, matching Table~\ref{tab:multicomment-example}. The receiver converts each parent/topic pair back into bits, joins the slices in the supplied order, checks the count, length, CRC, and padding, then decompresses the \McCompressedBits{}-bit payload. The recovered \McPayloadBytes{} bytes exactly match the original message, including its newline and final space.
+
+The example's control and integrity cost is incurred once for the complete message. It does not assign \McControlBits{} extra bits to every comment or to the separate single-comment embedding mode. The numerical trace is generated from the saved sender/public records and recorded receiver decisions; the shared codec reproduces its stream and exact decompression without new model calls.

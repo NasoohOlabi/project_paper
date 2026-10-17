@@ -3,11 +3,12 @@
 
 Majeed et al. (2021) \cite{math9212829} surveyed pre-LLM text steganography techniques, predating the current transformer era, emphasizing synonym replacement, spacing manipulation, and coding schemes such as Huffman coding. The methods of that generation often relied on context-free grammars or Markov chains and tended to produce syntactically correct but semantically incoherent cover text. Setiadi et al. (2025) \cite{Setiadi_Ghosal_Sahu_2025} examine more recent AI-powered data hiding across image, linguistic, and 3D mesh carriers (2021--2025), observing that LLMs have ``revitalized'' linguistic steganography through methods built on GPT-2 \cite{radford2019gpt2}, GPT-3 \cite{brown2020language}, LLaMA2 \cite{touvron2023llama2}, and Baichuan2 \cite{xiao2024baichuan2}. On the detection side, Wang et al. \cite{Wang_2023} review deep-learning linguistic steganalysis and document how detection techniques have evolved alongside generative hiding methods.
 
-This study evaluates reply fit within a threaded discussion and distinguishes that property from fluency and payload recovery.
-The remainder of this section synthesizes 31 primary studies from 2020 to 2025 on what was published, where it was applied, how it was evaluated, how it used external knowledge, and where it still breaks.
+This section draws on our systematic literature review (SLR) of LLM-based linguistic steganography~\cite{olabi2026slr}. The review searched ACM Digital Library, IEEE Digital Library, ScienceDirect, Scopus, and SpringerLink, supplemented by examining the references of selected studies. Its stated eligibility criteria cover English-language full texts from 2018--2025, relevance to LLM-based information hiding, and peer-reviewed journal, conference, or workshop publication, followed by title, abstract, and full-text screening. The synthesis here uses the 31 studies with completed extraction records, published from 2020 to 2025. Extraction describes the method, model access, application, contextual resources, evaluation, and reported limitations. Watermarking work provides adjacent evidence and is distinguished from transmitting a covert payload.
+
+The review identifies a practical tension: fluent text need not fit its conversation, and a plausible comment need not carry a reliably recoverable message. Methods also differ in model access, shared resources, datasets, and evaluation tasks, which prevents ranking them by published scores alone. These findings motivate this paper's reply-fit criteria, explicit baseline conditions, and separate tests of comment quality and complete-message recovery. The remainder of this section develops those findings through the individual studies.
 Table~\ref{tab:survey_comparison} places this synthesis next to the three surveys above.
 
-\begin{table}[t]
+\begin{table}[H]
   \centering
   \small
   \caption{Comparison of the literature synthesis in this section with prior surveys of text/linguistic steganography.}
@@ -27,7 +28,7 @@ Table~\ref{tab:survey_comparison} places this synthesis next to the three survey
 
 \subsection{Closest mechanisms and scope of the contribution}
 LLM-Stega already uses black-box prompting, shared keyword mappings, and extraction-feedback rejection~\cite{wu2024generative}. These are precedents for our verification loop. Our implemented distinction is the combination of public reply-target selection and contextual topic selection under an explicit shared-state contract, rather than black-box access alone. Table~\ref{tab:mechanism-comparison} separates the linguistic channel from its compression component; it makes no claim of priority or superior security.
-\begin{table}[t]
+\begin{table}[H]
 \centering\small
 \caption{Mechanisms and receiver coordination in the closest precedents.}
 \label{tab:mechanism-comparison}
@@ -37,15 +38,15 @@ Method & Information-carrying choice & Receiver coordination \\
 \hline
 LLM-Stega~\cite{wu2024generative} & Prompted keywords; feedback rejection & Keyword mappings, extraction prompts and shared mapping/time information. \\
 \hline
-ZLG~\cite{lin2024zero} & Zero-shot in-context generation with token-probability coding & Matching model, tokenizer, prompt and codec. Our historical adaptation additionally supplied token IDs and length. \\
+ZLG~\cite{lin2024zero} & Zero-shot in-context generation with token-probability coding & Matching model, tokenizer, prompt and codec. Our initial comparison adaptation additionally supplied token IDs and length. \\
 \hline
 OPPRESSION~\cite{zillien2024oppression} & Pointers to existing public text & Agreed sources and dictionary; pointer transmission uses another covert channel. \\
 \hline
-This prototype & Public parent choice plus semantic topic choice & Frozen ordered context/codebook and framing; October recovery additionally receives carrier order. \\
+This prototype & Public parent choice plus semantic topic choice & Frozen ordered context/codebook and framing; source-excerpt recovery additionally receives carrier order. \\
 \hline
 \end{tabularx}
 \end{table}
-The October codec adapts the text-reference compression idea in OPPRESSION~\cite{zillien2024oppression}. Compression reduces the bitstream to transmit; reply selection and generated text provide our carrier. Neither dictionary sharing nor sender verification proves fresh receiver agreement.
+The extended codec adapts the text-reference compression idea in OPPRESSION~\cite{zillien2024oppression}. Compression reduces the bitstream to transmit; reply selection and generated text provide our carrier. Neither dictionary sharing nor sender verification proves fresh receiver agreement.
 
 \subsection{State of the Published Literature}
 \label{sec:related-rq1}
@@ -119,7 +120,7 @@ A comprehensive breakdown of how the reviewed studies are distributed across the
 \label{sec:related-rq3}
 
 How published LLM steganography is scored varies by paper, which makes cross-paper comparison hard.
-Section~\ref{sec:evaluation} states the formulas this paper actually computes: recoverable selection-channel width, attempt versus accepted-output rates, GPT-2 perplexity on the historical run, and the five LLM-judge criteria.
+Section~\ref{sec:evaluation} states the formulas this paper actually computes: recoverable selection-channel width, attempt versus accepted-output rates, GPT-2 perplexity in the initial configuration comparison, and the five LLM-judge criteria.
 The rest of this subsection is about what the 31 studies reported, not a second copy of those formulas.
 
 \subsubsection{Perplexity}
@@ -220,8 +221,8 @@ Recent robustness-oriented work broadens this evaluation set. Position-agnostic 
 
 \subsubsection{Evaluation Challenges and Gaps}
 
-The broad range of evaluation metrics across the reviewed studies is summarized in Table~\ref{tab:evaluation_metrics_overview}, which categorizes metrics by type and quantifies their usage frequency. The numbers in that table reveal several persistent gaps. Shared benchmarks are rare: only around 20\% of studies use common datasets, which makes cross-paper comparison difficult even when the same metric name appears in both papers. Human evaluation was reported in just one of the 31 reviewed studies---a surprisingly low share given how central perceptual plausibility is to the field's core claims. Robustness testing is similarly sparse: only 5 of the 31 studies report it, so it is absent in roughly 84\%. Many papers also evaluate along only one or two metric dimensions, leaving imperceptibility, security, and capacity to be inferred from partial evidence rather than directly measured together. Taken together, these gaps mean the strongest conclusions available from the reviewed corpus are qualitative rather than quantitative.
-Section~\ref{sec:evaluation} reports an independent LLM-judge comparison together with source-run reliability and a historical configuration table; GPT-2 and unigram divergence are scored on that historical run, not on the 2026-08-15 freeze.
+The broad range of evaluation metrics across the reviewed studies is summarized in Table~\ref{tab:evaluation_metrics_overview}, which categorizes metrics by type and quantifies their usage frequency. Differences in datasets and evaluation settings make cross-paper comparison difficult even when the same metric name appears in both papers. Human evaluation was reported in one of the 31 reviewed studies, while five report robustness testing. Many papers evaluate only one or two dimensions, leaving text quality, detectability, and capacity without a joint measurement under the same conditions. These gaps favor a comparison grounded in explicit experimental conditions over a single ranking assembled from published scores.
+Section~\ref{sec:evaluation} reports an independent LLM-judge comparison together with generation success rates and the initial configuration comparison. GPT-2 perplexity was scored in the initial comparison, not on the comment-quality dataset.
 
 \begin{table}[t]
   \centering
@@ -321,8 +322,8 @@ Short, low-entropy contexts severely constrain embedding capacity. Social media 
 Early generative methods also produced fluent but semantically arbitrary text, violating cognitive imperceptibility \cite{ding2023context}. When generation is conditioned only on local token history, the output may drift away from the source topic or conversational logic, which is especially suspicious in low-entropy channels such as social media replies. This contextual drift worsens when methods must keep generating until an arbitrarily large payload is fully embedded: texts become unnaturally long, coherence decays over time, and practical payload efficiency drops even when reported bit capacity appears high \cite{li2024semantic,xiang2023cpg,steinebach2024natural,xu2024beyond}.
 
 Our paired comparisons against the zero-shot generative linguistic steganography baseline \cite{lin2024zero} are reported in Section~\ref{sec:evaluation}.
-An independent LLM-judge evaluation on the 244-post unique-ZLG subset~\cite{lin2024zero} is the current quality table; a 2026-07-30 configuration comparison reports recoverable capacity and GPT-2 perplexity on 100 post clusters.
-Both are conditional on accepted outputs, use audit-assisted reconstruction from sender-side metadata on the project side, and do not establish a security advantage for either method.
+An independent LLM-judge evaluation on the 244-post unique-ZLG subset~\cite{lin2024zero} supplies the comment-quality table.
+The first experiment reports our available selection budget alongside ZLG's reported payload and compares GPT-2 perplexity, averaging over 100 source posts. The selection budget describes the bits allowed by the reply-location and comment-topic lists, rather than bits actually extracted by the receiver. The quality tables describe accepted outputs, while generation-success rates include failed attempts. Our payload reconstruction in both baseline comparisons used sender audit data. Section~\ref{sec:baseline-choice} explains the choice of ZLG and the model, payload, and receiver conditions that constrain the comparison.
 
 \subsubsection{Segmentation and Tokenization Barriers}
 

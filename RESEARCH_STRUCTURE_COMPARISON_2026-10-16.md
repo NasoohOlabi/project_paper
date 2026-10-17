@@ -4,6 +4,34 @@ Date: 16 October 2026. Manuscript reviewed: Arabic version at commit `135d6b6`. 
 
 ## Review progress
 
+### Current finding count
+
+All 13 original findings are addressed in the manuscripts. This counts research/presentation findings rather than individual sentence edits. The author-generated evaluation-roadmap images are now inserted in both papers beside the setup narrative and configuration table, with matching captions and introductory references.
+
+| Original finding | Current status |
+| --- | --- |
+| Internal chapter map and scope statements | Addressed: navigation, source description, measurement wording, and comparison/recovery scope corrected. |
+| Connect questions to experiments and answers | Addressed: both introductions explicitly frame the same three questions, evaluation explains their evidence progression, and a short numbered-question synthesis precedes limitations in both papers. |
+| Complete worked implementation example | Addressed: one recorded message across seven comments, exact payload preparation, whole-message framing, every carrier's choices, and verified receiver reconstruction in both papers. |
+| Actual program boundaries | Addressed: dedicated receiver-operation subsection consolidates inputs, shared/private boundaries, receiving stages, outputs, and the scope of component and message validation in both languages. |
+| Introduce experimental families early | Addressed: overview moved, introduced, and visually checked in both papers. |
+| Dataset provenance and sampling overview | Addressed: bilingual overview covers all ten groups, including the prompt screen, source and payload selection, nested subsets, exclusions, repeated contexts, and manifest-checked recovery/archive post intersections. |
+| Explain parameter/design choices | Addressed: rationale is placed beside topic construction, preparation and compression limits, model settings, retrieval/retry budgets, and multi-comment planning; experimental values retain their own scope and measured comparisons. |
+| Baseline suitability and comparison fairness | Addressed through the full recovered baseline-thread revision. |
+| Mechanism rationale versus demonstrated effect | Addressed for the retained explanations: prompt/domain/model benefits are qualified, and measured effects remain separate from hypotheses. |
+| Consolidate assumptions and validity | Addressed: independent review found the existing receiver, recovery, transport, and question-answer discussions sufficient; one sentence was corrected to separate quality-result scope from assisted-recovery scope. No additional limitations section is needed. |
+| Compact reproducibility description | Addressed: the new bilingual setup subsection consolidates model roles, sampling controls, attempts, payload/receiver conditions, hardware/runtime evidence, prompt identities, and cost scope. G5 is defined in the dedicated prompt-ablation section; the roadmap generation brief is complete. |
+| Related-work selection method | Addressed: the author's SLR is cited and briefly summarized; its 31 completed extraction records match both paper study tables exactly. Search sources, screening scope, extraction categories, and relevant findings are explained without importing conflicting broader-draft counts. |
+| Conclusion and actual future work | Addressed: completed results precede future work, with a scoped baseline synthesis. |
+
+The author authorized completing the baseline-comparison rationale and all points from the separate baseline-limitations thread. This is now implemented across both papers, with evidence, scope corrections, hypotheses, and completed verification recorded in [BASELINE_COMPARISON_COVERAGE.md](BASELINE_COMPARISON_COVERAGE.md). The baseline-suitability finding is addressed editorially; stronger model, security, or whole-message comparison claims still require their own evidence.
+
+The approved experiment-overview table move is complete in both papers: it appears before metric definitions, with its results preserved and wrapping adjusted for long experiment names. The rendered table pages and their adjacent pages have been visually inspected in both languages.
+
+The author has replaced date-based versioning throughout both manuscripts with descriptive experiment and implementation names. Dates below identify the original review evidence only; they are not proposed manuscript labels. The shared guide now requires initial/revised or purpose-based names, explanation of relevant design differences and tradeoffs, and provenance identifiers outside the paper. Figure labels are covered by the same rule.
+
+The approved introduction correction now identifies the post, comments, and texts collected through search as the topic-list sources, and explains shared extraction and ordering rules in both languages.
+
 The findings below describe the reviewed commit. Subsequent author-approved edits correct the Arabic chapter map, distinguish development-only reconstruction validation from deployed behavior, revise the contributions to separate black-box operation from shared-list coordination, define API in both languages, and broaden the second Arabic research question to cover sender generation, receiver extraction, and failure causes. These edits address parts of the scope and framing findings; the remaining recommendations still require individual review.
 
 The author's terminology correction applies throughout the Arabic paper and to all future revisions arising from this report: translate experimental **run/runs** as **تجربة/تجارب**, or **اختبار/اختبارات** for a specific validation check. Do not use **تشغيلات/التشغيلات**. Technical expressions such as **نظام التشغيل** and **زمن التشغيل** retain their meaning. The Arabic writing guide records this rule, and existing research-run wording has been revised across the Arabic chapters. English “run” and recorded artifact identifiers remain unchanged.

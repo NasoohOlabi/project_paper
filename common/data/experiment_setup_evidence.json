@@ -1,0 +1,378 @@
+{
+  "source_sha256": {
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\e2e_runs\\oppression25_fresh_20261003T113428Z\\manifest.json": "ff0b61b8df5dfd12ddb6c1903cde6cd9568931b617a5757345e7a4116989922b",
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\recovery_development\\luna10_20261003_v2\\manifest.json": "074959f53c818a8562f0ad098a18ff5a5631606c8f0344fdd853605a0a81d0c4",
+    "D:\\Master\\code\\stego\\AstrasReview\\iterations\\round-5\\manifest_private.json": "5131e50a21a64738a952896788f19715eca829c402b80bbeee4afa766a018882",
+    "D:\\Master\\code\\stego\\AstrasReview\\iterations\\round-5\\quality_judge_freeze.json": "a55b6ea940178bcda5d91e7b4b3ea1506cb33226d6a5af4bbe7a06338a798a84",
+    "D:\\Master\\code\\stego\\AstrasReview\\iterations\\round-6\\manifest_private.json": "93f65640790193013b024470d6ec7ee7a54b9f50c19d08e975a6dbb482dd323f",
+    "D:\\Master\\code\\stego\\AstrasReview\\iterations\\round-6\\quality_judge_freeze.json": "b4a507c99ab55fef173f4e4851b3ddd4cf28bf7580d8862db1cfb2d2ec6fc4be",
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\evaluation_campaigns\\lucid_fresh_6x_20260815\\runs\\batch_0001\\balanced\\summary.json": "781cfbc2a28c851b0adb936480a11d9878701412af00ef7540de6765c019921c",
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\zlg_comparison_runs\\zlg_lucid_fresh_6x_20260815\\summary.json": "e174f5593a5e0f15e527153f57b6055a41c77bcb8cc9a002b7021a2d7f997c88",
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\zlg_comparison_runs\\zlg_lucid_fresh_6x_20260815_independent_unique_judge\\comparison_dataset\\codex_judgments\\register_judgments.jsonl": "8f371eae636e95a59c9162700482a280aeb7641bc2ac04c770ce4a939c291379",
+    "D:\\Master\\SLR draft\\data\\SLR - SLR-Deep.csv": "ea2278b3516850eaa8c269f6ed40b62b2f6b0166c400fe5df2c38609e4651de3",
+    "D:\\Master\\code\\stego\\project_paper\\stego_paper\\sections\\related_work.tex": "d35a2ce692d32aaac2bb51bbfc9bf135eec6584a454245ccac5fd0ec1ea7e7f7",
+    "D:\\Master\\code\\stego\\project_paper\\stego_paper_ar\\sections\\related_work.tex": "2dccabb9ea8ff1c45da3c40f17db818c8bf3b93f4473068a3ec02e8fff23fab6",
+    "D:\\Master\\SLR draft\\sections\\research_method.tex": "b16e5f7fdb78407a3b59c6c5d7d9a16229345e37dd44b0e6b0405f0d07e6916a",
+    "D:\\Master\\SLR draft\\sections\\discussion.tex": "95bd34fe6ede67658e7e2c5ba5b489912acfeefdaec3fbaeb77e262e6ac0676a",
+    "D:\\Master\\SLR draft\\sections\\threats.tex": "a2293d5579353cf70fcf7ae2b448ba2a90773bcbafd7a830b0a22c7dc5d79539",
+    "D:\\Master\\SLR draft\\sections\\conclusion.tex": "80def70592446e5b74ee58d039dd881920bdf3c1fd08f5a1cdd996a5451bee6a"
+  },
+  "source_excerpt": {
+    "settings": {
+      "encoding_profile": "balanced",
+      "capacity_profile": "mid",
+      "capacity_limits_enabled": true,
+      "angles_generation_mode": "model",
+      "stego_generation_mode": "model",
+      "payload_transform": "plain",
+      "stego_prompt_style": "anchored",
+      "stego_sample_angle_count": 1,
+      "stego_default_max_retries": 6,
+      "decode_semantic_top_n": 20,
+      "decode_llm_max_tries": 5,
+      "stego_llm_temperature": 0.7,
+      "decode_strict_default": false,
+      "barb_stance_gate": false,
+      "lm_studio_model": "qwen/qwen3.5-9b",
+      "google_ai_studio_model": "gemma-4-26b-a4b-it",
+      "has_encoding_secret": false
+    },
+    "gpu": "NVIDIA GeForce RTX 5060 Ti, 13590 MiB, 16311 MiB",
+    "carrier_limit": 12
+  },
+  "independent_payload": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "low",
+    "payload_bytes": 8,
+    "max_frames": 20,
+    "max_retries": 1,
+    "minimum_exact": 8,
+    "call_limit": 800,
+    "timeout_s": 180
+  },
+  "archive": {
+    "5": {
+      "settings": {
+        "encoding_profile": "balanced",
+        "capacity_profile": "mid",
+        "capacity_limits_enabled": true,
+        "angles_generation_mode": "extractive_zero_kld",
+        "stego_generation_mode": "model",
+        "payload_transform": "plain",
+        "stego_prompt_style": "anchored",
+        "stego_sample_angle_count": 1,
+        "stego_default_max_retries": 6,
+        "decode_semantic_top_n": 20,
+        "decode_llm_max_tries": 1,
+        "stego_llm_temperature": 0.7,
+        "decode_llm_temperature": 0.0,
+        "decode_strict_default": false,
+        "barb_stance_gate": false,
+        "lm_studio_model": "qwen/qwen3.5-9b",
+        "google_ai_studio_model": "gemma-4-26b-a4b-it",
+        "has_encoding_secret": false
+      },
+      "model": {
+        "id": "qwen/qwen3.5-9b",
+        "object": "model",
+        "type": "vlm",
+        "publisher": "qwen",
+        "arch": "qwen35",
+        "compatibility_type": "gguf",
+        "quantization": "Q4_K_M",
+        "state": "loaded",
+        "max_context_length": 262144,
+        "loaded_context_length": 16384,
+        "capabilities": [
+          "tool_use"
+        ]
+      },
+      "max_frames": 20,
+      "judge": {
+        "model": "openai/gpt-oss-20b",
+        "temperature": 0
+      }
+    },
+    "6": {
+      "settings": {
+        "encoding_profile": "balanced",
+        "capacity_profile": "mid",
+        "capacity_limits_enabled": true,
+        "angles_generation_mode": "extractive_zero_kld",
+        "stego_generation_mode": "model",
+        "payload_transform": "plain",
+        "stego_prompt_style": "anchored",
+        "stego_sample_angle_count": 1,
+        "stego_default_max_retries": 6,
+        "decode_semantic_top_n": 20,
+        "decode_llm_max_tries": 1,
+        "stego_llm_temperature": 0.7,
+        "decode_llm_temperature": 0.0,
+        "decode_strict_default": false,
+        "barb_stance_gate": false,
+        "lm_studio_model": "qwen/qwen3.5-9b",
+        "google_ai_studio_model": "gemma-4-26b-a4b-it",
+        "has_encoding_secret": false
+      },
+      "model": {
+        "id": "qwen/qwen3.5-9b",
+        "object": "model",
+        "type": "vlm",
+        "publisher": "qwen",
+        "arch": "qwen35",
+        "compatibility_type": "gguf",
+        "quantization": "Q4_K_M",
+        "state": "loaded",
+        "max_context_length": 262144,
+        "loaded_context_length": 16384,
+        "capabilities": [
+          "tool_use"
+        ]
+      },
+      "max_frames": 20,
+      "judge": {
+        "model": "openai/gpt-oss-20b",
+        "temperature": 0
+      }
+    }
+  },
+  "quality_generation_settings": {
+    "encoding_profile": "balanced",
+    "capacity_profile": "mid",
+    "capacity_limits_enabled": true,
+    "angles_generation_mode": "model",
+    "stego_generation_mode": "model",
+    "payload_transform": "plain",
+    "stego_prompt_style": "natural",
+    "stego_sample_angle_count": 1,
+    "stego_default_max_retries": 6,
+    "decode_semantic_top_n": 20,
+    "decode_llm_max_tries": 5,
+    "stego_llm_temperature": 0.7,
+    "decode_strict_default": false,
+    "barb_stance_gate": false,
+    "lm_studio_model": "qwen/qwen3.5-9b",
+    "google_ai_studio_model": "gemma-4-26b-a4b-it",
+    "has_encoding_secret": false
+  },
+  "quality_baseline_identity": {
+    "status": "ok",
+    "git_commit": "e87a1d9",
+    "git_dirty": false,
+    "backend": "llama_server",
+    "model": "Qwen3.5-9B-Q4_K_M.gguf",
+    "seed": 42,
+    "prompt_cfg_path": "D:\\Master\\code\\stego\\zero-shot-GLS\\config\\workflow_llm_prompts.json",
+    "generation_quality_status": "experimental",
+    "prompt_mode": "request_prompt_is_complete_context",
+    "cover_size": 0,
+    "cover_source": "none",
+    "cover_source_note": "Cover files are only used by sampling/metrics helpers; hide/reveal use the request prompt as the complete model prompt.",
+    "n_cover": 2,
+    "header_bits": 0,
+    "max_payload_bits": 65535,
+    "max_payload_bytes": 8191,
+    "quality_min_words": 8,
+    "quality_max_words": 60,
+    "quality_max_repetition_ratio": 0.65,
+    "quality_max_single_token_share": 0.35,
+    "quality_max_bigram_repeat": 3,
+    "quality_max_retries": 4,
+    "max_new_tokens": 256
+  },
+  "quality_judge": {
+    "judge_backend": "codex",
+    "judge_model": "gpt-5.6-luna",
+    "reasoning_effort": "high"
+  },
+  "slr_completed": [
+    {
+      "id": 25,
+      "title": "Robust and semantic-faithful post-hoc watermarking of text generated by black-box language models",
+      "year": 2025,
+      "citation_key": "hao2025robust"
+    },
+    {
+      "id": 43,
+      "title": "Contrastive Semantic Watermarking Framework",
+      "year": 2025,
+      "citation_key": "wang2025contrastive"
+    },
+    {
+      "id": 44,
+      "title": "DeepStego",
+      "year": 2025,
+      "citation_key": "kuznetsov2025deepstego"
+    },
+    {
+      "id": 45,
+      "title": "Emotionally Controllable Steganography",
+      "year": 2025,
+      "citation_key": "shi2025emotionally"
+    },
+    {
+      "id": 47,
+      "title": "Multi-criteria Linguistic Optimization",
+      "year": 2025,
+      "citation_key": "wozniak2025multicriteria"
+    },
+    {
+      "id": 48,
+      "title": "Position-Agnostic Generation",
+      "year": 2025,
+      "citation_key": "lin2025positionagnostic"
+    },
+    {
+      "id": 50,
+      "title": "Two-Model Defense & Repair",
+      "year": 2025,
+      "citation_key": "chen2025activetwo"
+    },
+    {
+      "id": 3,
+      "title": "Co-stega: Collaborative linguistic steganography for the low capacity challenge in social media",
+      "year": 2024,
+      "citation_key": "liao2024co"
+    },
+    {
+      "id": 6,
+      "title": "Generative text steganography with large language model",
+      "year": 2024,
+      "citation_key": "wu2024generative"
+    },
+    {
+      "id": 8,
+      "title": "Zero-shot generative linguistic steganography",
+      "year": 2024,
+      "citation_key": "lin2024zero"
+    },
+    {
+      "id": 9,
+      "title": "Provably secure disambiguating neural linguistic steganography",
+      "year": 2024,
+      "citation_key": "qi2024provably"
+    },
+    {
+      "id": 10,
+      "title": "A principled approach to natural language watermarking",
+      "year": 2024,
+      "citation_key": "ji2024principled"
+    },
+    {
+      "id": 11,
+      "title": "Context-aware linguistic steganography model based on neural machine translation",
+      "year": 2024,
+      "citation_key": "ding2023context"
+    },
+    {
+      "id": 12,
+      "title": "DeepTextMark: a deep learning-driven text watermarking approach for identifying large language model generated text",
+      "year": 2024,
+      "citation_key": "munyer2024deeptextmark"
+    },
+    {
+      "id": 13,
+      "title": "Hi-stega: A hierarchical linguistic steganography framework combining retrieval and generation",
+      "year": 2024,
+      "citation_key": "wang2023hi"
+    },
+    {
+      "id": 15,
+      "title": "Natural language steganography by chatgpt",
+      "year": 2024,
+      "citation_key": "steinebach2024natural"
+    },
+    {
+      "id": 19,
+      "title": "Imperceptible Text Steganography based on Group Chat",
+      "year": 2024,
+      "citation_key": "li2024imperceptible"
+    },
+    {
+      "id": 20,
+      "title": "A Semantic Controllable Long Text Steganography Framework Based on LLM Prompt Engineering and Knowledge Graph",
+      "year": 2024,
+      "citation_key": "li2024semantic"
+    },
+    {
+      "id": 21,
+      "title": "Beyond Binary Classification: Customizable Text Watermark on Large Language Models",
+      "year": 2024,
+      "citation_key": "xu2024beyond"
+    },
+    {
+      "id": 23,
+      "title": "Controllable Semantic Linguistic Steganography via Summarization Generation",
+      "year": 2024,
+      "citation_key": "zhang2024controllable"
+    },
+    {
+      "id": 24,
+      "title": "FREmax: A Simple Method Towards Truly Secure Generative Linguistic Steganography",
+      "year": 2024,
+      "citation_key": "pang2024fremax"
+    },
+    {
+      "id": 4,
+      "title": "Joint linguistic steganography with BERT masked language model and graph attention network",
+      "year": 2023,
+      "citation_key": "ding2023joint"
+    },
+    {
+      "id": 5,
+      "title": "Discop: Provably secure steganography in practice based on\" distribution copies\"",
+      "year": 2023,
+      "citation_key": "ding2023discop"
+    },
+    {
+      "id": 16,
+      "title": "Natural language watermarking via paraphraser-based lexical substitution",
+      "year": 2023,
+      "citation_key": "qiang2023natural"
+    },
+    {
+      "id": 17,
+      "title": "Rewriting-Stego: generating natural and controllable steganographic text with pre-trained language model",
+      "year": 2023,
+      "citation_key": "li2023rewriting"
+    },
+    {
+      "id": 22,
+      "title": "CPG-LS: Causal Perception Guided Linguistic Steganography",
+      "year": 2023,
+      "citation_key": "xiang2023cpg"
+    },
+    {
+      "id": 2,
+      "title": "General framework for reversible data hiding in texts based on masked language modeling",
+      "year": 2022,
+      "citation_key": "zheng2022general"
+    },
+    {
+      "id": 18,
+      "title": "ALiSa: Acrostic linguistic steganography based on BERT and Gibbs sampling",
+      "year": 2022,
+      "citation_key": "yi2022alisa"
+    },
+    {
+      "id": 7,
+      "title": "Meteor: Cryptographically secure steganography for realistic distributions",
+      "year": 2021,
+      "citation_key": "kaptchuk2021meteor"
+    },
+    {
+      "id": 1,
+      "title": "VAE-Stega: linguistic steganography based on variational auto-encoder",
+      "year": 2020,
+      "citation_key": "yang2020vae"
+    },
+    {
+      "id": 14,
+      "title": "Linguistic steganography: From symbolic space to semantic space",
+      "year": 2020,
+      "citation_key": "zhang2020linguistic"
+    }
+  ],
+  "slr_pending_records": 7,
+  "scope": "Saved configurations only; current defaults do not replace missing historical settings. SLR membership checks apply to the completed 31-study synthesis, not all draft counts."
+}

@@ -12,7 +12,8 @@ A model can write a grammatical, low-perplexity sentence that does not belong in
 A comment that is fluent but off-topic is conspicuous to a human reader and to a semantic checker.
 
 We hide the payload in two conversational choices rather than in token probabilities.
-Bits select (i) which comment to reply to in a depth-first flattened thread, and (ii) which topic the comment will discuss from a list both parties rebuild from the public thread and a shared research procedure.
+Both parties build an ordered topic list from the post, its comments, and texts collected through search. They use the same topic-extraction and ordering rules so that each index refers to the same topic for both parties.
+Bits select (i) which comment to reply to in a depth-first flattened thread, and (ii) which topic from that list the comment will discuss.
 A language model then writes an ordinary visible reply for that pair.
 We do not use invisible characters.
 Before keeping the comment, the sender uses the same topic-identification step as the receiver and retries if it identifies the wrong topic.
@@ -27,6 +28,18 @@ Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with this two-l
 	\label{fig:token-vs-intent}
 \end{figure}
 
+We assess proposed improvements through specified comparison criteria. Section~\ref{sec:baseline-choice} explains the baseline choice and the differences that affect interpretation.
+
+\subsection{Research questions}
+\label{sec:research-questions}
+The following questions organize the method and evaluation, distinguishing what the design specifies from what the experiments measure:
+\begin{enumerate}
+    \item How do the reply-location and comment-topic lists carry bits, and what shared data and agreements let both parties reconstruct them?
+    \item How successfully does the sender generate a comment expressing the selected topic, how successfully does the receiver extract the message from the resulting comments, and what causes failure at each stage?
+    \item How do accepted comments compare with those of Zero-shot Generative Linguistic Steganography (ZLG)~\cite{lin2024zero} under the independent judge's criteria, and what conclusions does that comparison support?
+\end{enumerate}
+
+\subsection{Main contributions}
 The primary contributions of this paper are:
 \begin{itemize}
     \item A context-aware black-box linguistic steganography method in which reply-location and comment-topic choices carry message bits, and a language model writes a comment suited to those choices and the context. The method calls the model through an API for embedding and extraction without requiring its internal token probabilities.

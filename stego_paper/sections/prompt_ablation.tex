@@ -1,0 +1,34 @@
+\subsection{Exploratory prompt ablation and human-style examples}
+\label{sec:prompt-ablation}
+
+The standout comparison raises a writing question: does recognizability come from the instructions for sounding conversational, from expressing a selected topic, or from the combination? We examined these components in a prompt-development screen before evaluating G5 in the archive experiment. The prompts change how the writer expresses the embedding choices; they do not introduce a different codec or receiver.
+
+\subsubsection{A shared development panel and seven prompt conditions}
+The panel contains \PaPosts{} posts drawn from the 244-post judge set. Selection takes \PaStratumPosts{} posts from each of its four joint detection outcomes: both methods detected, neither detected, only our method detected, and only ZLG detected. It is a stratified diagnostic panel based on known outcomes, not a fresh confirmation sample. The variants reuse the selected parent and, when applicable, target topic for each post.
+
+The initial four conditions form a two-by-two design. G0 retains the reflective writing instructions and subject/action/emotion recipe without a target topic; G1 is the payload-bearing baseline using that writing package. G2 removes that recipe and asks for one local conversational act, such as a question or correction, without a target topic. G3 combines the local-act instructions with the selected topic, treating it as a routing hint rather than something to announce explicitly. The no-target controls G0 and G2 help distinguish ordinary prompt-induced style from the additional burden of expressing the selected choice. They are not message-carrying methods.
+
+A subsequent extension uses the same panel. G4 adds three fixed human-reply examples to G2, and G5 adds those examples to G3. They guide brevity and reply shape, with instructions against copying their content. An additional argumentative prompt requires a pointed, thread-specific opinion while retaining the target topic. Thus G5 is a defined combination of concise conversational instructions, topic conditioning, and human-style examples, rather than a new embedding algorithm. The four-condition screen contains \PaPrimaryAttempts{} post/variant assignments and the extension \PaExtensionAttempts{}, totaling \PaGenerationAttempts{} over the same \PaPosts{} source posts.
+
+\subsubsection{What was validated and judged}
+For target-bearing variants, the existing sender validator checks whether a candidate identifies the intended topic. The saved field named ``exact recovery'' in this screen records that candidate-validation outcome; the runner does not assemble and independently extract a complete payload. We therefore report it as topic verification in Table~\ref{tab:prompt-ablation}. For no-target controls, this verification is inapplicable, not a zero recovery rate.
+
+Standout judgments use the accepted target-bearing comments and the produced control comments. GPT-5.6 Luna with high reasoning selected the inserted comment from a lineup containing nine human replies. The saved tasks and decisions provide \PaJudgeTasks{} complete joins to nonempty generated texts. Generated, verified, and judged counts have different denominators; failed attempts remain in the assigned count, while the judge sees only the available eligible texts.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Exploratory prompt screen on the same \PaPosts{} posts per variant. Produced and topic-verified counts use all assigned posts. Detection counts use only judged texts; lower detection is better on this task. Dashes indicate no target-topic check.}
+\label{tab:prompt-ablation}
+\begin{tabularx}{\linewidth}{|X|c|c|c|c|}
+\hline
+Variant & Target topic & Produced & Topic verified & Detected/judged \\ \hline
+\PaRowsEn
+\end{tabularx}
+\end{table}
+
+\subsubsection{What the prompt comparisons explain}
+Removing the reflective recipe alone did not change the controls' observed detection count: G0 and G2 were each detected \PaGZeroDetected/\PaGZeroJudged{} times. With a target topic, G3 verified more assigned cases than G1 (\PaGThreeVerified{} versus \PaGOneVerified{}), but its accepted texts were not less often detected in their respective judged subsets. This separates obtaining a decodable candidate from making that candidate resemble the surrounding human replies.
+
+G5 verified \PaGFiveVerified/\PaPosts{} assigned cases, with detection in \PaGFiveDetected/\PaGFiveJudged{} judged texts. Its lower conditional detection rate than G3's does not isolate an example-conditioning benefit: only \PaCommonGThreeGFive{} posts have accepted comments under both, and each variant is detected in \PaCommonGThreeHits{} of those posts. Verification filters different outputs for each prompt, and adding target conditioning also adds its acceptance requirement. These are exploratory component comparisons, not a clean estimate of one instruction's causal effect or a security result. A separate trace-enabled generation rerun is preserved independently and is not pooled into the table.
+
+The screen supplies a reason to examine G5 further, but it does not answer whether its comments can carry an entire multi-comment message. Section~\ref{sec:fresh-archive} tests that different endpoint: G5 recovered no complete message among six assignments, whereas the anchored writer recovered four. The generation/validation failures and acquisition failure there do not establish inferior writing quality. Together, the studies explain why a prompt that looks promising in a comment-level screen was not adopted as the working delivery policy.

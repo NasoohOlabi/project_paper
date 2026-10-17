@@ -1,0 +1,93 @@
+{
+  "scope": "One saved message across seven comments; prepared shared context and supplied carrier order; recorded classifier outputs, no fresh generation.",
+  "sources": {
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\e2e_runs\\oppression25_fresh_20261003T113428Z\\sender_private\\sample_0000.json": "b8663969260f9026c222ec946500c9d7f35f923ec4767fc0b809654a87cb359e",
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\e2e_runs\\oppression25_fresh_20261003T113428Z\\public\\sample_0000.json": "f6c669843bf57ecee1b7dd832dd894d481cc31e69a87b287c35cdb5ad56752b5",
+    "D:\\Master\\code\\stego\\stego-side-wing\\metrics\\recovery_diagnosis\\oppression25_20261003\\report.json": "f5d85701f8c09a1dde0f7151dc6b83e918e25c462f678b2017340a78238afcd7",
+    "D:\\Master\\code\\stego\\stego-side-wing\\src\\workflows\\utils\\stego_codec.py": "5c56bad98e96ed4133c56609b187c73a2d89666d742e40ca474342b72e103b32"
+  },
+  "sample_index": 0,
+  "payload": "\"All forms of violence are evil\"\nNelson ",
+  "recovered_payload": "\"All forms of violence are evil\"\nNelson ",
+  "values": {
+    "McPayloadBytes": 40,
+    "McPayloadStorageBits": 320,
+    "McCompressedBits": 31,
+    "McCount": 7,
+    "McMarkerBits": 16,
+    "McVersionBits": 2,
+    "McCountBits": 5,
+    "McLengthBits": 9,
+    "McControlBits": 32,
+    "McIntegrityBits": 32,
+    "McStreamBits": 95,
+    "McPaddingBits": 10,
+    "McSlotBits": 105,
+    "McCommentChoices": 1329,
+    "McTopicChoices": 32,
+    "McCommentBits": 10,
+    "McTopicBits": 5,
+    "McFrameBits": 15,
+    "McDictionaryEntries": 998,
+    "McReplyIndex": 662,
+    "McTopicIndex": 18,
+    "McFirstReplyBits": "1010010110",
+    "McFirstTopicBits": "10010",
+    "McMarkerString": "1010010110100101",
+    "McVersionString": "10",
+    "McGammaCount": "00111",
+    "McGammaLength": "000011111"
+  },
+  "frames": [
+    {
+      "comment": 1,
+      "reply_index": 662,
+      "topic_index": 18,
+      "stream_bits": 15,
+      "padding_bits": 0
+    },
+    {
+      "comment": 2,
+      "reply_index": 796,
+      "topic_index": 7,
+      "stream_bits": 15,
+      "padding_bits": 0
+    },
+    {
+      "comment": 3,
+      "reply_index": 960,
+      "topic_index": 2,
+      "stream_bits": 15,
+      "padding_bits": 0
+    },
+    {
+      "comment": 4,
+      "reply_index": 0,
+      "topic_index": 5,
+      "stream_bits": 15,
+      "padding_bits": 0
+    },
+    {
+      "comment": 5,
+      "reply_index": 105,
+      "topic_index": 17,
+      "stream_bits": 15,
+      "padding_bits": 0
+    },
+    {
+      "comment": 6,
+      "reply_index": 663,
+      "topic_index": 5,
+      "stream_bits": 15,
+      "padding_bits": 0
+    },
+    {
+      "comment": 7,
+      "reply_index": 288,
+      "topic_index": 0,
+      "stream_bits": 5,
+      "padding_bits": 10
+    }
+  ],
+  "actual_codec_replay": "Stream rebuilt, recorded receiver bits parsed with CRC/padding checks, and payload decompressed exactly."
+}
