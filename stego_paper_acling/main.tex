@@ -1,0 +1,130 @@
+% Anonymous ACLing 2026 submission draft.
+% Prepared from the full Context-Aware Linguistic Steganography preprint.
+\documentclass[3p,times,procedia]{elsarticle}
+\flushbottom
+\usepackage{ecrc}
+\usepackage[bookmarks=false]{hyperref}
+\hypersetup{colorlinks,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{url}
+\graphicspath{{figures/}}
+
+\volume{00}
+\firstpage{1}
+\journalname{Procedia Computer Science}
+\runauth{Anonymous}
+\jid{procs}
+\dochead{8th International Conference on AI in Computational Linguistics}
+
+\begin{document}
+\begin{frontmatter}
+
+\title{Context-Aware Linguistic Steganography through Reply and Topic Selection}
+
+\author{Anonymous Authors}
+\address{Anonymous submission}
+
+\begin{abstract}
+Linguistic steganography usually embeds bits by changing token-generation probabilities. This paper studies a black-box alternative for threaded discussions: message bits select a reply target and a comment topic, and a language model writes an ordinary reply for those choices. Sender and receiver construct ordered lists from the post, its comments, and agreed domain texts. A sender-side verification loop rejects a reply when the receiver-style topic classifier does not recover the intended choice. We evaluate contextual quality, generation, and complete-message extraction under explicitly separated receiver conditions. On a selected 244-post judge set, our comments were chosen as the weakest text in 29.1\% of three-way tasks versus 47.5\% for the ZLG baseline and received higher register-fit scores (3.193 versus 2.791). ZLG was harder to identify in a ten-comment lineup (28.3\% versus 51.6\% detection). Complete-message recovery was 7/25 with prepared shared context and 5/6 on the anchored seven-attempt archive-development panel. These results support a contextual selection channel, while leaving live-platform delivery, adaptive steganalysis, and fully independent web/model reconstruction for future work.
+\end{abstract}
+
+\begin{keyword}
+linguistic steganography \sep large language models \sep black-box generation \sep conversational context \sep message recovery
+\end{keyword}
+\end{frontmatter}
+
+\section{Introduction}
+
+Text steganography must hide both the message and the fact that communication is taking place. Text is difficult because it has little redundancy: a statistically unusual choice or a semantically misplaced sentence can expose the channel. Generative language models improve surface fluency, but a grammatical reply can still be conspicuous when it does not fit the post or the comment to which it responds \citep{ding2023context,liao2024co,wang2023hi}. Token-level methods address this problem by steering next-token sampling, but they normally require model probabilities or a shared tokenizer \citep{zhang2021provably,kaptchuk2021meteor}.
+
+We study a black-box selection channel for threaded discussions. The sender and receiver build the same ordered reply-location and comment-topic lists. Message bits select one location and one topic; a language model then writes a visible reply suited to the selected context. The receiver reads the location and identifies the topic from the generated text. The method uses ordinary API access and does not insert invisible characters.
+
+Our contributions are threefold. First, we define a two-layer selection channel that separates observable conversational choices from token probabilities. Second, we specify the shared context, ordering, synchronization, verification, and multi-comment transport needed to interpret those choices. Third, we evaluate comment quality, generation, and complete-message recovery while recording the receiver inputs available in each experiment. The work makes no theoretical security claim and does not treat sender-side audit reconstruction as independent public-text recovery.
+
+\section{Method}
+
+\subsection{Communication model}
+
+Alice selects a public post and prepares a bounded copy of its comments. Both parties collect the post, its comments, and agreed domain documents through a deterministic helper configuration. Topic extraction produces an ordered list
+\[
+\mathcal{A}=(a_0,\ldots,a_{A-1}),
+\]
+where each record contains a source quote, a topic description, a category, and a source reference. Reply locations form a depth-first ordered list of size $C$, including the post itself. The parties must agree on the source texts, their order, the helper model and prompt, the comment cutoff, and the list-construction rules. Hashes can expose input differences but cannot make changing web content identical.
+
+\subsection{Two-layer selection channel}
+
+The first bit field selects the reply location and the second selects a topic. With fixed-width power-of-two subsets, the distinguishable selection budget per carrier is
+\[
+b=\lfloor\log_2 C\rfloor+\lfloor\log_2 A\rfloor.
+\]
+For example, three reply locations and five topics provide $1+2=3$ distinguishable bits. This is an available selection budget, not Shannon capacity and not a measurement of useful payload independently recovered by a receiver. Modulo reduction can map different bit patterns to the same choice, so the multi-comment writer restricts choices to invertible subsets.
+
+The writer receives the post, the selected parent chain, the selected topic description and source excerpt, and a research excerpt. It generates candidate replies at nonzero temperature. Before publication, Alice applies the same topic-identification procedure used by the receiver and retains a candidate only when it identifies the selected topic and passes a contextuality check. This verifies a candidate under the sender's available conditions; it does not by itself establish public-text receiver recovery.
+
+\subsection{Payloads and multiple comments}
+
+A text payload may be protected and compressed against a dictionary built from the shared texts. A single comment carries only the choices available in its two lists. Larger messages therefore use multiple carriers. The implemented stream contains a recognition marker, version, gamma-coded carrier count and payload length, the prepared payload, a CRC-32 check, and final padding. The receiver joins candidate bit slices in supplied order and rejects inconsistent count, length, CRC, or padding. The carrier limit bounds delivery work; it does not establish an optimal message size.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{token_vs_intent_embedding}
+\caption{Token-level embedding compared with the proposed two-layer selection channel. Bits select a reply location and a conversational topic before the model writes the visible reply.}
+\label{fig:selection-channel}
+\end{figure}
+
+\section{Experimental design}
+
+The experiments answer different questions and are not one benchmark. The initial configuration comparison used 304 accepted pairs over 100 source posts and compared an available selection budget with a reported ZLG payload. The comment-quality study used one eligible pair for each of 244 posts selected from a frozen 1,608-pair collection; 95 posts without a unique ZLG output were excluded. Five blinded tasks reused these same post-level pairs.
+
+Complete-message experiments use different receiver contracts. The source-excerpt study assigned 25 messages selected from prepared source texts, so the payloads favor dictionary matches. The independent-payload development check assigned eight-byte messages and stopped after its third failure. Archive reconstruction independently prepared thread-only lists from public archive inputs. These experiments test different dependencies and are reported separately.
+
+The quality judge was a single language model with five task-specific prompts. The tasks measured standout detection, weakest-text selection, suspicion AUROC, thread attribution, and register fit. Higher standout detection is worse for imperceptibility; the task is not a security test. The baseline is official Zero-shot Generative Linguistic Steganography (ZLG), whose token-probability channel and receiver inputs differ from ours \citep{lin2024zero}.
+
+\section{Results}
+
+\subsection{Comment quality}
+
+Table~\ref{tab:judge} summarizes the selected 244-post judge set. The results are criterion-specific. ZLG was harder to identify as the inserted comment, while our method was selected less often as the weakest text and scored higher on register fit. The AUROC values were close. The selected subset and one judge model limit the strength of these conclusions.
+
+\begin{table}[t]
+\centering
+\caption{Blinded LLM-judge results on 244 selected post pairs.}
+\label{tab:judge}
+\begin{tabular}{lcc}
+\toprule
+Criterion & Our method & ZLG \\
+\midrule
+Standout detection (lower is better) & 51.6\% & 28.3\% \\
+Weakest text selected (lower is better) & 29.1\% & 47.5\% \\
+Suspicion AUROC (lower is closer to human) & 0.661 & 0.650 \\
+Thread attribution (higher is better) & 89.3\% & 75.0\% \\
+Register fit, 1--5 (higher is better) & 3.193 & 2.791 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+\subsection{Generation and message recovery}
+
+The source campaign permitted one retry and produced 2,543 accepted comments from 4,044 attempts. Those successes were reconstructed with sender audit metadata, so they measure a generation path rather than independent public-text recovery. In the source-excerpt experiment, 7 of 25 assigned messages were recovered exactly with prepared shared context. Five attempts failed generation and 13 failed receiver recovery; all 25 offline codec and transport checks passed. The saved receiver failures contained topic-classification confusion even when the intended topic was in the shortlist.
+
+The independent-payload development check recovered 4 of 7 attempted messages before a prespecified no-go condition; three messages were left unattempted. All attempted messages generated, but incorrect topic classifications prevented complete recovery in three cases. This separates linguistic choice identification from transport correctness.
+
+The archive panels independently rebuilt a deterministic thread-only list. With the anchored writer and seven attempts, recovery was 5/6 on the development panel and 4/6 on the untouched panel. A concise selection policy preserved those observed exact counts while reducing all-attempt words by 4.07\% and 3.11\%, respectively. Pairwise writing judgments did not establish a quality improvement or preservation. These panels do not evaluate live Reddit publication, public discovery, complete web/model reconstruction, or adaptive attacks.
+
+\section{Limitations and conclusion}
+
+The evidence is configuration-specific. The judge uses a selected unique-output subset and one non-deterministic evaluator; its task outcomes are not independent samples. The initial comparison and comment-quality study use audit-assisted reconstruction, while the message experiments expose prepared or independently acquired inputs under separate contracts. The archive driver simulates public observation locally and does not implement full platform discovery. The paper therefore does not claim general steganographic security, resistance to editing, or complete end-to-end platform deployment.
+
+The results show that conversational choices can serve as a black-box carrier when the parties can reconstruct compatible lists. They also show that receiver topic identification, rather than bit assembly alone, is a central failure point. Future work should test larger models, live platform delivery, independent search and model reconstruction, complete-message bundle detectability, and dedicated editing and steganalysis attacks.
+
+\enlargethispage{3\baselineskip}
+\bibliographystyle{elsarticle-harv}
+\bibliography{bibliography}
+
+\end{document}
+
