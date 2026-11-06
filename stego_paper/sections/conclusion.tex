@@ -1,6 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
+\subsection{Contributions and limits}
+
 This work hides a payload in a threaded discussion by choosing a reply target and a comment topic, then asking an LLM to write an ordinary comment.
 The available selection budget depends on distinguishable choices in the two lists; actual extraction also requires the receiver to identify the choices correctly.
 The design does not insert bits into next-token sampling, and it does not need white-box logits.
@@ -19,6 +21,8 @@ The later archive simulation independently reconstructed the existing thread-onl
 
 \label{par:baseline-interpretation}
 ZLG~\cite{lin2024zero} provided a runnable comparison on common posts, with different model-access requirements, information-carrying choices, and receiver inputs. Using a local model and the single-comment path restricted what this experiment could reveal about our model flexibility and larger-message delivery. Improvement is therefore tied to the measured criterion and configuration: some quality judgments favored our method, ZLG was harder to identify in standout detection, and suspicion AUROC values were close. These results do not quantify the benefit of a larger model or provide an overall ranking of message-extraction reliability.
+
+\subsection{Future work}
 
 Future evaluation can use larger or stronger-reasoning models while controlling context, topic count, and topic similarity. This would test whether API model flexibility improves generation or topic identification instead of assuming a gain from model size alone.
 

@@ -7,9 +7,34 @@ Natural language has little spare room, so even small statistical quirks can giv
 Large language models changed the cover: instead of editing an existing sentence, many systems now generate the text \cite{li2023rewriting,lin2024zero,wu2024generative}.
 Those systems usually hide bits by steering next-token sampling, which can look fluent while still sitting on a modified distribution.
 
+\subsection{Research motivation}
+
 That fluency still has to fit the thread.
 A model can write a grammatical, low-perplexity sentence that does not belong in the conversation \cite{liao2024co,wang2023hi,zhang2024controllable}.
-A comment that is fluent but off-topic is conspicuous to a human reader and to a semantic checker.
+A comment that is fluent but off-topic is conspicuous to a human reader and to a semantic checker \cite{olabi2026slr}.
+
+In a discussion, readers interpret a comment together with the post and the comment to which it replies.
+Conversational fit therefore depends on both what the comment says and where it appears.
+This motivates a channel in which the reply location and the comment topic are part of the embedding decision, rather than evaluating the generated text in isolation.
+
+Token-directed methods also assume access to the model's next-token probabilities.
+An API that exposes only generated text provides no such distribution, so the payload needs another observable carrier.
+Reply location and comment topic provide that carrier when both parties can reconstruct the same choices.
+
+\subsection{Research problem}
+
+The problem is to place message bits in choices that look ordinary in a public conversation and to identify those choices at the receiver without access to the model's token probabilities.
+Writing a suitable comment is not enough: the parties must agree on the possible reply locations, candidate topics, and their ordering so that one choice denotes the same bits for both.
+
+The conversation may change while a reply is being prepared, search results may differ, and the model may fail to identify the intended topic in its own output.
+The design addresses these cases with an agreed operating window, hashes and data-integrity checks, and a sender-side verification step before publication.
+The evaluation separates development checks of list reconstruction from experiments that embed and extract complete messages.
+
+\subsection{Research objective and scope}
+
+This paper describes a two-layer selection channel in a public discussion, states the coordination required by its sender and receiver, and evaluates accepted comments and message extraction under specified experimental conditions.
+We assess the proposed improvements using explicit comparison criteria and explain the baseline choice and the differences that affect interpretation in Section~\ref{sec:baseline-choice}.
+The paper does not provide a theoretical security proof, claim that a public conversation alone is sufficient for recovery in every setting, or establish general superiority against steganalysis.
 
 We hide the payload in two conversational choices rather than in token probabilities.
 Both parties build an ordered topic list from the post, its comments, and texts collected through search. They use the same topic-extraction and ordering rules so that each index refers to the same topic for both parties.
@@ -28,8 +53,6 @@ Figure~\ref{fig:token-vs-intent} contrasts token-level embedding with this two-l
 	\label{fig:token-vs-intent}
 \end{figure}
 
-We assess proposed improvements through specified comparison criteria. Section~\ref{sec:baseline-choice} explains the baseline choice and the differences that affect interpretation.
-
 \subsection{Research questions}
 \label{sec:research-questions}
 The following questions organize the method and evaluation, distinguishing what the design specifies from what the experiments measure:
@@ -47,3 +70,8 @@ The primary contributions of this paper are:
     \item A closed-loop verification mechanism that simulates decoding before the comment is kept and retries synthesis, with an optional revision pass, under stochastic generation.
     \item An experimental evaluation covering comment quality, generation success, and message extraction. An independent language model compares our comments with ZLG~\cite{lin2024zero} comments on 244 posts, and a separate configuration comparison covers 304 comment pairs. We also report independent-receiver extraction experiments, specifying the shared data available to the receiver in each experiment.
 \end{itemize}
+
+\subsection{Paper roadmap}
+
+Section~2 presents the background, Section~3 defines the terminology, and Section~4 reviews related work and its evaluation practices.
+Section~5 explains the proposed methodology, Section~6 describes the implementation, Section~7 reports the experiments and the limits of their conclusions, and Section~8 summarizes the contributions and future work.
